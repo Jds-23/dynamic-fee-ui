@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
@@ -8,11 +9,16 @@ import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Label } from "@/components/ui/Label";
-import { DEFAULT_POOL, TICK_RANGE_FULL } from "@/constants/defaults";
+import {
+  DEFAULT_POOL,
+  DEFAULT_SLIPPAGE_TOLERANCE,
+  TICK_RANGE_FULL,
+} from "@/constants/defaults";
 import { COMMON_TOKENS } from "@/constants/tokens";
 import { useApprovalFlow } from "@/hooks/approval/useApprovalFlow";
 import { usePoolState } from "@/hooks/pool/usePoolState";
 import { usePosition } from "@/hooks/position/usePosition";
+import { useMintPosition } from "@/hooks/transaction/useMintPosition";
 import { sortTokens } from "@/lib/poolId";
 import type { PoolKey, TokenData } from "@/types";
 
@@ -120,15 +126,46 @@ export function MintForm() {
     amount1Max: positionData?.amount1 ?? 0n,
   });
 
-  const handleAmount0Change = useCallback((value: string) => {
-    setActiveInput("token0");
-    setAmount0(value);
-  }, []);
+  // Mint transaction
+  const {
+    mint,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error: mintError,
+    reset: resetMint,
+  } = useMintPosition({
+    position: positionData?.position,
+    slippageTolerance: DEFAULT_SLIPPAGE_TOLERANCE,
+  });
 
-  const handleAmount1Change = useCallback((value: string) => {
-    setActiveInput("token1");
-    setAmount1(value);
-  }, []);
+  // Reset form after successful mint
+  useEffect(() => {
+    if (isSuccess) {
+      setAmount0("");
+      setAmount1("");
+      setActiveInput(null);
+    }
+  }, [isSuccess]);
+
+  const handleAmount0Change = useCallback(
+    (value: string) => {
+      setActiveInput("token0");
+      setAmount0(value);
+      resetMint();
+    },
+    [resetMint],
+  );
+
+  const handleAmount1Change = useCallback(
+    (value: string) => {
+      setActiveInput("token1");
+      setAmount1(value);
+      resetMint();
+    },
+    [resetMint],
+  );
 
   const handleFeeSelect = useCallback(
     (newFee: number, newTickSpacing: number) => {
@@ -152,11 +189,21 @@ export function MintForm() {
     setActiveInput(null);
   }, []);
 
-  const canMint = isConnected && positionData && currentStep === "ready";
+  const canMint =
+    isConnected &&
+    positionData &&
+    currentStep === "ready" &&
+    !isPending &&
+    !isConfirming;
 
-  const handleMint = () => {
-    // TODO: Implement mint transaction
-    console.log("Minting position:", positionData);
+  const getButtonText = () => {
+    if (!isConnected) return "Connect Wallet";
+    if (!positionData) return "Enter an amount";
+    if (currentStep !== "ready") return "Approve tokens first";
+    if (isPending) return "Confirm in wallet...";
+    if (isConfirming) return "Adding liquidity...";
+    if (isSuccess) return "Success!";
+    return "Add Liquidity";
   };
 
   return (
@@ -172,7 +219,7 @@ export function MintForm() {
           onAmountChange={handleAmount0Change}
           onTokenSelect={handleToken0Select}
           tokens={tokens.filter((t) => t.address !== token1?.address)}
-          disabled={!isConnected}
+          disabled={!isConnected || isPending || isConfirming}
         />
 
         <TokenAmountInput
@@ -182,7 +229,7 @@ export function MintForm() {
           onAmountChange={handleAmount1Change}
           onTokenSelect={handleToken1Select}
           tokens={tokens.filter((t) => t.address !== token0?.address)}
-          disabled={!isConnected}
+          disabled={!isConnected || isPending || isConfirming}
         />
 
         <div>
@@ -190,7 +237,7 @@ export function MintForm() {
           <PoolFeeSelector
             selectedFee={fee}
             onSelect={handleFeeSelect}
-            disabled={!isConnected}
+            disabled={!isConnected || isPending || isConfirming}
           />
         </div>
 
@@ -203,7 +250,7 @@ export function MintForm() {
             currentTick={poolState?.tick}
             onTickLowerChange={setTickLower}
             onTickUpperChange={setTickUpper}
-            disabled={!isConnected}
+            disabled={!isConnected || isPending || isConfirming}
           />
         </div>
 
@@ -249,20 +296,32 @@ export function MintForm() {
           />
         )}
 
+        {mintError && (
+          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            {mintError.message}
+          </div>
+        )}
+
         <Button
           type="button"
           className="w-full"
           disabled={!canMint}
-          onClick={handleMint}
+          onClick={mint}
         >
-          {!isConnected
-            ? "Connect Wallet"
-            : !positionData
-              ? "Enter an amount"
-              : currentStep !== "ready"
-                ? "Approve tokens first"
-                : "Add Liquidity"}
+          {(isPending || isConfirming) && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          {getButtonText()}
         </Button>
+
+        {hash && (
+          <div className="text-center text-sm text-muted-foreground">
+            Transaction:{" "}
+            <span className="font-mono">
+              {hash.slice(0, 10)}...{hash.slice(-8)}
+            </span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
