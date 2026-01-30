@@ -3,12 +3,13 @@ import { useAccount, useChainId } from "wagmi";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { FaucetPage } from "@/pages/FaucetPage";
 import { MintPage } from "@/pages/MintPage";
 import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
 import { Providers } from "@/providers";
 
-type Page = "home" | "mint" | "swap" | "positions";
+type Page = "home" | "mint" | "swap" | "positions" | "faucet";
 
 function AppContent() {
   const { address, isConnected } = useAccount();
@@ -23,6 +24,8 @@ function AppContent() {
         return <SwapPage />;
       case "positions":
         return <PositionsPage />;
+      case "faucet":
+        return <FaucetPage />;
       default:
         return (
           <div className="py-8">
@@ -114,6 +117,13 @@ function AppContent() {
                 onClick={() => setCurrentPage("positions")}
               >
                 My Positions
+              </button>
+              <button
+                type="button"
+                className={`${currentPage === "faucet" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                onClick={() => setCurrentPage("faucet")}
+              >
+                Faucet
               </button>
             </nav>
           </div>

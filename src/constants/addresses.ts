@@ -7,6 +7,7 @@ type ChainAddresses = {
   STATE_VIEW: Address;
   PERMIT2: Address;
   UNIVERSAL_ROUTER: Address;
+  FAUCET: Address;
 };
 
 // Uniswap V4 contract addresses for Sepolia testnet
@@ -17,6 +18,7 @@ export const ADDRESSES: Record<number, ChainAddresses> = {
     STATE_VIEW: "0xe1dd9c3fa50edb962e442f60dfbc432e24537e4c",
     PERMIT2: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
     UNIVERSAL_ROUTER: "0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b",
+    FAUCET: "0x55391a64c26c312FB57046474656959C37B08538",
   },
 };
 
