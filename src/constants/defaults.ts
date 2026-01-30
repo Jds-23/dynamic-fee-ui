@@ -1,14 +1,14 @@
+// Dynamic fee pool configuration for Sepolia
+// Fee 0x800000 (8388608) is the dynamic fee flag in Uniswap V4
 export const DEFAULT_POOL = {
-  fee: 3000, // 0.3%
-  tickSpacing: 60,
-  hooks: "0x0000000000000000000000000000000000000000" as const,
+  fee: 0x800000,
+  tickSpacing: 120,
+  hooks: "0x9A411c87d79059d99ebB1F229289593713Ace080" as const,
 };
 
+// Dynamic fee - no selectable fee tiers
 export const FEE_TIERS = [
-  { fee: 100, tickSpacing: 1, label: "0.01%" },
-  { fee: 500, tickSpacing: 10, label: "0.05%" },
-  { fee: 3000, tickSpacing: 60, label: "0.3%" },
-  { fee: 10000, tickSpacing: 200, label: "1%" },
+  { fee: 0x800000, tickSpacing: 120, label: "Dynamic Fee" },
 ] as const;
 
 export const TICK_RANGE_FULL = {

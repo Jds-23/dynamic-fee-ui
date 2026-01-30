@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { ApprovalFlow } from "@/components/approval/ApprovalFlow";
-import { PoolFeeSelector } from "@/components/pool/PoolFeeSelector";
 import { TickRangeSelector } from "@/components/position/TickRangeSelector";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
@@ -32,13 +31,15 @@ export function MintForm() {
   const [token1, setToken1] = useState<TokenData | undefined>(tokens[1]);
   const [amount0, setAmount0] = useState("");
   const [amount1, setAmount1] = useState("");
-  const [fee, setFee] = useState(DEFAULT_POOL.fee);
-  const [tickSpacing, setTickSpacing] = useState(DEFAULT_POOL.tickSpacing);
   const [tickLower, setTickLower] = useState(TICK_RANGE_FULL.tickLower);
   const [tickUpper, setTickUpper] = useState(TICK_RANGE_FULL.tickUpper);
   const [activeInput, setActiveInput] = useState<"token0" | "token1" | null>(
     null,
   );
+
+  // Use fixed pool configuration (dynamic fee pool)
+  const fee = DEFAULT_POOL.fee;
+  const tickSpacing = DEFAULT_POOL.tickSpacing;
 
   // Prevent infinite loops when syncing amounts
   const isCalculatingRef = useRef(false);
@@ -167,14 +168,6 @@ export function MintForm() {
     [resetMint],
   );
 
-  const handleFeeSelect = useCallback(
-    (newFee: number, newTickSpacing: number) => {
-      setFee(newFee);
-      setTickSpacing(newTickSpacing);
-    },
-    [],
-  );
-
   const handleToken0Select = useCallback((token: TokenData) => {
     setToken0(token);
     setAmount0("");
@@ -233,12 +226,13 @@ export function MintForm() {
         />
 
         <div>
-          <Label className="mb-2 block">Fee Tier</Label>
-          <PoolFeeSelector
-            selectedFee={fee}
-            onSelect={handleFeeSelect}
-            disabled={!isConnected || isPending || isConfirming}
-          />
+          <Label className="mb-2 block">Pool Type</Label>
+          <div className="rounded-lg border bg-muted/50 px-4 py-3">
+            <span className="text-sm font-medium">Dynamic Fee Pool</span>
+            <span className="ml-2 text-xs text-muted-foreground">
+              (Fee varies per swap)
+            </span>
+          </div>
         </div>
 
         <div>
