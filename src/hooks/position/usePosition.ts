@@ -75,8 +75,8 @@ export function usePosition(
         fee,
         tickSpacing,
         hooks,
-        sqrtPriceX96,
-        liquidity,
+        sqrtPriceX96.toString(),
+        liquidity.toString(),
         tick,
       );
 
@@ -91,7 +91,7 @@ export function usePosition(
           pool,
           tickLower,
           tickUpper,
-          amount0: parsedAmount,
+          amount0: parsedAmount.toString(),
           useFullPrecision: true,
         });
       } else if (activeInput === "token1" && amount1 && amount1 !== "0") {
@@ -102,7 +102,7 @@ export function usePosition(
           pool,
           tickLower,
           tickUpper,
-          amount1: parsedAmount,
+          amount1: parsedAmount.toString(),
         });
       } else {
         return undefined;

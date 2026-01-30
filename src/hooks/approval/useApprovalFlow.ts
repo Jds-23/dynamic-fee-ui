@@ -11,6 +11,7 @@ interface UseApprovalFlowParams {
   token1Address?: Address;
   amount0Max: bigint;
   amount1Max: bigint;
+  targetContract?: "POSITION_MANAGER" | "UNIVERSAL_ROUTER";
 }
 
 interface ApprovalStatus {
@@ -25,15 +26,16 @@ export function useApprovalFlow({
   token1Address,
   amount0Max,
   amount1Max,
+  targetContract = "POSITION_MANAGER",
 }: UseApprovalFlowParams) {
   const chainId = useChainId();
 
   let permit2Address: Address | undefined;
-  let positionManagerAddress: Address | undefined;
+  let targetAddress: Address | undefined;
 
   try {
     permit2Address = getAddress(chainId, "PERMIT2");
-    positionManagerAddress = getAddress(chainId, "POSITION_MANAGER");
+    targetAddress = getAddress(chainId, targetContract);
   } catch {
     // Chain not supported
   }
@@ -45,12 +47,12 @@ export function useApprovalFlow({
   const { allowance: erc20Allowance1, refetch: refetchErc20_1 } =
     useErc20Allowance(token1Address, permit2Address);
 
-  // Check Permit2 allowances to PositionManager
+  // Check Permit2 allowances to target contract
   const { allowance: permit2Allowance0, refetch: refetchPermit2_0 } =
-    usePermit2Allowance(token0Address, positionManagerAddress);
+    usePermit2Allowance(token0Address, targetAddress);
 
   const { allowance: permit2Allowance1, refetch: refetchPermit2_1 } =
-    usePermit2Allowance(token1Address, positionManagerAddress);
+    usePermit2Allowance(token1Address, targetAddress);
 
   // Determine approval status
   const approvalStatus: ApprovalStatus = useMemo(
@@ -96,6 +98,6 @@ export function useApprovalFlow({
     currentStep,
     refetchAllowances,
     permit2Address,
-    positionManagerAddress,
+    targetAddress,
   };
 }

@@ -20,6 +20,7 @@ interface ApprovalFlowProps {
   token0Symbol?: string;
   token1Symbol?: string;
   onApprovalComplete: () => void;
+  targetContract?: "POSITION_MANAGER" | "UNIVERSAL_ROUTER";
 }
 
 const STEP_LABELS: Record<ApprovalStep, string> = {
@@ -37,18 +38,24 @@ export function ApprovalFlow({
   token0Symbol,
   token1Symbol,
   onApprovalComplete,
+  targetContract = "POSITION_MANAGER",
 }: ApprovalFlowProps) {
   const chainId = useChainId();
 
   let permit2Address: Address | undefined;
-  let positionManagerAddress: Address | undefined;
+  let targetAddress: Address | undefined;
 
   try {
     permit2Address = getAddress(chainId, "PERMIT2");
-    positionManagerAddress = getAddress(chainId, "POSITION_MANAGER");
+    targetAddress = getAddress(chainId, targetContract);
   } catch {
     // Chain not supported
   }
+
+  const targetLabel =
+    targetContract === "UNIVERSAL_ROUTER"
+      ? "Universal Router"
+      : "Position Manager";
 
   const { writeContract, data: hash, isPending, reset } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
@@ -71,16 +78,16 @@ export function ApprovalFlow({
       return `Approve ${token1Symbol} for Permit2`;
     }
     if (step === "permit2_token0" && token0Symbol) {
-      return `Permit ${token0Symbol} for Position Manager`;
+      return `Permit ${token0Symbol} for ${targetLabel}`;
     }
     if (step === "permit2_token1" && token1Symbol) {
-      return `Permit ${token1Symbol} for Position Manager`;
+      return `Permit ${token1Symbol} for ${targetLabel}`;
     }
     return STEP_LABELS[step];
   };
 
   const handleApprove = () => {
-    if (!permit2Address || !positionManagerAddress) return;
+    if (!permit2Address || !targetAddress) return;
 
     if (currentStep === "token0_to_permit2" && token0Address) {
       writeContract({
@@ -102,7 +109,7 @@ export function ApprovalFlow({
         address: permit2Address,
         abi: permit2Abi,
         functionName: "approve",
-        args: [token0Address, positionManagerAddress, MAX_UINT160, expiration],
+        args: [token0Address, targetAddress, MAX_UINT160, expiration],
       });
     } else if (currentStep === "permit2_token1" && token1Address) {
       const expiration = Math.floor(Date.now() / 1000) + 86400 * 30; // 30 days
@@ -110,7 +117,7 @@ export function ApprovalFlow({
         address: permit2Address,
         abi: permit2Abi,
         functionName: "approve",
-        args: [token1Address, positionManagerAddress, MAX_UINT160, expiration],
+        args: [token1Address, targetAddress, MAX_UINT160, expiration],
       });
     }
   };

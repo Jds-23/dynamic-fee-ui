@@ -62,7 +62,7 @@ export function useMintPosition({
         position,
         {
           slippageTolerance: new Percent(slippageTolerance, 10000),
-          deadline,
+          deadline: deadline.toString(),
           recipient,
         },
       );
