@@ -1,5 +1,6 @@
 import { darkTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/config/wagmi";
 
@@ -16,6 +17,7 @@ export function Providers({ children }: ProvidersProps) {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
+        <Toaster position="bottom-right" richColors />
       </QueryClientProvider>
     </WagmiProvider>
   );

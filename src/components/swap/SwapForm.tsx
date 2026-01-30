@@ -1,7 +1,9 @@
 import { ArrowDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
+import { getExplorerTxUrl } from "@/utils/explorer";
 import { ApprovalFlow } from "@/components/approval/ApprovalFlow";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
@@ -114,12 +116,30 @@ export function SwapForm() {
     amountOutMinimum: quote?.minimumAmountOut ?? 0n,
   });
 
-  // Reset form after successful swap
+  // Reset form and show toast after successful swap
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && hash) {
       setAmountIn("");
+      toast.success("Swap successful!", {
+        description: "Transaction confirmed",
+        action: {
+          label: "View on Etherscan",
+          onClick: () => window.open(getExplorerTxUrl(hash), "_blank"),
+        },
+        duration: 10000,
+      });
     }
-  }, [isSuccess]);
+  }, [isSuccess, hash]);
+
+  // Show error toast on swap failure
+  useEffect(() => {
+    if (swapError) {
+      toast.error("Swap failed", {
+        description: swapError.message?.slice(0, 100) || "Transaction failed",
+        duration: 8000,
+      });
+    }
+  }, [swapError]);
 
   const handleAmountInChange = useCallback(
     (value: string) => {

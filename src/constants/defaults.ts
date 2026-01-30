@@ -12,8 +12,8 @@ export const FEE_TIERS = [
 ] as const;
 
 export const TICK_RANGE_FULL = {
-  tickLower: -887220,
-  tickUpper: 887220,
+  tickLower: -887160, // Nearest valid tick to MIN_TICK for tickSpacing=120
+  tickUpper: 887160, // Nearest valid tick to MAX_TICK for tickSpacing=120
 };
 
 export const DEFAULT_SLIPPAGE_TOLERANCE = 100; // 1% in bps

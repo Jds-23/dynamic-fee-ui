@@ -115,8 +115,12 @@ export function useSwapQuote(params: UseSwapQuoteParams): QuoteResult {
       const amountInNum = parseFloat(amountIn);
       const amountOutNum = amountInNum * priceNum;
 
-      // Apply a small fee impact estimate based on the pool fee
-      const feePercent = fee / 1_000_000; // fee is in hundredths of a bip
+      // Apply fee impact estimate (skip for dynamic fee pools where fee is determined by hooks)
+      const DYNAMIC_FEE_FLAG = 0x800000;
+      const isDynamicFee = (fee & DYNAMIC_FEE_FLAG) !== 0;
+      // For dynamic fees, use 0% estimate (actual fee applied by hooks at execution)
+      // For static fees, convert from hundredths of a bip to percentage
+      const feePercent = isDynamicFee ? 0 : fee / 1_000_000;
       const amountOutAfterFee = amountOutNum * (1 - feePercent);
 
       // Convert back to bigint

@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { ApprovalFlow } from "@/components/approval/ApprovalFlow";
@@ -20,6 +21,7 @@ import { usePosition } from "@/hooks/position/usePosition";
 import { useMintPosition } from "@/hooks/transaction/useMintPosition";
 import { sortTokens } from "@/lib/poolId";
 import type { PoolKey, TokenData } from "@/types";
+import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function MintForm() {
   const { isConnected } = useAccount();
@@ -141,14 +143,32 @@ export function MintForm() {
     slippageTolerance: DEFAULT_SLIPPAGE_TOLERANCE,
   });
 
-  // Reset form after successful mint
+  // Reset form and show toast after successful mint
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && hash) {
       setAmount0("");
       setAmount1("");
       setActiveInput(null);
+      toast.success("Liquidity added!", {
+        description: "Transaction confirmed",
+        action: {
+          label: "View on Etherscan",
+          onClick: () => window.open(getExplorerTxUrl(hash), "_blank"),
+        },
+        duration: 10000,
+      });
     }
-  }, [isSuccess]);
+  }, [isSuccess, hash]);
+
+  // Show toast on mint error
+  useEffect(() => {
+    if (mintError) {
+      toast.error("Add liquidity failed", {
+        description: mintError.message?.slice(0, 100) || "Transaction failed",
+        duration: 8000,
+      });
+    }
+  }, [mintError]);
 
   const handleAmount0Change = useCallback(
     (value: string) => {
