@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
-import { getExplorerTxUrl } from "@/utils/explorer";
 import { ApprovalFlow } from "@/components/approval/ApprovalFlow";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +15,7 @@ import { useSwapQuote } from "@/hooks/swap/useSwapQuote";
 import { useSwapTransaction } from "@/hooks/swap/useSwapTransaction";
 import { sortTokens } from "@/lib/poolId";
 import type { PoolKey, TokenData } from "@/types";
+import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function SwapForm() {
   const { isConnected } = useAccount();

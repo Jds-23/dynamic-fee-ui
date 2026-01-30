@@ -4,10 +4,11 @@ import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { MintPage } from "@/pages/MintPage";
+import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
 import { Providers } from "@/providers";
 
-type Page = "home" | "mint" | "swap";
+type Page = "home" | "mint" | "swap" | "positions";
 
 function AppContent() {
   const { address, isConnected } = useAccount();
@@ -20,6 +21,8 @@ function AppContent() {
         return <MintPage />;
       case "swap":
         return <SwapPage />;
+      case "positions":
+        return <PositionsPage />;
       default:
         return (
           <div className="py-8">
@@ -104,6 +107,13 @@ function AppContent() {
                 onClick={() => setCurrentPage("swap")}
               >
                 Swap
+              </button>
+              <button
+                type="button"
+                className={`${currentPage === "positions" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                onClick={() => setCurrentPage("positions")}
+              >
+                My Positions
               </button>
             </nav>
           </div>
