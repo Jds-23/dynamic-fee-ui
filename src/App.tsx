@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { FaucetPage } from "@/pages/FaucetPage";
 import { MintPage } from "@/pages/MintPage";
 import { MarketsPage } from "@/pages/MarketsPage";
+import { MarketTradePage } from "@/pages/MarketTradePage";
+import { CreateMarketPage } from "@/pages/CreateMarketPage";
 import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
 import { Providers } from "@/providers";
 
-type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "markets";
+type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "markets" | "market-trade" | "create-market";
 
 function AppContent() {
   const { address, isConnected } = useAccount();
@@ -31,9 +33,19 @@ function AppContent() {
           <MarketsPage
             onSelectMarket={(id) => {
               setSelectedConditionId(id);
+              setCurrentPage("market-trade");
             }}
           />
         );
+      case "market-trade":
+        return (
+          <MarketTradePage
+            conditionId={selectedConditionId!}
+            onBack={() => setCurrentPage("markets")}
+          />
+        );
+      case "create-market":
+        return <CreateMarketPage />;
       case "faucet":
         return <FaucetPage />;
       default:
@@ -109,10 +121,17 @@ function AppContent() {
               </button>
               <button
                 type="button"
-                className={`${currentPage === "markets" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                className={`${currentPage === "markets" || currentPage === "market-trade" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
                 onClick={() => setCurrentPage("markets")}
               >
                 Markets
+              </button>
+              <button
+                type="button"
+                className={`${currentPage === "create-market" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                onClick={() => setCurrentPage("create-market")}
+              >
+                Create Market
               </button>
               <button
                 type="button"
