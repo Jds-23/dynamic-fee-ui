@@ -8,11 +8,12 @@ import { MintPage } from "@/pages/MintPage";
 import { MarketsPage } from "@/pages/MarketsPage";
 import { MarketTradePage } from "@/pages/MarketTradePage";
 import { CreateMarketPage } from "@/pages/CreateMarketPage";
+import { PortfolioPage } from "@/pages/PortfolioPage";
 import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
 import { Providers } from "@/providers";
 
-type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "markets" | "market-trade" | "create-market";
+type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "markets" | "market-trade" | "create-market" | "portfolio";
 
 function AppContent() {
   const { address, isConnected } = useAccount();
@@ -46,6 +47,15 @@ function AppContent() {
         );
       case "create-market":
         return <CreateMarketPage />;
+      case "portfolio":
+        return (
+          <PortfolioPage
+            onNavigateMarket={(id) => {
+              setSelectedConditionId(id);
+              setCurrentPage("market-trade");
+            }}
+          />
+        );
       case "faucet":
         return <FaucetPage />;
       default:
@@ -132,6 +142,13 @@ function AppContent() {
                 onClick={() => setCurrentPage("create-market")}
               >
                 Create Market
+              </button>
+              <button
+                type="button"
+                className={`${currentPage === "portfolio" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                onClick={() => setCurrentPage("portfolio")}
+              >
+                Portfolio
               </button>
               <button
                 type="button"
