@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { FaucetPage } from "@/pages/FaucetPage";
+import { MintCollateralPage } from "@/pages/MintCollateralPage";
 import { MintPage } from "@/pages/MintPage";
 import { MarketsPage } from "@/pages/MarketsPage";
 import { MarketTradePage } from "@/pages/MarketTradePage";
@@ -12,8 +13,30 @@ import { PortfolioPage } from "@/pages/PortfolioPage";
 import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
 import { Providers } from "@/providers";
+import { APP_MODE, type AppMode } from "@/constants/appMode";
 
-type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "markets" | "market-trade" | "create-market" | "portfolio";
+type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "mint-collateral" | "markets" | "market-trade" | "create-market" | "portfolio";
+
+interface NavItem {
+  label: string;
+  page: Page;
+  modes: AppMode[];
+  activePages?: Page[];
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { label: "Home", page: "home", modes: ["prediction", "dynamic"] },
+  { label: "Markets", page: "markets", modes: ["prediction"], activePages: ["markets", "market-trade"] },
+  { label: "Create Market", page: "create-market", modes: ["prediction"] },
+  { label: "Portfolio", page: "portfolio", modes: ["prediction"] },
+  { label: "Add Liquidity", page: "mint", modes: ["dynamic"] },
+  { label: "Swap", page: "swap", modes: ["dynamic"] },
+  { label: "My Positions", page: "positions", modes: ["dynamic"] },
+  { label: "Mint Collateral", page: "mint-collateral", modes: ["prediction"] },
+  { label: "Faucet", page: "faucet", modes: ["dynamic"] },
+];
+
+const filteredNavItems = NAV_ITEMS.filter((item) => item.modes.includes(APP_MODE));
 
 function AppContent() {
   const { address, isConnected } = useAccount();
@@ -56,6 +79,8 @@ function AppContent() {
             }}
           />
         );
+      case "mint-collateral":
+        return <MintCollateralPage />;
       case "faucet":
         return <FaucetPage />;
       default:
@@ -122,62 +147,20 @@ function AppContent() {
               Uniswap V4
             </button>
             <nav className="flex gap-4">
-              <button
-                type="button"
-                className={`${currentPage === "home" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("home")}
-              >
-                Home
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "markets" || currentPage === "market-trade" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("markets")}
-              >
-                Markets
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "create-market" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("create-market")}
-              >
-                Create Market
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "portfolio" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("portfolio")}
-              >
-                Portfolio
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "mint" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("mint")}
-              >
-                Add Liquidity
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "swap" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("swap")}
-              >
-                Swap
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "positions" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("positions")}
-              >
-                My Positions
-              </button>
-              <button
-                type="button"
-                className={`${currentPage === "faucet" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
-                onClick={() => setCurrentPage("faucet")}
-              >
-                Faucet
-              </button>
+              {filteredNavItems.map((item) => {
+                const activePages = item.activePages ?? [item.page];
+                const isActive = activePages.includes(currentPage);
+                return (
+                  <button
+                    key={item.page}
+                    type="button"
+                    className={`${isActive ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                    onClick={() => setCurrentPage(item.page)}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
             </nav>
           </div>
           <Header />
