@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { parseUnits, formatUnits } from "viem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -11,7 +11,7 @@ import { getExplorerTxUrl } from "@/utils/explorer";
 import type { MarketWithPrices } from "@/types";
 
 interface TradeFormProps {
-  market: MarketWithPrices;
+  market: MarketWithPrices & { refetch: () => void };
 }
 
 export function TradeForm({ market }: TradeFormProps) {
@@ -43,6 +43,10 @@ export function TradeForm({ market }: TradeFormProps) {
   });
 
   const trade = useMarketTrade({ market, side, direction, amountIn, minAmountOut });
+
+  useEffect(() => {
+    if (trade.isSuccess) market.refetch();
+  }, [trade.isSuccess]);
 
   const isPending = trade.isPending || trade.isConfirming;
   const isApproving = approval.isPending || approval.isConfirming;
