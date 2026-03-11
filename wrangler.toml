@@ -8,7 +8,7 @@ binding = "ASSETS"
 not_found_handling = "single-page-application"
 
 [[d1_databases]]
-binding = "prediction_markets"
+binding = "DB"
 database_name = "prediction-markets"
 database_id = "dfd67066-f7db-4d9d-8612-a31da2abc964"
 migrations_dir = "migrations"
