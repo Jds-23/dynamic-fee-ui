@@ -1,4 +1,5 @@
 import { Link, useParams } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
 import { ProbabilityBar } from "@/components/market/ProbabilityBar";
 import { MarketStatusBadge } from "@/components/market/MarketStatusBadge";
@@ -7,11 +8,13 @@ import { SplitMergePanel } from "@/components/market/SplitMergePanel";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
-import { MARKETS } from "@/constants/markets";
+import { fetchMarkets } from "@/lib/api";
+import type { MarketCondition } from "@/types";
 
 export function MarketTradePage() {
   const { conditionId } = useParams({ from: "/markets/$conditionId" });
-  const condition = MARKETS.find((m) => m.conditionId === conditionId);
+  const { data: conditions = [] } = useQuery({ queryKey: ["markets"], queryFn: fetchMarkets });
+  const condition = conditions.find((m) => m.conditionId === conditionId);
 
   if (!condition) {
     return (
@@ -30,7 +33,7 @@ export function MarketTradePage() {
 function MarketTradeContent({
   condition,
 }: {
-  condition: (typeof MARKETS)[number];
+  condition: MarketCondition;
 }) {
   const market = useMarketState(condition);
 

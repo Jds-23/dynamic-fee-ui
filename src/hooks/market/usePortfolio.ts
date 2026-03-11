@@ -3,7 +3,6 @@ import { useAccount, useReadContracts } from "wagmi";
 import { zeroAddress } from "viem";
 import { unichainSepolia } from "wagmi/chains";
 import { erc20Abi } from "@/abi/erc20";
-import { MARKETS } from "@/constants/markets";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import type { MarketWithPrices } from "@/types";
 

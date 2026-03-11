@@ -1,16 +1,24 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { parseUnits } from "viem";
+import { useAccount, useSignMessage } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useTokenApproval } from "@/hooks/approval/useTokenApproval";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
 import { PM_CONTRACTS, TUSD } from "@/constants/markets";
 import { computeConditionId } from "@/lib/market";
+import { postMarket } from "@/lib/api";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function CreateMarketForm() {
   const [question, setQuestion] = useState("");
   const [fundingStr, setFundingStr] = useState("");
+  const [postError, setPostError] = useState<string | null>(null);
+
+  const { address } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+  const queryClient = useQueryClient();
 
   const conditionId = useMemo(() => {
     if (!question.trim()) return undefined;
@@ -33,6 +41,23 @@ export function CreateMarketForm() {
     collateralAddress: TUSD.address,
     fundingAmount,
   });
+
+  // Post to API after successful on-chain tx
+  useEffect(() => {
+    if (!create.isSuccess || !conditionId || !address) return;
+    setPostError(null);
+    postMarket(
+      {
+        conditionId,
+        question: question.trim(),
+        collateralAddress: TUSD.address,
+        creator: address,
+      },
+      signMessageAsync,
+    )
+      .then(() => queryClient.invalidateQueries({ queryKey: ["markets"] }))
+      .catch((err) => setPostError((err as Error).message));
+  }, [create.isSuccess, conditionId, address, question, signMessageAsync, queryClient]);
 
   const isPending = create.isPending || create.isConfirming;
   const isApproving = approval.isPending || approval.isConfirming;
@@ -106,6 +131,11 @@ export function CreateMarketForm() {
               >
                 View tx
               </a>
+            </div>
+          )}
+          {postError && (
+            <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+              Market created on-chain but failed to register: {postError}
             </div>
           )}
           {create.error && (

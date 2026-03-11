@@ -1,6 +1,4 @@
 import type { Address } from "viem";
-import { keccak256, toBytes } from "viem";
-import type { MarketCondition } from "@/types";
 import type { TokenData } from "@/types";
 
 // Unichain Sepolia (chain 1301) contract addresses
@@ -23,11 +21,3 @@ export const TUSD: TokenData = {
   name: "Test USD",
   decimals: 6,
 };
-
-export const MARKETS: MarketCondition[] = [
-  {
-    conditionId: keccak256(toBytes("test-market-1")),
-    question: "test-market-1",
-    collateralAddress: TUSD.address,
-  },
-];

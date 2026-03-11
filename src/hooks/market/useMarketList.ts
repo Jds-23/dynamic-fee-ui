@@ -1,19 +1,26 @@
 import { useMemo } from "react";
 import { useReadContracts } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
 import { zeroAddress } from "viem";
 import type { Address } from "viem";
 import { unichainSepolia } from "wagmi/chains";
 import { conditionalLMSRHookAbi } from "@/abi/conditionalLMSRHook";
 import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
-import { PM_CONTRACTS, MARKETS } from "@/constants/markets";
+import { PM_CONTRACTS } from "@/constants/markets";
+import { fetchMarkets } from "@/lib/api";
 import { wadToProb } from "@/lib/market";
 import type { MarketState, MarketWithPrices } from "@/types";
 
 const chainId = unichainSepolia.id;
 
 export function useMarketList() {
+  const {
+    data: conditions = [],
+    isLoading: isLoadingConditions,
+  } = useQuery({ queryKey: ["markets"], queryFn: fetchMarkets });
+
   // Batch 1: markets() + resolved() for every condition
-  const batch1Contracts = MARKETS.flatMap((m) => [
+  const batch1Contracts = conditions.flatMap((m) => [
     {
       address: PM_CONTRACTS.conditionalLMSRHook,
       abi: conditionalLMSRHookAbi,
@@ -32,7 +39,10 @@ export function useMarketList() {
 
   const batch1 = useReadContracts({
     contracts: batch1Contracts,
-    query: { refetchInterval: 15000 },
+    query: {
+      enabled: conditions.length > 0,
+      refetchInterval: 15000,
+    },
   });
 
   // Parse batch 1 → MarketState[] + token addresses for batch 2
@@ -40,7 +50,7 @@ export function useMarketList() {
     const states: (MarketState | null)[] = [];
     const tokenPairs: { yes: Address; no: Address }[] = [];
 
-    for (let i = 0; i < MARKETS.length; i++) {
+    for (let i = 0; i < conditions.length; i++) {
       const marketsResult = batch1.data?.[i * 2];
       const resolvedResult = batch1.data?.[i * 2 + 1];
 
@@ -59,7 +69,7 @@ export function useMarketList() {
           : zeroAddress;
 
       states.push({
-        conditionId: MARKETS[i].conditionId,
+        conditionId: conditions[i]!.conditionId,
         collateralAddress: collateralToken,
         yesTokenAddress: yes,
         noTokenAddress: no,
@@ -74,12 +84,12 @@ export function useMarketList() {
     }
 
     return { states, tokenPairs };
-  }, [batch1.data]);
+  }, [batch1.data, conditions]);
 
   // Batch 2: calcMarginalPrice for each token
   const anyTokens = tokenPairs.some((p) => p.yes !== zeroAddress);
 
-  const batch2Contracts = MARKETS.flatMap((m, i) => [
+  const batch2Contracts = conditions.flatMap((m, i) => [
     {
       address: PM_CONTRACTS.conditionalLMSRHook,
       abi: conditionalLMSRHookAbi,
@@ -105,7 +115,7 @@ export function useMarketList() {
   });
 
   const markets = useMemo((): MarketWithPrices[] => {
-    return MARKETS.map((condition, i) => {
+    return conditions.map((condition, i) => {
       const state = states[i] ?? null;
       const isResolved = state !== null && state.resolved !== zeroAddress;
       let resolvedOutcome: "YES" | "NO" | null = null;
@@ -128,11 +138,11 @@ export function useMarketList() {
 
       return { condition, state, yesProb, noProb, isResolved, resolvedOutcome };
     });
-  }, [states, batch2.data]);
+  }, [conditions, states, batch2.data]);
 
   return {
     markets,
-    isLoading: batch1.isLoading || batch2.isLoading,
+    isLoading: isLoadingConditions || batch1.isLoading || batch2.isLoading,
     refetch: () => {
       batch1.refetch();
       batch2.refetch();
