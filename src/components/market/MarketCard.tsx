@@ -5,14 +5,12 @@ import type { MarketWithPrices } from "@/types";
 
 interface MarketCardProps {
   market: MarketWithPrices;
-  onClick: () => void;
 }
 
-export function MarketCard({ market, onClick }: MarketCardProps) {
+export function MarketCard({ market }: MarketCardProps) {
   return (
     <Card
       className="cursor-pointer transition-colors hover:border-foreground/20"
-      onClick={onClick}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">

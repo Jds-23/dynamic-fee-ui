@@ -1,11 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { MarketCard } from "@/components/market/MarketCard";
 
-interface MarketsPageProps {
-  onSelectMarket: (conditionId: `0x${string}`) => void;
-}
-
-export function MarketsPage({ onSelectMarket }: MarketsPageProps) {
+export function MarketsPage() {
   const { markets, isLoading } = useMarketList();
 
   if (isLoading && markets.length === 0) {
@@ -29,11 +26,13 @@ export function MarketsPage({ onSelectMarket }: MarketsPageProps) {
       <h1 className="mb-6 text-2xl font-bold">Prediction Markets</h1>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {markets.map((market) => (
-          <MarketCard
+          <Link
             key={market.condition.conditionId}
-            market={market}
-            onClick={() => onSelectMarket(market.condition.conditionId)}
-          />
+            to="/markets/$conditionId"
+            params={{ conditionId: market.condition.conditionId }}
+          >
+            <MarketCard market={market} />
+          </Link>
         ))}
       </div>
     </div>

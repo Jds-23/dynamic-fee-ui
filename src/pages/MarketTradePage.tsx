@@ -1,3 +1,4 @@
+import { Link, useParams } from "@tanstack/react-router";
 import { Button } from "@/components/ui/Button";
 import { ProbabilityBar } from "@/components/market/ProbabilityBar";
 import { MarketStatusBadge } from "@/components/market/MarketStatusBadge";
@@ -8,34 +9,28 @@ import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { MARKETS } from "@/constants/markets";
 
-interface MarketTradePageProps {
-  conditionId: `0x${string}`;
-  onBack: () => void;
-}
-
-export function MarketTradePage({ conditionId, onBack }: MarketTradePageProps) {
+export function MarketTradePage() {
+  const { conditionId } = useParams({ from: "/markets/$conditionId" });
   const condition = MARKETS.find((m) => m.conditionId === conditionId);
 
   if (!condition) {
     return (
       <div className="py-8 text-center text-muted-foreground">
         Market not found.{" "}
-        <button type="button" className="underline" onClick={onBack}>
+        <Link to="/markets" className="underline">
           Back
-        </button>
+        </Link>
       </div>
     );
   }
 
-  return <MarketTradeContent condition={condition} onBack={onBack} />;
+  return <MarketTradeContent condition={condition} />;
 }
 
 function MarketTradeContent({
   condition,
-  onBack,
 }: {
   condition: (typeof MARKETS)[number];
-  onBack: () => void;
 }) {
   const market = useMarketState(condition);
 
@@ -50,8 +45,8 @@ function MarketTradeContent({
   return (
     <div className="py-8">
       <div className="mx-auto max-w-md space-y-4">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          &larr; Back
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/markets">&larr; Back</Link>
         </Button>
 
         <div className="space-y-2">

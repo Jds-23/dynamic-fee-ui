@@ -5,11 +5,7 @@ import { PositionRow } from "@/components/market/PositionRow";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
 import type { PortfolioPosition } from "@/hooks/market/usePortfolio";
 
-interface PortfolioPageProps {
-  onNavigateMarket: (conditionId: `0x${string}`) => void;
-}
-
-export function PortfolioPage({ onNavigateMarket }: PortfolioPageProps) {
+export function PortfolioPage() {
   const { isConnected } = useAccount();
   const { positions, isLoading } = usePortfolio();
   const [redeemPosition, setRedeemPosition] = useState<PortfolioPosition | null>(null);
