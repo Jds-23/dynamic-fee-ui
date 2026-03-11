@@ -17,3 +17,12 @@ export interface MarketState {
   funding: bigint;
   resolved: Address; // address(0) if unresolved, winner token address if resolved
 }
+
+export interface MarketWithPrices {
+  condition: MarketCondition;
+  state: MarketState | null;
+  yesProb: number | null;
+  noProb: number | null;
+  isResolved: boolean;
+  resolvedOutcome: "YES" | "NO" | null;
+}

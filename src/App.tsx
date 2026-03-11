@@ -5,16 +5,18 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { FaucetPage } from "@/pages/FaucetPage";
 import { MintPage } from "@/pages/MintPage";
+import { MarketsPage } from "@/pages/MarketsPage";
 import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
 import { Providers } from "@/providers";
 
-type Page = "home" | "mint" | "swap" | "positions" | "faucet";
+type Page = "home" | "mint" | "swap" | "positions" | "faucet" | "markets";
 
 function AppContent() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const [currentPage, setCurrentPage] = useState<Page>("home");
+  const [selectedConditionId, setSelectedConditionId] = useState<`0x${string}` | null>(null);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -24,6 +26,14 @@ function AppContent() {
         return <SwapPage />;
       case "positions":
         return <PositionsPage />;
+      case "markets":
+        return (
+          <MarketsPage
+            onSelectMarket={(id) => {
+              setSelectedConditionId(id);
+            }}
+          />
+        );
       case "faucet":
         return <FaucetPage />;
       default:
@@ -96,6 +106,13 @@ function AppContent() {
                 onClick={() => setCurrentPage("home")}
               >
                 Home
+              </button>
+              <button
+                type="button"
+                className={`${currentPage === "markets" ? "text-foreground" : "text-muted-foreground"} hover:text-foreground`}
+                onClick={() => setCurrentPage("markets")}
+              >
+                Markets
               </button>
               <button
                 type="button"
