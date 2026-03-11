@@ -2,9 +2,9 @@ import { useState, useMemo } from "react";
 import { parseUnits, formatUnits } from "viem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useTokenApproval } from "@/hooks/approval/useTokenApproval";
+import { useMarketTradeApproval } from "@/hooks/market/useMarketTradeApproval";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
-import { PM_CONTRACTS, TUSD } from "@/constants/markets";
+import { TUSD } from "@/constants/markets";
 import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { formatProbability } from "@/lib/market";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -19,14 +19,13 @@ export function TradeForm({ market }: TradeFormProps) {
   const [direction, setDirection] = useState<"buy" | "sell">("buy");
   const [amountStr, setAmountStr] = useState("");
 
-  const decimals = TUSD.decimals; // both collateral and outcome tokens use same decimals
+  const decimals = TUSD.decimals;
   const amountIn = useMemo(() => {
     if (!amountStr || Number.isNaN(Number(amountStr))) return 0n;
     return parseUnits(amountStr, decimals);
   }, [amountStr, decimals]);
 
   const minAmountOut = useMemo(() => {
-    // simple slippage: amountIn * (1 - slippage)
     if (amountIn === 0n) return 0n;
     return amountIn - (amountIn * BigInt(DEFAULT_SLIPPAGE_TOLERANCE)) / 10000n;
   }, [amountIn]);
@@ -38,9 +37,8 @@ export function TradeForm({ market }: TradeFormProps) {
     return side === "YES" ? market.state.yesTokenAddress : market.state.noTokenAddress;
   }, [market.state, direction, side]);
 
-  const approval = useTokenApproval({
+  const approval = useMarketTradeApproval({
     tokenAddress: inputToken,
-    spender: PM_CONTRACTS.v4SwapRouter,
     amount: amountIn,
   });
 
@@ -48,6 +46,7 @@ export function TradeForm({ market }: TradeFormProps) {
 
   const isPending = trade.isPending || trade.isConfirming;
   const isApproving = approval.isPending || approval.isConfirming;
+  const tokenLabel = direction === "buy" ? TUSD.symbol : `${side} Token`;
 
   return (
     <Card>
@@ -104,7 +103,7 @@ export function TradeForm({ market }: TradeFormProps) {
         {/* Amount input */}
         <div>
           <label className="mb-1 block text-sm text-muted-foreground">
-            Amount ({direction === "buy" ? TUSD.symbol : `${side} Token`})
+            Amount ({tokenLabel})
           </label>
           <input
             type="text"
@@ -123,14 +122,22 @@ export function TradeForm({ market }: TradeFormProps) {
           </div>
         )}
 
-        {/* Action buttons */}
-        {approval.needsApproval && amountIn > 0n ? (
+        {/* Action buttons — 2-step approval then trade */}
+        {approval.needsErc20Approval && amountIn > 0n ? (
           <Button
             className="w-full"
-            onClick={approval.approve}
+            onClick={approval.approveErc20}
             disabled={isApproving}
           >
-            {isApproving ? "Approving..." : `Approve ${direction === "buy" ? TUSD.symbol : `${side} Token`}`}
+            {isApproving ? "Approving..." : `Approve ${tokenLabel} to Permit2`}
+          </Button>
+        ) : approval.needsPermit2Approval && amountIn > 0n ? (
+          <Button
+            className="w-full"
+            onClick={approval.approvePermit2}
+            disabled={isApproving}
+          >
+            {isApproving ? "Approving..." : `Approve ${tokenLabel} to Router`}
           </Button>
         ) : (
           <Button

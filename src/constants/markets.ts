@@ -7,7 +7,7 @@ import type { TokenData } from "@/types";
 export const PM_CONTRACTS = {
   conditionalMarkets: "0x02035cC65763c755FEa322B4984f2678608AAAf8" as Address,
   conditionalLMSRHook: "0xA2b04282706Ea52B002EECc387C30b9348c1ca88" as Address,
-  v4SwapRouter: "0x9cD2b0a732dd5e023a5539921e0FD1c30E198Dba" as Address,
+  universalRouter: "0xf70536B3bcC1bD1a972dc186A2cf84cC6da6Be5D" as Address,
   poolManager: "0x00B036B58a818B1BC34d502D3fE730Db729e62AC" as Address,
   permit2: "0x000000000022D473030F116dDEE9F6B43aC78BA3" as Address,
 } as const;
