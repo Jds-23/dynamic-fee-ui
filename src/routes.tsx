@@ -17,6 +17,7 @@ import { CreateMarketPage } from "@/pages/CreateMarketPage";
 import { PortfolioPage } from "@/pages/PortfolioPage";
 import { PositionsPage } from "@/pages/PositionsPage";
 import { SwapPage } from "@/pages/SwapPage";
+import { ResolvePage } from "@/pages/ResolvePage";
 import { APP_MODE, type AppMode } from "@/constants/appMode";
 
 interface NavItem {
@@ -94,6 +95,12 @@ const marketTradeRoute = createRoute({
   component: MarketTradePage,
 });
 
+const marketResolveRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/markets/$conditionId/resolve",
+  component: ResolvePage,
+});
+
 const createMarketRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/create-market",
@@ -140,6 +147,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   marketsRoute,
   marketTradeRoute,
+  marketResolveRoute,
   createMarketRoute,
   portfolioRoute,
   mintRoute,

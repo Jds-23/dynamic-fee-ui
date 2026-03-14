@@ -1,3 +1,10 @@
+import { ResolvePanel } from "@/components/market/ResolvePanel";
+import { RedeemPanel } from "@/components/market/RedeemPanel";
+import { useMarketList } from "@/hooks/market/useMarketList";
+import { useMarketState } from "@/hooks/market/useMarketState";
+import { useTokenBalance } from "@/hooks/token/useTokenBalance";
+import type { MarketCondition } from "@/types";
+
 export function ResolutionSlideInfo() {
   return (
     <div className="space-y-5">
@@ -42,9 +49,53 @@ export function ResolutionSlideInfo() {
 }
 
 export function ResolutionSlidePanel() {
+  const { markets, isLoading } = useMarketList();
+  const firstMarket = markets[0] ?? null;
+
+  if (isLoading && markets.length === 0) {
+    return (
+      <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
+        <div className="h-48 w-full animate-pulse rounded-lg bg-muted" />
+      </div>
+    );
+  }
+
+  if (!firstMarket) {
+    return (
+      <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
+        <p className="text-sm text-muted-foreground">No markets available</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
-      <p className="text-sm text-muted-foreground">Coming soon</p>
+    <div className="min-h-[28rem] overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
+      <ResolutionSlideInner condition={firstMarket.condition} />
+    </div>
+  );
+}
+
+function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
+  const market = useMarketState(condition);
+
+  const winnerToken = market.isResolved && market.state
+    ? market.resolvedOutcome === "YES"
+      ? market.state.yesTokenAddress
+      : market.state.noTokenAddress
+    : undefined;
+
+  const { balance: winnerBalance } = useTokenBalance(winnerToken);
+
+  return (
+    <div className="space-y-4">
+      <ResolvePanel market={market} />
+      {market.isResolved && winnerToken && market.resolvedOutcome && (
+        <RedeemPanel
+          resolvedOutcome={market.resolvedOutcome}
+          winnerToken={winnerToken}
+          winnerBalance={winnerBalance ?? 0n}
+        />
+      )}
     </div>
   );
 }

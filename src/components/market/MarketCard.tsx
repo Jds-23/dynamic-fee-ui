@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { ProbabilityBar } from "./ProbabilityBar";
 import { MarketStatusBadge } from "./MarketStatusBadge";
 import type { MarketWithPrices } from "@/types";
@@ -21,8 +23,20 @@ export function MarketCard({ market }: MarketCardProps) {
           />
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
         <ProbabilityBar yesProb={market.yesProb} noProb={market.noProb} />
+        {!market.isResolved && (
+          <div onClick={(e) => e.stopPropagation()}>
+            <Button variant="outline" size="sm" asChild>
+              <Link
+                to="/markets/$conditionId/resolve"
+                params={{ conditionId: market.condition.conditionId }}
+              >
+                Resolve
+              </Link>
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

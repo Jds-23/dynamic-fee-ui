@@ -1,5 +1,4 @@
-import { useState, useMemo } from "react";
-import { parseUnits, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import type { Address } from "viem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -15,23 +14,17 @@ interface RedeemPanelProps {
 }
 
 export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: RedeemPanelProps) {
-  const [amountStr, setAmountStr] = useState("");
   const decimals = TUSD.decimals;
-
-  const amount = useMemo(() => {
-    if (!amountStr || Number.isNaN(Number(amountStr))) return 0n;
-    return parseUnits(amountStr, decimals);
-  }, [amountStr, decimals]);
 
   const approval = useTokenApproval({
     tokenAddress: winnerToken,
     spender: PM_CONTRACTS.conditionalMarkets,
-    amount,
+    amount: winnerBalance,
   });
 
   const { redeem, hash, isPending, isConfirming, isSuccess, error } = useRedeem({
     token: winnerToken,
-    amount,
+    amount: winnerBalance,
   });
 
   const isApproving = approval.isPending || approval.isConfirming;
@@ -47,26 +40,11 @@ export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: Red
         </div>
 
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>Winner token balance</span>
-          <button
-            type="button"
-            className="font-mono hover:text-foreground"
-            onClick={() => setAmountStr(formatUnits(winnerBalance, decimals))}
-          >
-            {formatUnits(winnerBalance, decimals)}
-          </button>
+          <span>Expected payout</span>
+          <span className="font-mono">{formatUnits(winnerBalance, decimals)} {TUSD.symbol}</span>
         </div>
 
-        <input
-          type="text"
-          inputMode="decimal"
-          placeholder="0.0"
-          value={amountStr}
-          onChange={(e) => setAmountStr(e.target.value)}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-        />
-
-        {approval.needsApproval && amount > 0n ? (
+        {approval.needsApproval && winnerBalance > 0n ? (
           <Button className="w-full" onClick={approval.approve} disabled={isApproving}>
             {isApproving ? "Approving..." : `Approve ${resolvedOutcome} Token`}
           </Button>
@@ -74,7 +52,7 @@ export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: Red
           <Button
             className="w-full"
             onClick={redeem}
-            disabled={isPending || isConfirming || amount === 0n}
+            disabled={isPending || isConfirming || winnerBalance === 0n}
           >
             {isPending || isConfirming ? "Redeeming..." : "Redeem"}
           </Button>
