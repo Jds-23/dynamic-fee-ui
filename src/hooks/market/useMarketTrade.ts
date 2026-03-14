@@ -3,11 +3,12 @@ import { Actions, V4Planner } from "@uniswap/v4-sdk";
 import { useCallback } from "react";
 import type { Hex } from "viem";
 import { encodeAbiParameters } from "viem";
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
 import { PM_CONTRACTS } from "@/constants/markets";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
 import { buildMarketPoolKey } from "@/lib/market";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
 import type { MarketWithPrices } from "@/types";
 
 interface UseMarketTradeParams {
@@ -19,16 +20,12 @@ interface UseMarketTradeParams {
 }
 
 export function useMarketTrade({ market, side, direction, amountIn, minAmountOut }: UseMarketTradeParams) {
-  const { address } = useAccount();
-  const { sendTransaction, data: hash, isPending, error, reset } = useSendTransaction();
+  const { address } = useSmartAccount();
+  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
+    useKernelTransaction(unichainSepolia.id);
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-    chainId: unichainSepolia.id,
-  });
-
-  const trade = useCallback(() => {
-    if (!market.state || !address || amountIn === 0n || minAmountOut === 0n) return;
+  const buildCalls = useCallback((): { to: Hex; data: Hex; value: bigint }[] | null => {
+    if (!market.state || !address || amountIn === 0n || minAmountOut === 0n) return null;
 
     const outcomeToken = side === "YES" ? market.state.yesTokenAddress : market.state.noTokenAddress;
     const collateral = market.state.collateralAddress;
@@ -40,7 +37,6 @@ export function useMarketTrade({ market, side, direction, amountIn, minAmountOut
 
     const deadline = BigInt(Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_MINUTES * 60);
 
-    // V4 planner: SWAP_EXACT_IN_SINGLE → SETTLE_ALL → TAKE_ALL
     const v4Planner = new V4Planner();
     const routePlanner = new RoutePlanner();
 
@@ -83,12 +79,13 @@ export function useMarketTrade({ market, side, direction, amountIn, minAmountOut
     const functionSelector = "0x3593564c" as Hex;
     const fullCalldata = (functionSelector + calldata.slice(2)) as Hex;
 
-    sendTransaction({
-      to: PM_CONTRACTS.universalRouter,
-      data: fullCalldata,
-      value: 0n,
-    });
-  }, [market.state, address, side, direction, amountIn, minAmountOut, sendTransaction]);
+    return [{ to: PM_CONTRACTS.universalRouter, data: fullCalldata, value: 0n }];
+  }, [market.state, address, side, direction, amountIn, minAmountOut]);
 
-  return { trade, hash, isPending, isConfirming, isSuccess, error, reset };
+  const trade = useCallback(() => {
+    const calls = buildCalls();
+    if (calls) send(calls);
+  }, [buildCalls, send]);
+
+  return { trade, buildCalls, hash, isPending, isConfirming, isSuccess, error, reset };
 }

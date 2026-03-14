@@ -1,14 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
 import { parseUnits } from "viem";
-import { useAccount, useSignMessage } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useTokenApproval } from "@/hooks/approval/useTokenApproval";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
-import { PM_CONTRACTS, TUSD } from "@/constants/markets";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { TUSD } from "@/constants/markets";
 import { computeConditionId } from "@/lib/market";
 import { postMarket } from "@/lib/api";
+import { signMessage } from "@/lib/smartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function CreateMarketForm() {
@@ -16,8 +16,7 @@ export function CreateMarketForm() {
   const [fundingStr, setFundingStr] = useState("");
   const [postError, setPostError] = useState<string | null>(null);
 
-  const { address } = useAccount();
-  const { signMessageAsync } = useSignMessage();
+  const { address, privateKey } = useSmartAccount();
   const queryClient = useQueryClient();
 
   const conditionId = useMemo(() => {
@@ -30,12 +29,6 @@ export function CreateMarketForm() {
     return parseUnits(fundingStr, TUSD.decimals);
   }, [fundingStr]);
 
-  const approval = useTokenApproval({
-    tokenAddress: TUSD.address,
-    spender: PM_CONTRACTS.conditionalMarkets,
-    amount: fundingAmount,
-  });
-
   const create = useCreateMarket({
     conditionId: conditionId ?? "0x",
     collateralAddress: TUSD.address,
@@ -44,8 +37,13 @@ export function CreateMarketForm() {
 
   // Post to API after successful on-chain tx
   useEffect(() => {
-    if (!create.isSuccess || !conditionId || !address) return;
+    if (!create.isSuccess || !conditionId || !address || !privateKey) return;
     setPostError(null);
+
+    const signFn = async (args: { message: string }) => {
+      return signMessage(privateKey, args.message);
+    };
+
     postMarket(
       {
         conditionId,
@@ -53,14 +51,13 @@ export function CreateMarketForm() {
         collateralAddress: TUSD.address,
         creator: address,
       },
-      signMessageAsync,
+      signFn,
     )
       .then(() => queryClient.invalidateQueries({ queryKey: ["markets"] }))
       .catch((err) => setPostError((err as Error).message));
-  }, [create.isSuccess, conditionId, address, question, signMessageAsync, queryClient]);
+  }, [create.isSuccess, conditionId, address, privateKey, question, queryClient]);
 
   const isPending = create.isPending || create.isConfirming;
-  const isApproving = approval.isPending || approval.isConfirming;
 
   return (
     <div className="py-8">
@@ -105,26 +102,20 @@ export function CreateMarketForm() {
           </div>
 
           {/* Action */}
-          {approval.needsApproval && fundingAmount > 0n ? (
-            <Button className="w-full" onClick={approval.approve} disabled={isApproving}>
-              {isApproving ? "Approving..." : `Approve ${TUSD.symbol}`}
-            </Button>
-          ) : (
-            <Button
-              className="w-full"
-              onClick={create.createMarket}
-              disabled={isPending || !conditionId || fundingAmount === 0n}
-            >
-              {isPending ? "Creating..." : "Create Market"}
-            </Button>
-          )}
+          <Button
+            className="w-full"
+            onClick={create.createMarket}
+            disabled={isPending || !conditionId || fundingAmount === 0n}
+          >
+            {isPending ? "Creating..." : "Create Market"}
+          </Button>
 
           {/* Status */}
           {create.isSuccess && create.hash && (
             <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
               Market created!{" "}
               <a
-                href={getExplorerTxUrl(create.hash)}
+                href={getExplorerTxUrl(create.hash, 1301)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline"
