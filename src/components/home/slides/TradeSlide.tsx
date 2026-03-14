@@ -45,7 +45,7 @@ export function TradeSlideInfo() {
 }
 
 interface TradeSlidePanelProps {
-  onGoTo: (index: number) => void;
+  onGoTo?: (index: number) => void;
   conditionId?: string;
 }
 
@@ -73,7 +73,7 @@ function TradeSlideInner({ onGoTo, conditionId }: TradeSlidePanelProps) {
       <Card>
         <CardContent className="space-y-4 p-6 text-center">
           <p className="text-muted-foreground">No markets available yet.</p>
-          <Button onClick={() => onGoTo(2)}>Create a Market</Button>
+          <Button onClick={() => onGoTo?.(2)}>Create a Market</Button>
         </CardContent>
       </Card>
     );
