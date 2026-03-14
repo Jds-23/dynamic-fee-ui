@@ -1,6 +1,17 @@
+import { useEffect } from "react";
+import { parseUnits } from "viem";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { ProbabilityBar } from "@/components/market/ProbabilityBar";
 import { useMarketList } from "@/hooks/market/useMarketList";
+import { useMarketState } from "@/hooks/market/useMarketState";
+import { useMarketTrade } from "@/hooks/market/useMarketTrade";
+import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
+import { getExplorerTxUrl } from "@/utils/explorer";
+import type { MarketCondition, MarketWithPrices } from "@/types";
+
+const BUY_AMOUNT = parseUnits("1", 6); // 1 TUSD
+const MIN_OUT = BUY_AMOUNT * BigInt(10000 - DEFAULT_SLIPPAGE_TOLERANCE) / 10000n;
 
 export function LMSRSlideInfo() {
   return (
@@ -79,23 +90,109 @@ function LivePricePanel() {
     );
   }
 
+  return <LivePricePanelInner condition={firstMarket.condition} />;
+}
+
+function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
+  const market = useMarketState(condition);
+  const { refetch } = market;
+
+  const marketWithPrices: MarketWithPrices = {
+    condition: market.condition,
+    state: market.state,
+    yesProb: market.yesProb,
+    noProb: market.noProb,
+    isResolved: market.isResolved,
+    resolvedOutcome: market.resolvedOutcome,
+  };
+
+  const buyYes = useMarketTrade({
+    market: marketWithPrices,
+    side: "YES",
+    direction: "buy",
+    amountIn: BUY_AMOUNT,
+    minAmountOut: MIN_OUT,
+  });
+
+  const buyNo = useMarketTrade({
+    market: marketWithPrices,
+    side: "NO",
+    direction: "buy",
+    amountIn: BUY_AMOUNT,
+    minAmountOut: MIN_OUT,
+  });
+
+  useEffect(() => {
+    if (buyYes.isSuccess) {
+      refetch();
+      buyYes.reset();
+    }
+  }, [buyYes.isSuccess, refetch, buyYes.reset]);
+
+  useEffect(() => {
+    if (buyNo.isSuccess) {
+      refetch();
+      buyNo.reset();
+    }
+  }, [buyNo.isSuccess, refetch, buyNo.reset]);
+
+  const busy = buyYes.isPending || buyYes.isConfirming || buyNo.isPending || buyNo.isConfirming;
+  const error = buyYes.error || buyNo.error;
+  const confirmingHash = buyYes.hash || buyNo.hash;
+
   return (
     <Card className="w-full">
       <CardContent className="space-y-4 p-6">
         <h3 className="text-sm font-medium text-muted-foreground">
           Live Probabilities
         </h3>
-        <p className="text-lg font-semibold">
-          {firstMarket.condition.question}
-        </p>
-        <ProbabilityBar
-          yesProb={firstMarket.yesProb}
-          noProb={firstMarket.noProb}
-        />
+        <p className="text-lg font-semibold">{condition.question}</p>
+        <ProbabilityBar yesProb={market.yesProb} noProb={market.noProb} />
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>YES</span>
           <span>NO</span>
         </div>
+
+        <div className="flex gap-3">
+          <Button
+            className="flex-1"
+            variant="default"
+            disabled={busy || market.isResolved}
+            onClick={() => buyYes.trade()}
+          >
+            {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1 TUSD"}
+          </Button>
+          <Button
+            className="flex-1"
+            variant="secondary"
+            disabled={busy || market.isResolved}
+            onClick={() => buyNo.trade()}
+          >
+            {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1 TUSD"}
+          </Button>
+        </div>
+
+        {(buyYes.isPending || buyNo.isPending) && (
+          <p className="text-xs text-muted-foreground">Waiting for wallet…</p>
+        )}
+        {(buyYes.isConfirming || buyNo.isConfirming) && confirmingHash && (
+          <p className="text-xs text-muted-foreground">
+            Confirming…{" "}
+            <a
+              href={getExplorerTxUrl(confirmingHash)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              View tx
+            </a>
+          </p>
+        )}
+        {error && (
+          <p className="text-xs text-destructive">
+            {error instanceof Error ? error.message : "Transaction failed"}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
