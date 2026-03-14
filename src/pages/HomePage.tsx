@@ -5,11 +5,13 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { SlideNavigation } from "@/components/home/SlideNavigation";
-import { IntroSlideInfo, IntroSlidePanel } from "@/components/home/slides/IntroSlide";
+import { MultiverseSlideInfo, MultiverseSlidePanel } from "@/components/home/slides/IntroSlide";
 import { CreateMarketSlideInfo, CreateMarketSlidePanel } from "@/components/home/slides/CreateMarketSlide";
 import { TradeSlideInfo, TradeSlidePanel } from "@/components/home/slides/TradeSlide";
+import { LMSRSlideInfo, LMSRSlidePanel } from "@/components/home/slides/LMSRSlide";
+import { ResolutionSlideInfo, ResolutionSlidePanel } from "@/components/home/slides/ResolutionSlide";
 
-const TOTAL_SLIDES = 4;
+const TOTAL_SLIDES = 6;
 const SWIPE_THRESHOLD = 50;
 
 const slideVariants = {
@@ -140,9 +142,9 @@ export function HomePage() {
                     Deployed on Unichain
                   </span>
                   <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-                    Prediction Markets
+                    The Multiverse Market
                     <span className="block text-muted-foreground">
-                      with on-chain settlement.
+                      A Uniswap v4 Hook for Conditional Finance
                     </span>
                   </h1>
                   <p className="max-w-lg text-muted-foreground">
@@ -184,8 +186,8 @@ export function HomePage() {
 
           {currentSlide === 1 && (
             <>
-              <IntroSlideInfo />
-              <IntroSlidePanel />
+              <MultiverseSlideInfo />
+              <MultiverseSlidePanel />
             </>
           )}
 
@@ -200,6 +202,20 @@ export function HomePage() {
             <>
               <TradeSlideInfo />
               <TradeSlidePanel onGoTo={handleGoTo} />
+            </>
+          )}
+
+          {currentSlide === 4 && (
+            <>
+              <LMSRSlideInfo />
+              <LMSRSlidePanel />
+            </>
+          )}
+
+          {currentSlide === 5 && (
+            <>
+              <ResolutionSlideInfo />
+              <ResolutionSlidePanel />
             </>
           )}
         </motion.div>

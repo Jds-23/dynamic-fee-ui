@@ -6,12 +6,40 @@ import { useMarketState } from "@/hooks/market/useMarketState";
 
 export function TradeSlideInfo() {
   return (
-    <div className="space-y-4">
-      <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Trade</h2>
-      <p className="max-w-lg text-muted-foreground">
-        Buy and sell outcome tokens on live markets. Prices update in
-        real-time using LMSR automated market making.
+    <div className="space-y-5">
+      <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+        How a Swap Works
+      </h2>
+      <p className="text-sm text-muted-foreground">
+        Every buy starts by <strong className="text-foreground">minting equal amounts of YES and NO tokens</strong>{" "}
+        from deposited collateral. The hook then routes the unwanted side back
+        into the pool so the user ends up holding only the token they want.
       </p>
+
+      <div className="space-y-2 rounded-lg bg-muted/60 p-4 text-xs font-mono leading-relaxed">
+        <p className="text-muted-foreground">// Buy YES flow</p>
+        <p>1. Collateral deposited</p>
+        <p>2. Split → equal YES + NO minted</p>
+        <p>3. User receives YES</p>
+        <p>4. Hook retains NO as reserve</p>
+      </div>
+
+      <ul className="space-y-2 text-sm text-muted-foreground">
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5 text-primary">●</span>
+          <span>
+            <strong className="text-foreground">Selling</strong> is the reverse — outcome tokens
+            are returned, merged back into collateral, and the user is paid out.
+          </span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5 text-primary">●</span>
+          <span>
+            <strong className="text-foreground">YES↔NO swaps</strong> happen at
+            near-zero net cost because the collateral legs cancel out.
+          </span>
+        </li>
+      </ul>
     </div>
   );
 }
