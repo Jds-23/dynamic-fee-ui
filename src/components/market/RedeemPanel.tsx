@@ -83,7 +83,7 @@ export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: Red
         {isSuccess && hash && (
           <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
             Redeemed!{" "}
-            <a href={getExplorerTxUrl(hash)} target="_blank" rel="noopener noreferrer" className="underline">
+            <a href={getExplorerTxUrl(hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
               View tx
             </a>
           </div>

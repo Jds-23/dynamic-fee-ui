@@ -2,7 +2,8 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
-import { useAccount, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { erc20Abi } from "@/abi/erc20";
@@ -11,7 +12,7 @@ import { useMintCollateral } from "@/hooks/useMintCollateral";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function MintCollateralForm() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useSmartAccount();
   const [amount, setAmount] = useState("");
 
   const { data: balance, refetch: refetchBalance } = useReadContract({
@@ -31,7 +32,7 @@ export function MintCollateralForm() {
         description: `${amount} TUSD sent to your wallet`,
         action: {
           label: "View tx",
-          onClick: () => window.open(getExplorerTxUrl(hash), "_blank"),
+          onClick: () => window.open(getExplorerTxUrl(hash, 1301), "_blank"),
         },
         duration: 10000,
       });
@@ -58,7 +59,7 @@ export function MintCollateralForm() {
   const validAmount = !Number.isNaN(parsedAmount) && parsedAmount > 0;
 
   const getButtonText = () => {
-    if (!isConnected) return "Connect Wallet";
+    if (!isConnected) return "Initializing...";
     if (isPending) return "Confirm in wallet...";
     if (isConfirming) return "Minting...";
     if (!amount) return "Enter amount";
@@ -80,7 +81,7 @@ export function MintCollateralForm() {
 
         {!isConnected && (
           <div className="rounded-lg bg-muted p-4 text-center text-sm text-muted-foreground">
-            Connect your wallet to mint TUSD
+            Initializing...
           </div>
         )}
 

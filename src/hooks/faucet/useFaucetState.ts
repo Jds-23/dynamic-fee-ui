@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { useAccount, useChainId, useReadContracts } from "wagmi";
+import { useChainId, useReadContracts } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { faucetAbi } from "@/abi/faucet";
 import { getAddress } from "@/constants/addresses";
 
@@ -15,7 +16,7 @@ export interface FaucetState {
 }
 
 export function useFaucetState(): FaucetState {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const chainId = useChainId();
 
   const faucetAddress = useMemo(() => {

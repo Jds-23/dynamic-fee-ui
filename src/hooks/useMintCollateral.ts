@@ -1,29 +1,15 @@
 import { useCallback } from "react";
-import {
-  useAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
-import { parseUnits } from "viem";
+import { encodeFunctionData, parseUnits } from "viem";
+import { unichainSepolia } from "wagmi/chains";
 import { simpleERC20Abi } from "@/abi/simpleERC20";
 import { TUSD } from "@/constants/markets";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
 
 export function useMintCollateral() {
-  const { address } = useAccount();
-
-  const {
-    writeContract,
-    data: hash,
-    isPending,
-    error: writeError,
-    reset,
-  } = useWriteContract();
-
-  const {
-    isLoading: isConfirming,
-    isSuccess,
-    error: confirmError,
-  } = useWaitForTransactionReceipt({ hash });
+  const { address } = useSmartAccount();
+  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
+    useKernelTransaction(unichainSepolia.id);
 
   const mint = useCallback(
     (amount: string) => {
@@ -34,23 +20,17 @@ export function useMintCollateral() {
 
       const parsedAmount = parseUnits(amount, TUSD.decimals);
 
-      writeContract({
-        address: TUSD.address,
-        abi: simpleERC20Abi,
-        functionName: "mint",
-        args: [address, parsedAmount],
-      });
+      send([{
+        to: TUSD.address,
+        data: encodeFunctionData({
+          abi: simpleERC20Abi,
+          functionName: "mint",
+          args: [address, parsedAmount],
+        }),
+      }]);
     },
-    [address, writeContract],
+    [address, send],
   );
 
-  return {
-    mint,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error: writeError || confirmError,
-    reset,
-  };
+  return { mint, hash, isPending, isConfirming, isSuccess, error, reset };
 }

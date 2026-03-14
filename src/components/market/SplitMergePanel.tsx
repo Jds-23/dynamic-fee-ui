@@ -144,7 +144,7 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
         {op.isSuccess && op.hash && (
           <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
             {mode === "split" ? "Split" : "Merge"} successful!{" "}
-            <a href={getExplorerTxUrl(op.hash)} target="_blank" rel="noopener noreferrer" className="underline">
+            <a href={getExplorerTxUrl(op.hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
               View tx
             </a>
           </div>

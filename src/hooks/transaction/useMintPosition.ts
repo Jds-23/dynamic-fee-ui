@@ -3,14 +3,11 @@ import type { Position } from "@uniswap/v4-sdk";
 import { V4PositionManager } from "@uniswap/v4-sdk";
 import { useCallback } from "react";
 import type { Hex } from "viem";
-import {
-  useAccount,
-  useChainId,
-  useSendTransaction,
-  useWaitForTransactionReceipt,
-} from "wagmi";
+import { useChainId } from "wagmi";
 import { getAddress } from "@/constants/addresses";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseMintPositionParams {
   position?: Position;
@@ -21,8 +18,10 @@ export function useMintPosition({
   position,
   slippageTolerance,
 }: UseMintPositionParams) {
-  const { address: recipient } = useAccount();
+  const { address: recipient } = useSmartAccount();
   const chainId = useChainId();
+  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
+    useKernelTransaction(chainId);
 
   let positionManagerAddress: `0x${string}` | undefined;
   try {
@@ -31,20 +30,6 @@ export function useMintPosition({
     // Chain not supported
   }
 
-  const {
-    sendTransaction,
-    data: hash,
-    isPending,
-    error: sendError,
-    reset,
-  } = useSendTransaction();
-
-  const {
-    isLoading: isConfirming,
-    isSuccess,
-    error: confirmError,
-  } = useWaitForTransactionReceipt({ hash });
-
   const mint = useCallback(() => {
     if (!position || !recipient || !positionManagerAddress) {
       console.error("Missing required parameters for mint");
@@ -52,12 +37,10 @@ export function useMintPosition({
     }
 
     try {
-      // Calculate deadline (current time + minutes)
       const deadline = BigInt(
         Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_MINUTES * 60,
       );
 
-      // Generate calldata using SDK
       const { calldata, value } = V4PositionManager.addCallParameters(
         position,
         {
@@ -67,30 +50,15 @@ export function useMintPosition({
         },
       );
 
-      // Send transaction
-      sendTransaction({
+      send([{
         to: positionManagerAddress,
         data: calldata as Hex,
         value: BigInt(value),
-      });
+      }]);
     } catch (error) {
       console.error("Error preparing mint transaction:", error);
     }
-  }, [
-    position,
-    recipient,
-    slippageTolerance,
-    positionManagerAddress,
-    sendTransaction,
-  ]);
+  }, [position, recipient, slippageTolerance, positionManagerAddress, send]);
 
-  return {
-    mint,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error: sendError || confirmError,
-    reset,
-  };
+  return { mint, hash, isPending, isConfirming, isSuccess, error, reset };
 }

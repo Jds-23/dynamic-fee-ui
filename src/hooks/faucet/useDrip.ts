@@ -1,16 +1,16 @@
 import { useCallback, useMemo } from "react";
-import {
-  useAccount,
-  useChainId,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { encodeFunctionData } from "viem";
+import { useChainId } from "wagmi";
 import { faucetAbi } from "@/abi/faucet";
 import { getAddress } from "@/constants/addresses";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
 
 export function useDrip() {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const chainId = useChainId();
+  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
+    useKernelTransaction(chainId);
 
   const faucetAddress = useMemo(() => {
     try {
@@ -20,40 +20,20 @@ export function useDrip() {
     }
   }, [chainId]);
 
-  const {
-    writeContract,
-    data: hash,
-    isPending,
-    error: writeError,
-    reset,
-  } = useWriteContract();
-
-  const {
-    isLoading: isConfirming,
-    isSuccess,
-    error: confirmError,
-  } = useWaitForTransactionReceipt({ hash });
-
   const drip = useCallback(() => {
     if (!address || !faucetAddress) {
       console.error("Missing required parameters for drip");
       return;
     }
 
-    writeContract({
-      address: faucetAddress,
-      abi: faucetAbi,
-      functionName: "drip",
-    });
-  }, [address, faucetAddress, writeContract]);
+    send([{
+      to: faucetAddress,
+      data: encodeFunctionData({
+        abi: faucetAbi,
+        functionName: "drip",
+      }),
+    }]);
+  }, [address, faucetAddress, send]);
 
-  return {
-    drip,
-    hash,
-    isPending,
-    isConfirming,
-    isSuccess,
-    error: writeError || confirmError,
-    reset,
-  };
+  return { drip, hash, isPending, isConfirming, isSuccess, error, reset };
 }

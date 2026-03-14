@@ -5,7 +5,8 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -74,7 +75,7 @@ function RootLayout() {
 }
 
 function HomePage() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useSmartAccount();
   const chainId = useChainId();
 
   return (
@@ -102,7 +103,7 @@ function HomePage() {
             </div>
           ) : (
             <div className="rounded-lg bg-muted p-4 text-center text-sm text-muted-foreground">
-              Connect your wallet to get started
+              Initializing...
             </div>
           )}
           <div className="flex gap-2">

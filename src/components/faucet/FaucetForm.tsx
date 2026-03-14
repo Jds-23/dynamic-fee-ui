@@ -2,7 +2,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
-import { useAccount } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useDrip } from "@/hooks/faucet/useDrip";
@@ -27,7 +27,7 @@ function formatCountdown(seconds: bigint): string {
 }
 
 export function FaucetForm() {
-  const { isConnected } = useAccount();
+  const { isConnected } = useSmartAccount();
   const {
     canDrip,
     timeUntilNextDrip,
@@ -101,7 +101,7 @@ export function FaucetForm() {
   const faucetHasTokens = faucetBalance0 >= dripAmount0 && faucetBalance1 >= dripAmount1;
 
   const getButtonText = () => {
-    if (!isConnected) return "Connect Wallet";
+    if (!isConnected) return "Initializing...";
     if (isLoading) return "Loading...";
     if (isPending) return "Confirm in wallet...";
     if (isConfirming) return "Claiming tokens...";
@@ -125,7 +125,7 @@ export function FaucetForm() {
 
         {!isConnected && (
           <div className="rounded-lg bg-muted p-4 text-center text-sm text-muted-foreground">
-            Connect your wallet to claim tokens
+            Initializing...
           </div>
         )}
 

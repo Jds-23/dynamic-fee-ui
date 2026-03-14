@@ -2,14 +2,13 @@ import { ArrowDown, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, parseUnits } from "viem";
-import { useAccount, useChainId } from "wagmi";
-import { ApprovalFlow } from "@/components/approval/ApprovalFlow";
+import { useChainId } from "wagmi";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { DEFAULT_POOL, DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { COMMON_TOKENS } from "@/constants/tokens";
-import { useApprovalFlow } from "@/hooks/approval/useApprovalFlow";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { usePoolState } from "@/hooks/pool/usePoolState";
 import { useSwapQuote } from "@/hooks/swap/useSwapQuote";
 import { useSwapTransaction } from "@/hooks/swap/useSwapTransaction";
@@ -18,7 +17,7 @@ import type { PoolKey, TokenData } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function SwapForm() {
-  const { isConnected } = useAccount();
+  const { isConnected } = useSmartAccount();
   const chainId = useChainId();
   const tokens = COMMON_TOKENS[chainId] ?? [];
 
@@ -80,26 +79,6 @@ export function SwapForm() {
     slippageTolerance: DEFAULT_SLIPPAGE_TOLERANCE,
   });
 
-  // Parse amount for approvals
-  const parsedAmountIn =
-    amountIn && tokenIn ? parseUnits(amountIn || "0", tokenIn.decimals) : 0n;
-
-  // For swaps, we only need to approve the input token
-  // Use token0/token1 based on swap direction
-  const approvalToken0 = zeroForOne ? tokenIn : undefined;
-  const approvalToken1 = zeroForOne ? undefined : tokenIn;
-  const amount0Max = zeroForOne ? parsedAmountIn : 0n;
-  const amount1Max = zeroForOne ? 0n : parsedAmountIn;
-
-  // Approval flow - targeting Universal Router for swaps
-  const { currentStep, refetchAllowances } = useApprovalFlow({
-    token0Address: approvalToken0?.address,
-    token1Address: approvalToken1?.address,
-    amount0Max,
-    amount1Max,
-    targetContract: "UNIVERSAL_ROUTER",
-  });
-
   // Swap transaction
   const {
     swap,
@@ -112,7 +91,7 @@ export function SwapForm() {
   } = useSwapTransaction({
     poolKey,
     zeroForOne,
-    amountIn: parsedAmountIn,
+    amountIn: amountIn && tokenIn ? parseUnits(amountIn || "0", tokenIn.decimals) : 0n,
     amountOutMinimum: quote?.minimumAmountOut ?? 0n,
   });
 
@@ -170,18 +149,16 @@ export function SwapForm() {
   const canSwap =
     isConnected &&
     quote &&
-    currentStep === "ready" &&
     !isPending &&
     !isConfirming;
 
   const getButtonText = () => {
-    if (!isConnected) return "Connect Wallet";
+    if (!isConnected) return "Initializing...";
     if (!amountIn || amountIn === "0") return "Enter an amount";
     if (poolLoading) return "Loading...";
     if (!quote) return "Insufficient liquidity";
-    if (currentStep !== "ready") return "Approve token first";
-    if (isPending) return "Confirm in wallet...";
-    if (isConfirming) return "Swapping...";
+    if (isPending) return "Sending...";
+    if (isConfirming) return "Confirming...";
     if (isSuccess) return "Success!";
     return "Swap";
   };
@@ -256,18 +233,6 @@ export function SwapForm() {
               <span>{DEFAULT_SLIPPAGE_TOLERANCE / 100}%</span>
             </div>
           </div>
-        )}
-
-        {isConnected && currentStep !== "ready" && tokenIn && (
-          <ApprovalFlow
-            currentStep={currentStep}
-            token0Address={zeroForOne ? tokenIn.address : undefined}
-            token1Address={zeroForOne ? undefined : tokenIn.address}
-            token0Symbol={zeroForOne ? tokenIn.symbol : undefined}
-            token1Symbol={zeroForOne ? undefined : tokenIn.symbol}
-            onApprovalComplete={refetchAllowances}
-            targetContract="UNIVERSAL_ROUTER"
-          />
         )}
 
         {swapError && (

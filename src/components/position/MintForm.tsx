@@ -2,8 +2,7 @@ import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
-import { useAccount, useChainId } from "wagmi";
-import { ApprovalFlow } from "@/components/approval/ApprovalFlow";
+import { useChainId } from "wagmi";
 import { TickRangeSelector } from "@/components/position/TickRangeSelector";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +14,7 @@ import {
   TICK_RANGE_FULL,
 } from "@/constants/defaults";
 import { COMMON_TOKENS } from "@/constants/tokens";
-import { useApprovalFlow } from "@/hooks/approval/useApprovalFlow";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { usePoolState } from "@/hooks/pool/usePoolState";
 import { usePosition } from "@/hooks/position/usePosition";
 import { useMintPosition } from "@/hooks/transaction/useMintPosition";
@@ -24,7 +23,7 @@ import type { PoolKey, TokenData } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 export function MintForm() {
-  const { isConnected } = useAccount();
+  const { isConnected } = useSmartAccount();
   const chainId = useChainId();
   const tokens = COMMON_TOKENS[chainId] ?? [];
 
@@ -121,14 +120,6 @@ export function MintForm() {
     isCalculatingRef.current = false;
   }, [positionData, activeInput, token0?.decimals, token1?.decimals]);
 
-  // Approval flow
-  const { currentStep, refetchAllowances } = useApprovalFlow({
-    token0Address: token0?.address,
-    token1Address: token1?.address,
-    amount0Max: positionData?.amount0 ?? 0n,
-    amount1Max: positionData?.amount1 ?? 0n,
-  });
-
   // Mint transaction
   const {
     mint,
@@ -205,15 +196,13 @@ export function MintForm() {
   const canMint =
     isConnected &&
     positionData &&
-    currentStep === "ready" &&
     !isPending &&
     !isConfirming;
 
   const getButtonText = () => {
-    if (!isConnected) return "Connect Wallet";
+    if (!isConnected) return "Initializing...";
     if (!positionData) return "Enter an amount";
-    if (currentStep !== "ready") return "Approve tokens first";
-    if (isPending) return "Confirm in wallet...";
+    if (isPending) return "Sending...";
     if (isConfirming) return "Adding liquidity...";
     if (isSuccess) return "Success!";
     return "Add Liquidity";
@@ -297,17 +286,6 @@ export function MintForm() {
               </span>
             </div>
           </div>
-        )}
-
-        {isConnected && currentStep !== "ready" && (
-          <ApprovalFlow
-            currentStep={currentStep}
-            token0Address={token0?.address}
-            token1Address={token1?.address}
-            token0Symbol={token0?.symbol}
-            token1Symbol={token1?.symbol}
-            onApprovalComplete={refetchAllowances}
-          />
         )}
 
         {mintError && (

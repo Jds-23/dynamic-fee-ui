@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { useAccount, useReadContracts } from "wagmi";
+import { useReadContracts } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { zeroAddress } from "viem";
 import { unichainSepolia } from "wagmi/chains";
 import { erc20Abi } from "@/abi/erc20";
@@ -18,7 +19,7 @@ export interface PortfolioPosition {
 }
 
 export function usePortfolio() {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
   const { markets, isLoading: marketsLoading } = useMarketList();
 
   // Build balance read calls for all markets with state

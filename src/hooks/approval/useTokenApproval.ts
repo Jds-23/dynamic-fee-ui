@@ -1,8 +1,11 @@
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { encodeFunctionData } from "viem";
+import { useReadContract } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
 import type { Address } from "viem";
 import { erc20Abi } from "@/abi/erc20";
 import { MAX_UINT256 } from "@/constants/defaults";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseTokenApprovalParams {
   tokenAddress?: Address;
@@ -11,7 +14,7 @@ interface UseTokenApprovalParams {
 }
 
 export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenApprovalParams) {
-  const { address } = useAccount();
+  const { address } = useSmartAccount();
 
   const { data: allowance, refetch } = useReadContract({
     address: tokenAddress,
@@ -22,14 +25,9 @@ export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenAppr
     query: { enabled: !!tokenAddress && !!spender && !!address },
   });
 
-  const { writeContract, data: hash, isPending, reset } = useWriteContract();
+  const { send, hash, isPending, isConfirming, isSuccess, reset } =
+    useKernelTransaction(unichainSepolia.id);
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-    chainId: unichainSepolia.id,
-  });
-
-  // Refetch allowance after approval confirms
   if (isSuccess && hash) {
     refetch();
   }
@@ -39,13 +37,14 @@ export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenAppr
 
   function approve() {
     if (!tokenAddress || !spender) return;
-    writeContract({
-      address: tokenAddress,
-      abi: erc20Abi,
-      functionName: "approve",
-      args: [spender, MAX_UINT256],
-      chainId: unichainSepolia.id,
-    });
+    send([{
+      to: tokenAddress,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "approve",
+        args: [spender, MAX_UINT256],
+      }),
+    }]);
   }
 
   return { needsApproval, approve, isPending, isConfirming, refetch, reset };

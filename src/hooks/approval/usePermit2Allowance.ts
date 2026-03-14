@@ -1,5 +1,6 @@
 import type { Address } from "viem";
-import { useAccount, useChainId, useReadContract } from "wagmi";
+import { useChainId, useReadContract } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { permit2Abi } from "@/abi/permit2";
 import { getAddress } from "@/constants/addresses";
 
@@ -15,7 +16,7 @@ export function usePermit2Allowance(
   tokenAddress?: Address,
   spenderAddress?: Address,
 ): UsePermit2AllowanceResult {
-  const { address: userAddress } = useAccount();
+  const { address: userAddress } = useSmartAccount();
   const chainId = useChainId();
 
   let permit2Address: Address | undefined;

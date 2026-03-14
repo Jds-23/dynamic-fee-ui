@@ -1,11 +1,11 @@
-import { useAccount } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useUserPositions } from "@/hooks/positions/useUserPositions";
 import { PositionCard } from "./PositionCard";
 
 export function PositionsList() {
-  const { isConnected } = useAccount();
+  const { isConnected } = useSmartAccount();
   const { positions, isLoading, error, refetch } = useUserPositions();
 
   if (!isConnected) {
@@ -16,7 +16,7 @@ export function PositionsList() {
         </CardHeader>
         <CardContent>
           <p className="text-center text-muted-foreground">
-            Connect your wallet to view your positions
+            Initializing...
           </p>
         </CardContent>
       </Card>

@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { usePortfolio } from "@/hooks/market/usePortfolio";
 import { PositionRow } from "@/components/market/PositionRow";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
 import type { PortfolioPosition } from "@/hooks/market/usePortfolio";
 
 export function PortfolioPage() {
-  const { isConnected } = useAccount();
+  const { isConnected } = useSmartAccount();
   const { positions, isLoading } = usePortfolio();
   const [redeemPosition, setRedeemPosition] = useState<PortfolioPosition | null>(null);
 
   if (!isConnected) {
     return (
       <div className="py-8 text-center text-muted-foreground">
-        Connect wallet to view portfolio.
+        Initializing...
       </div>
     );
   }

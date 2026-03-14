@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { getAddress } from "@/constants/addresses";
 import { fetchNFTsForOwner } from "@/lib/alchemy";
 import type { AlchemyNFT } from "@/types/userPosition";
@@ -14,7 +15,7 @@ interface UseUserPositionsResult {
 }
 
 export function useUserPositions(): UseUserPositionsResult {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useSmartAccount();
   const chainId = useChainId();
 
   const query = useQuery({

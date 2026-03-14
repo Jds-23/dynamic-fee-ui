@@ -1,5 +1,6 @@
 import type { Address } from "viem";
-import { useAccount, useChainId, useReadContract } from "wagmi";
+import { useChainId, useReadContract } from "wagmi";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { erc20Abi } from "@/abi/erc20";
 
 interface UseTokenBalanceResult {
@@ -10,7 +11,7 @@ interface UseTokenBalanceResult {
 }
 
 export function useTokenBalance(tokenAddress?: Address): UseTokenBalanceResult {
-  const { address: userAddress } = useAccount();
+  const { address: userAddress } = useSmartAccount();
   const chainId = useChainId();
 
   const { data, isLoading, error, refetch } = useReadContract({
