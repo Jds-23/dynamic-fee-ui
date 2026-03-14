@@ -90,6 +90,7 @@ export function SwapForm() {
     reset: resetSwap,
   } = useSwapTransaction({
     poolKey,
+    tokenIn: tokenIn?.address,
     zeroForOne,
     amountIn: amountIn && tokenIn ? parseUnits(amountIn || "0", tokenIn.decimals) : 0n,
     amountOutMinimum: quote?.minimumAmountOut ?? 0n,

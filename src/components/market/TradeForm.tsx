@@ -1,11 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { parseUnits, formatUnits } from "viem";
-import { unichainSepolia } from "wagmi/chains";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useBatchedAction } from "@/hooks/approval/useBatchedAction";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
-import { PM_CONTRACTS, TUSD } from "@/constants/markets";
+import { TUSD } from "@/constants/markets";
 import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { formatProbability } from "@/lib/market";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -31,28 +29,13 @@ export function TradeForm({ market }: TradeFormProps) {
     return amountIn - (amountIn * BigInt(DEFAULT_SLIPPAGE_TOLERANCE)) / 10000n;
   }, [amountIn]);
 
-  // Input token: buy = collateral, sell = outcome token
-  const inputToken = useMemo(() => {
-    if (!market.state) return undefined;
-    if (direction === "buy") return market.state.collateralAddress;
-    return side === "YES" ? market.state.yesTokenAddress : market.state.noTokenAddress;
-  }, [market.state, direction, side]);
-
   const trade = useMarketTrade({ market, side, direction, amountIn, minAmountOut });
 
-  const batched = useBatchedAction({
-    chainId: unichainSepolia.id,
-    tokenAddress: inputToken,
-    permit2Address: PM_CONTRACTS.permit2,
-    targetAddress: PM_CONTRACTS.universalRouter,
-    amount: amountIn,
-  });
-
   useEffect(() => {
-    if (batched.isSuccess) market.refetch();
-  }, [batched.isSuccess]);
+    if (trade.isSuccess) market.refetch();
+  }, [trade.isSuccess]);
 
-  const isPending = batched.isPending || batched.isConfirming;
+  const isPending = trade.isPending || trade.isConfirming;
   const tokenLabel = direction === "buy" ? TUSD.symbol : `${side} Token`;
 
   return (
@@ -132,21 +115,18 @@ export function TradeForm({ market }: TradeFormProps) {
         {/* Action */}
         <Button
           className="w-full"
-          onClick={() => {
-            const calls = trade.buildCalls();
-            if (calls) batched.sendWithApprovals(calls);
-          }}
+          onClick={() => trade.trade()}
           disabled={isPending || amountIn === 0n || !market.state}
         >
           {isPending ? "Trading..." : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}
         </Button>
 
         {/* Status */}
-        {batched.isSuccess && batched.hash && (
+        {trade.isSuccess && trade.hash && (
           <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
             Trade successful!{" "}
             <a
-              href={getExplorerTxUrl(batched.hash, 1301)}
+              href={getExplorerTxUrl(trade.hash, 1301)}
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
@@ -155,9 +135,9 @@ export function TradeForm({ market }: TradeFormProps) {
             </a>
           </div>
         )}
-        {batched.error && (
+        {trade.error && (
           <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
-            {(batched.error as Error).message?.slice(0, 100)}
+            {(trade.error as Error).message?.slice(0, 100)}
           </div>
         )}
       </CardContent>

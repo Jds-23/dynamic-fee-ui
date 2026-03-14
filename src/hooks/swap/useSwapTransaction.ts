@@ -1,9 +1,10 @@
 import { CommandType, RoutePlanner } from "@uniswap/universal-router-sdk";
 import { Actions, V4Planner } from "@uniswap/v4-sdk";
 import { useCallback } from "react";
-import type { Hex } from "viem";
-import { encodeAbiParameters } from "viem";
+import type { Address, Hex } from "viem";
+import { encodeAbiParameters, encodeFunctionData } from "viem";
 import { useChainId } from "wagmi";
+import { erc20Abi } from "@/abi/erc20";
 import { getAddress } from "@/constants/addresses";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
@@ -12,6 +13,7 @@ import type { PoolKey } from "@/types";
 
 interface UseSwapTransactionParams {
   poolKey: PoolKey | undefined;
+  tokenIn: Address | undefined;
   zeroForOne: boolean;
   amountIn: bigint;
   amountOutMinimum: bigint;
@@ -19,6 +21,7 @@ interface UseSwapTransactionParams {
 
 export function useSwapTransaction({
   poolKey,
+  tokenIn,
   zeroForOne,
   amountIn,
   amountOutMinimum,
@@ -38,6 +41,7 @@ export function useSwapTransaction({
   const swap = useCallback(() => {
     if (
       !poolKey ||
+      !tokenIn ||
       !recipient ||
       !universalRouterAddress ||
       amountIn === 0n ||
@@ -72,7 +76,7 @@ export function useSwapTransaction({
       v4Planner.addAction(Actions.SWAP_EXACT_IN_SINGLE, [swapConfig]);
 
       const currencyIn = zeroForOne ? poolKey.currency0 : poolKey.currency1;
-      v4Planner.addAction(Actions.SETTLE_ALL, [currencyIn, amountIn.toString()]);
+      v4Planner.addAction(Actions.SETTLE, [currencyIn, amountIn.toString(), false]);
 
       const currencyOut = zeroForOne ? poolKey.currency1 : poolKey.currency0;
       v4Planner.addAction(Actions.TAKE_ALL, [currencyOut, amountOutMinimum.toString()]);
@@ -99,12 +103,22 @@ export function useSwapTransaction({
       const functionSelector = "0x3593564c" as Hex;
       const fullCalldata = (functionSelector + calldata.slice(2)) as Hex;
 
-      send([{ to: universalRouterAddress, data: fullCalldata, value: 0n }]);
+      const transferData = encodeFunctionData({
+        abi: erc20Abi,
+        functionName: "transfer",
+        args: [universalRouterAddress, amountIn],
+      });
+
+      send([
+        { to: tokenIn, data: transferData, value: 0n },
+        { to: universalRouterAddress, data: fullCalldata, value: 0n },
+      ]);
     } catch (error) {
       console.error("Error preparing swap transaction:", error);
     }
   }, [
     poolKey,
+    tokenIn,
     recipient,
     zeroForOne,
     amountIn,
