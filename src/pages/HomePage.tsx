@@ -28,28 +28,19 @@ interface FeatureCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
-  animate: boolean;
-  delay: number;
-  onAnimationComplete?: () => void;
 }
 
-function FeatureCard({ icon, title, description, animate, delay, onAnimationComplete }: FeatureCardProps) {
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <motion.div
-      animate={animate ? { scale: [1, 1.08, 1], y: [0, -8, 0] } : undefined}
-      transition={animate ? { type: "spring", stiffness: 400, damping: 15, delay } : undefined}
-      onAnimationComplete={onAnimationComplete}
-    >
-      <Card className="p-4">
-        <CardContent className="flex items-start gap-3 p-0">
-          <div className="text-primary">{icon}</div>
-          <div>
-            <h3 className="font-medium">{title}</h3>
-            <p className="text-sm text-muted-foreground">{description}</p>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+    <Card className="p-4">
+      <CardContent className="flex items-start gap-3 p-0">
+        <div className="text-primary">{icon}</div>
+        <div>
+          <h3 className="font-medium">{title}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -64,26 +55,12 @@ export function HomePage() {
   const { market: conditionId } = useSearch({ from: "/" });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [hasFlourished, setHasFlourished] = useState(false);
-  const [triggerFlourish, setTriggerFlourish] = useState(false);
-
-  const shouldAnimateCards = triggerFlourish && !hasFlourished;
-
-  const handleFlourishComplete = useCallback(() => {
-    setHasFlourished(true);
-    setTriggerFlourish(false);
-  }, []);
-
   const handleNext = useCallback(() => {
-    if (currentSlide === 0 && !hasFlourished) {
-      setTriggerFlourish(true);
-      return;
-    }
     if (currentSlide < TOTAL_SLIDES - 1) {
       setDirection(1);
       setCurrentSlide((s) => s + 1);
     }
-  }, [currentSlide, hasFlourished]);
+  }, [currentSlide]);
 
   const handlePrev = useCallback(() => {
     if (currentSlide > 0) {
@@ -164,15 +141,12 @@ export function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {features.map((f, i) => (
+                  {features.map((f) => (
                     <FeatureCard
                       key={f.title}
                       icon={f.icon}
                       title={f.title}
                       description={f.description}
-                      animate={shouldAnimateCards}
-                      delay={i * 0.1}
-                      onAnimationComplete={i === features.length - 1 ? handleFlourishComplete : undefined}
                     />
                   ))}
                 </div>

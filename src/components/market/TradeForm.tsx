@@ -16,7 +16,7 @@ interface TradeFormProps {
 export function TradeForm({ market }: TradeFormProps) {
   const [side, setSide] = useState<"YES" | "NO">("YES");
   const [direction, setDirection] = useState<"buy" | "sell">("buy");
-  const [amountStr, setAmountStr] = useState("");
+  const [amountStr, setAmountStr] = useState("1000");
 
   const decimals = TUSD.decimals;
   const amountIn = useMemo(() => {

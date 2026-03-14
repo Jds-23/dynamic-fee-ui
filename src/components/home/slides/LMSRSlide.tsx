@@ -10,7 +10,7 @@ import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { getExplorerTxUrl } from "@/utils/explorer";
 import type { MarketCondition, MarketWithPrices } from "@/types";
 
-const BUY_AMOUNT = parseUnits("1", 6); // 1 TUSD
+const BUY_AMOUNT = parseUnits("1000", 6); // 1000 TUSD
 const MIN_OUT = BUY_AMOUNT * BigInt(10000 - DEFAULT_SLIPPAGE_TOLERANCE) / 10000n;
 
 export function LMSRSlideInfo() {
@@ -163,7 +163,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
             disabled={busy || market.isResolved}
             onClick={() => buyYes.trade()}
           >
-            {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1 TUSD"}
+            {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1000 TUSD"}
           </Button>
           <Button
             className="flex-1"
@@ -171,7 +171,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
             disabled={busy || market.isResolved}
             onClick={() => buyNo.trade()}
           >
-            {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1 TUSD"}
+            {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1000 TUSD"}
           </Button>
         </div>
 

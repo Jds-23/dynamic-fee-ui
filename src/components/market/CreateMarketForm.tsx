@@ -17,7 +17,7 @@ interface CreateMarketFormProps {
 
 export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
   const [question, setQuestion] = useState("");
-  const [fundingStr, setFundingStr] = useState("");
+  const [fundingStr, setFundingStr] = useState("10000");
   const [postError, setPostError] = useState<string | null>(null);
 
   const { address, privateKey } = useSmartAccount();
