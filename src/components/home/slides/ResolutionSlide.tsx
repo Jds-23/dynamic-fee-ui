@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { ResolvePanel } from "@/components/market/ResolvePanel";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
 import { useMarketList } from "@/hooks/market/useMarketList";
@@ -80,9 +81,17 @@ export function ResolutionSlidePanel({ conditionId }: { conditionId?: string }) 
 
 function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
   const market = useMarketState(condition);
+  const [optimisticOutcome, setOptimisticOutcome] = useState<"YES" | "NO" | null>(null);
 
-  const winnerToken = market.isResolved && market.state
-    ? market.resolvedOutcome === "YES"
+  const onResolved = useCallback((outcome: "YES" | "NO") => {
+    setOptimisticOutcome(outcome);
+    market.refetch();
+  }, [market.refetch]);
+
+  const resolvedOutcome = market.resolvedOutcome ?? optimisticOutcome;
+
+  const winnerToken = resolvedOutcome && market.state
+    ? resolvedOutcome === "YES"
       ? market.state.yesTokenAddress
       : market.state.noTokenAddress
     : undefined;
@@ -91,10 +100,10 @@ function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
 
   return (
     <div className="space-y-4">
-      <ResolvePanel market={market} />
-      {market.isResolved && winnerToken && market.resolvedOutcome && (
+      <ResolvePanel market={market} onResolved={onResolved} />
+      {resolvedOutcome && winnerToken && (
         <RedeemPanel
-          resolvedOutcome={market.resolvedOutcome}
+          resolvedOutcome={resolvedOutcome}
           winnerToken={winnerToken}
           winnerBalance={winnerBalance ?? 0n}
         />

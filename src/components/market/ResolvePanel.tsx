@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -8,9 +8,10 @@ import type { MarketWithPrices } from "@/types";
 
 interface ResolvePanelProps {
   market: MarketWithPrices;
+  onResolved?: (outcome: "YES" | "NO") => void;
 }
 
-export function ResolvePanel({ market }: ResolvePanelProps) {
+export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
   const [selected, setSelected] = useState<"YES" | "NO" | null>(null);
 
   const winner = selected === "YES"
@@ -23,6 +24,10 @@ export function ResolvePanel({ market }: ResolvePanelProps) {
     conditionId: market.condition.conditionId,
     winner: winner ?? "0x0000000000000000000000000000000000000000",
   });
+
+  useEffect(() => {
+    if (isSuccess && selected) onResolved?.(selected);
+  }, [isSuccess, selected, onResolved]);
 
   if (market.isResolved) {
     return (

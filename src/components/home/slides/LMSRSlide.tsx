@@ -127,17 +127,19 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
 
   useEffect(() => {
     if (buyYes.isSuccess) {
-      refetch();
       buyYes.reset();
+      const t = setTimeout(() => refetch(), 2000);
+      return () => clearTimeout(t);
     }
-  }, [buyYes.isSuccess, refetch, buyYes.reset]);
+  }, [buyYes.isSuccess]);
 
   useEffect(() => {
     if (buyNo.isSuccess) {
-      refetch();
       buyNo.reset();
+      const t = setTimeout(() => refetch(), 2000);
+      return () => clearTimeout(t);
     }
-  }, [buyNo.isSuccess, refetch, buyNo.reset]);
+  }, [buyNo.isSuccess]);
 
   const busy = buyYes.isPending || buyYes.isConfirming || buyNo.isPending || buyNo.isConfirming;
   const error = buyYes.error || buyNo.error;
