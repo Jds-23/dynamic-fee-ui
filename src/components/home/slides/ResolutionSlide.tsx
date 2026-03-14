@@ -48,9 +48,12 @@ export function ResolutionSlideInfo() {
   );
 }
 
-export function ResolutionSlidePanel() {
+export function ResolutionSlidePanel({ conditionId }: { conditionId?: string }) {
   const { markets, isLoading } = useMarketList();
-  const firstMarket = markets[0] ?? null;
+  const target = conditionId
+    ? markets.find((m) => m.condition.conditionId === conditionId)
+    : markets[0];
+  const firstMarket = target ?? null;
 
   if (isLoading && markets.length === 0) {
     return (

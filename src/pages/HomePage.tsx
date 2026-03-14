@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import { BarChart3, Zap, Shield, Coins } from "lucide-react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { Button } from "@/components/ui/Button";
@@ -61,6 +61,7 @@ const features = [
 ];
 
 export function HomePage() {
+  const { market: conditionId } = useSearch({ from: "/" });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(1);
   const [hasFlourished, setHasFlourished] = useState(false);
@@ -201,21 +202,21 @@ export function HomePage() {
           {currentSlide === 3 && (
             <>
               <TradeSlideInfo />
-              <TradeSlidePanel onGoTo={handleGoTo} />
+              <TradeSlidePanel onGoTo={handleGoTo} conditionId={conditionId} />
             </>
           )}
 
           {currentSlide === 4 && (
             <>
               <LMSRSlideInfo />
-              <LMSRSlidePanel />
+              <LMSRSlidePanel conditionId={conditionId} />
             </>
           )}
 
           {currentSlide === 5 && (
             <>
               <ResolutionSlideInfo />
-              <ResolutionSlidePanel />
+              <ResolutionSlidePanel conditionId={conditionId} />
             </>
           )}
         </motion.div>

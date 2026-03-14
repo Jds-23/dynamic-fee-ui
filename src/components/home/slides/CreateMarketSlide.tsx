@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { CreateMarketForm } from "@/components/market/CreateMarketForm";
 
 export function CreateMarketSlideInfo() {
@@ -71,9 +72,15 @@ export function CreateMarketSlideInfo() {
 }
 
 export function CreateMarketSlidePanel() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-[28rem] overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
-      <CreateMarketForm />
+      <CreateMarketForm
+        onCreated={(conditionId) =>
+          navigate({ to: "/", search: { market: conditionId } })
+        }
+      />
     </div>
   );
 }

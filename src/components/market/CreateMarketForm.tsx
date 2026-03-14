@@ -11,7 +11,11 @@ import { postMarket } from "@/lib/api";
 import { signMessage } from "@/lib/smartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
-export function CreateMarketForm() {
+interface CreateMarketFormProps {
+  onCreated?: (conditionId: string) => void;
+}
+
+export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
   const [question, setQuestion] = useState("");
   const [fundingStr, setFundingStr] = useState("");
   const [postError, setPostError] = useState<string | null>(null);
@@ -53,9 +57,12 @@ export function CreateMarketForm() {
       },
       signFn,
     )
-      .then(() => queryClient.invalidateQueries({ queryKey: ["markets"] }))
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ["markets"] });
+        if (conditionId) onCreated?.(conditionId);
+      })
       .catch((err) => setPostError((err as Error).message));
-  }, [create.isSuccess, conditionId, address, privateKey, question, queryClient]);
+  }, [create.isSuccess, conditionId, address, privateKey, question, queryClient, onCreated]);
 
   const isPending = create.isPending || create.isConfirming;
 

@@ -2,9 +2,8 @@ import { formatUnits } from "viem";
 import type { Address } from "viem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useTokenApproval } from "@/hooks/approval/useTokenApproval";
 import { useRedeem } from "@/hooks/market/useRedeem";
-import { PM_CONTRACTS, TUSD } from "@/constants/markets";
+import { TUSD } from "@/constants/markets";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 interface RedeemPanelProps {
@@ -16,18 +15,10 @@ interface RedeemPanelProps {
 export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: RedeemPanelProps) {
   const decimals = TUSD.decimals;
 
-  const approval = useTokenApproval({
-    tokenAddress: winnerToken,
-    spender: PM_CONTRACTS.conditionalMarkets,
-    amount: winnerBalance,
-  });
-
   const { redeem, hash, isPending, isConfirming, isSuccess, error } = useRedeem({
     token: winnerToken,
     amount: winnerBalance,
   });
-
-  const isApproving = approval.isPending || approval.isConfirming;
 
   return (
     <Card>
@@ -44,19 +35,13 @@ export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: Red
           <span className="font-mono">{formatUnits(winnerBalance, decimals)} {TUSD.symbol}</span>
         </div>
 
-        {approval.needsApproval && winnerBalance > 0n ? (
-          <Button className="w-full" onClick={approval.approve} disabled={isApproving}>
-            {isApproving ? "Approving..." : `Approve ${resolvedOutcome} Token`}
-          </Button>
-        ) : (
-          <Button
-            className="w-full"
-            onClick={redeem}
-            disabled={isPending || isConfirming || winnerBalance === 0n}
-          >
-            {isPending || isConfirming ? "Redeeming..." : "Redeem"}
-          </Button>
-        )}
+        <Button
+          className="w-full"
+          onClick={redeem}
+          disabled={isPending || isConfirming || winnerBalance === 0n}
+        >
+          {isPending || isConfirming ? "Redeeming..." : "Redeem"}
+        </Button>
 
         {isSuccess && hash && (
           <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">

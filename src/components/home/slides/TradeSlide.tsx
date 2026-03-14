@@ -46,19 +46,23 @@ export function TradeSlideInfo() {
 
 interface TradeSlidePanelProps {
   onGoTo: (index: number) => void;
+  conditionId?: string;
 }
 
-export function TradeSlidePanel({ onGoTo }: TradeSlidePanelProps) {
+export function TradeSlidePanel({ onGoTo, conditionId }: TradeSlidePanelProps) {
   return (
     <div className="min-h-[28rem] overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
-      <TradeSlideInner onGoTo={onGoTo} />
+      <TradeSlideInner onGoTo={onGoTo} conditionId={conditionId} />
     </div>
   );
 }
 
-function TradeSlideInner({ onGoTo }: TradeSlidePanelProps) {
+function TradeSlideInner({ onGoTo, conditionId }: TradeSlidePanelProps) {
   const { markets, isLoading, refetch: listRefetch } = useMarketList();
-  const firstMarket = markets[0] ?? null;
+  const target = conditionId
+    ? markets.find((m) => m.condition.conditionId === conditionId)
+    : markets[0];
+  const firstMarket = target ?? null;
 
   if (isLoading && markets.length === 0) {
     return <div className="h-48 animate-pulse rounded-lg bg-muted" />;

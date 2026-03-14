@@ -46,7 +46,7 @@ function RootLayout() {
       <header className="border-b border-border backdrop-blur-sm bg-background/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
-            <Link to="/" className="text-xl font-bold">
+            <Link to="/" search={{ market: undefined }} className="text-xl font-bold">
               Uniswap V4
             </Link>
             <nav className="flex gap-4">
@@ -81,6 +81,9 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: HomePage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    market: (search.market as string) || undefined,
+  }),
 });
 
 const marketsRoute = createRoute({

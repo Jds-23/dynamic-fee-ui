@@ -62,17 +62,20 @@ export function LMSRSlideInfo() {
   );
 }
 
-export function LMSRSlidePanel() {
+export function LMSRSlidePanel({ conditionId }: { conditionId?: string }) {
   return (
     <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-6">
-      <LivePricePanel />
+      <LivePricePanel conditionId={conditionId} />
     </div>
   );
 }
 
-function LivePricePanel() {
+function LivePricePanel({ conditionId }: { conditionId?: string }) {
   const { markets, isLoading } = useMarketList();
-  const firstMarket = markets[0] ?? null;
+  const target = conditionId
+    ? markets.find((m) => m.condition.conditionId === conditionId)
+    : markets[0];
+  const firstMarket = target ?? null;
 
   if (isLoading && markets.length === 0) {
     return <div className="h-48 w-full animate-pulse rounded-lg bg-muted" />;
