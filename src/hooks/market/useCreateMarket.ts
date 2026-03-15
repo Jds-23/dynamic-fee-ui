@@ -7,7 +7,7 @@ import { erc20Abi } from "@/abi/erc20";
 import { PM_CONTRACTS } from "@/constants/markets";
 import { MAX_UINT256 } from "@/constants/defaults";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseCreateMarketParams {
   conditionId: `0x${string}`;
@@ -31,7 +31,7 @@ export function useCreateMarket({ conditionId, collateralAddress, fundingAmount 
   const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
     useKernelTransaction(unichainSepolia.id);
 
-  function createMarket() {
+  function createMarket(options?: TransactionCallbacks) {
     const calls: { to: Hex; data: Hex }[] = [];
 
     // Prepend approve if allowance insufficient
@@ -55,7 +55,7 @@ export function useCreateMarket({ conditionId, collateralAddress, fundingAmount 
       }),
     });
 
-    send(calls);
+    send(calls, options);
   }
 
   return { createMarket, hash, isPending, isConfirming, isSuccess, error, reset };

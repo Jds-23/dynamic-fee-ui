@@ -134,7 +134,7 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
         ) : (
           <Button
             className="w-full"
-            onClick={op.execute}
+            onClick={() => op.execute()}
             disabled={op.isPending || op.isConfirming || amount === 0n}
           >
             {op.isPending || op.isConfirming ? "Executing..." : mode === "split" ? "Split" : "Merge"}

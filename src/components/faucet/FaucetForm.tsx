@@ -39,7 +39,7 @@ export function FaucetForm() {
     refetch,
   } = useFaucetState();
 
-  const { drip, hash, isPending, isConfirming, isSuccess, error, reset } =
+  const { drip, hash, isPending, isConfirming, error, reset } =
     useDrip();
 
   // Local countdown state for smooth UI updates
@@ -68,34 +68,27 @@ export function FaucetForm() {
     }
   }, [countdown, timeUntilNextDrip, refetch]);
 
-  // Show toast on success and refetch state
-  useEffect(() => {
-    if (isSuccess && hash) {
-      toast.success("Tokens claimed!", {
-        description: "mUSDC and mUSDT have been sent to your wallet",
-        action: {
-          label: "View on Etherscan",
-          onClick: () => window.open(getExplorerTxUrl(hash), "_blank"),
-        },
-        duration: 10000,
-      });
-      refetch();
-    }
-  }, [isSuccess, hash, refetch]);
-
-  // Show toast on error
-  useEffect(() => {
-    if (error) {
-      toast.error("Claim failed", {
-        description: error.message?.slice(0, 100) || "Transaction failed",
-        duration: 8000,
-      });
-    }
-  }, [error]);
-
   const handleClaim = () => {
     reset();
-    drip();
+    drip({
+      onSuccess: (txHash) => {
+        toast.success("Tokens claimed!", {
+          description: "mUSDC and mUSDT have been sent to your wallet",
+          action: {
+            label: "View on Etherscan",
+            onClick: () => window.open(getExplorerTxUrl(txHash), "_blank"),
+          },
+          duration: 10000,
+        });
+        refetch();
+      },
+      onError: (err) => {
+        toast.error("Claim failed", {
+          description: err.message?.slice(0, 100) || "Transaction failed",
+          duration: 8000,
+        });
+      },
+    });
   };
 
   const faucetHasTokens = faucetBalance0 >= dripAmount0 && faucetBalance1 >= dripAmount1;

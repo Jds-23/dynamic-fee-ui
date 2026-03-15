@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { parseUnits, formatUnits } from "viem";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
@@ -32,10 +32,6 @@ export function TradeForm({ market }: TradeFormProps) {
   }, [amountIn]);
 
   const trade = useMarketTrade({ market, side, direction, amountIn, minAmountOut });
-
-  useEffect(() => {
-    if (trade.isSuccess) market.refetch();
-  }, [trade.isSuccess]);
 
   const isPending = trade.isPending || trade.isConfirming;
 
@@ -155,7 +151,7 @@ export function TradeForm({ market }: TradeFormProps) {
       {/* Trade button */}
       <Button
         className="w-full"
-        onClick={() => trade.trade()}
+        onClick={() => trade.trade({ onSuccess: () => market.refetch() })}
         disabled={isPending || amountIn === 0n || !market.state}
       >
         {isPending ? "Trading..." : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}

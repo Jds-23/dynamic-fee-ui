@@ -4,7 +4,7 @@ import { unichainSepolia } from "wagmi/chains";
 import { simpleERC20Abi } from "@/abi/simpleERC20";
 import { TUSD } from "@/constants/markets";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 export function useMintCollateral() {
   const { address } = useSmartAccount();
@@ -12,7 +12,7 @@ export function useMintCollateral() {
     useKernelTransaction(unichainSepolia.id);
 
   const mint = useCallback(
-    (amount: string) => {
+    (amount: string, options?: TransactionCallbacks) => {
       if (!address) {
         console.error("Wallet not connected");
         return;
@@ -27,7 +27,7 @@ export function useMintCollateral() {
           functionName: "mint",
           args: [address, parsedAmount],
         }),
-      }]);
+      }], options);
     },
     [address, send],
   );

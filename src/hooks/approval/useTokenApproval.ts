@@ -25,12 +25,8 @@ export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenAppr
     query: { enabled: !!tokenAddress && !!spender && !!address },
   });
 
-  const { send, hash, isPending, isConfirming, isSuccess, reset } =
+  const { send, isPending, isConfirming, reset } =
     useKernelTransaction(unichainSepolia.id);
-
-  if (isSuccess && hash) {
-    refetch();
-  }
 
   const needsApproval =
     !!tokenAddress && !!spender && (allowance === undefined || allowance < amount);
@@ -44,7 +40,7 @@ export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenAppr
         functionName: "approve",
         args: [spender, MAX_UINT256],
       }),
-    }]);
+    }], { onSuccess: () => refetch() });
   }
 
   return { needsApproval, approve, isPending, isConfirming, refetch, reset };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -25,9 +25,10 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
     winner: winner ?? "0x0000000000000000000000000000000000000000",
   });
 
-  useEffect(() => {
-    if (isSuccess && selected) onResolved?.(selected);
-  }, [isSuccess, selected, onResolved]);
+  const handleResolve = () => {
+    if (!selected) return;
+    resolve({ onSuccess: () => onResolved?.(selected) });
+  };
 
   if (market.isResolved) {
     return (
@@ -116,7 +117,7 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
 
         <Button
           className="w-full"
-          onClick={resolve}
+          onClick={handleResolve}
           disabled={!selected || isPending || isConfirming}
         >
           {isPending || isConfirming ? "Resolving..." : "Resolve Market"}

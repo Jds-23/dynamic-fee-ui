@@ -9,7 +9,7 @@ import { PM_CONTRACTS } from "@/constants/markets";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
 import { buildMarketPoolKey } from "@/lib/market";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 import type { MarketWithPrices } from "@/types";
 
 interface UseMarketTradeParams {
@@ -92,9 +92,9 @@ export function useMarketTrade({ market, side, direction, amountIn, minAmountOut
     ];
   }, [market.state, address, side, direction, amountIn, minAmountOut]);
 
-  const trade = useCallback(() => {
+  const trade = useCallback((options?: TransactionCallbacks) => {
     const calls = buildCalls();
-    if (calls) send(calls);
+    if (calls) send(calls, options);
   }, [buildCalls, send]);
 
   return { trade, buildCalls, hash, isPending, isConfirming, isSuccess, error, reset };

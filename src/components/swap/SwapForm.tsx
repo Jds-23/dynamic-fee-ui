@@ -1,5 +1,5 @@
 import { ArrowDown, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, parseUnits } from "viem";
 import { useChainId } from "wagmi";
@@ -96,30 +96,27 @@ export function SwapForm() {
     amountOutMinimum: quote?.minimumAmountOut ?? 0n,
   });
 
-  // Reset form and show toast after successful swap
-  useEffect(() => {
-    if (isSuccess && hash) {
-      setAmountIn("");
-      toast.success("Swap successful!", {
-        description: "Transaction confirmed",
-        action: {
-          label: "View on Etherscan",
-          onClick: () => window.open(getExplorerTxUrl(hash), "_blank"),
-        },
-        duration: 10000,
-      });
-    }
-  }, [isSuccess, hash]);
-
-  // Show error toast on swap failure
-  useEffect(() => {
-    if (swapError) {
-      toast.error("Swap failed", {
-        description: swapError.message?.slice(0, 100) || "Transaction failed",
-        duration: 8000,
-      });
-    }
-  }, [swapError]);
+  const handleSwap = () => {
+    swap({
+      onSuccess: (txHash) => {
+        setAmountIn("");
+        toast.success("Swap successful!", {
+          description: "Transaction confirmed",
+          action: {
+            label: "View on Etherscan",
+            onClick: () => window.open(getExplorerTxUrl(txHash), "_blank"),
+          },
+          duration: 10000,
+        });
+      },
+      onError: (err) => {
+        toast.error("Swap failed", {
+          description: err.message?.slice(0, 100) || "Transaction failed",
+          duration: 8000,
+        });
+      },
+    });
+  };
 
   const handleAmountInChange = useCallback(
     (value: string) => {
@@ -246,7 +243,7 @@ export function SwapForm() {
           type="button"
           className="w-full"
           disabled={!canSwap}
-          onClick={swap}
+          onClick={handleSwap}
         >
           {(isPending || isConfirming) && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

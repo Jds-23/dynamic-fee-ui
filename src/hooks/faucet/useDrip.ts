@@ -4,7 +4,7 @@ import { useChainId } from "wagmi";
 import { faucetAbi } from "@/abi/faucet";
 import { getAddress } from "@/constants/addresses";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 export function useDrip() {
   const { address } = useSmartAccount();
@@ -20,7 +20,7 @@ export function useDrip() {
     }
   }, [chainId]);
 
-  const drip = useCallback(() => {
+  const drip = useCallback((options?: TransactionCallbacks) => {
     if (!address || !faucetAddress) {
       console.error("Missing required parameters for drip");
       return;
@@ -32,7 +32,7 @@ export function useDrip() {
         abi: faucetAbi,
         functionName: "drip",
       }),
-    }]);
+    }], options);
   }, [address, faucetAddress, send]);
 
   return { drip, hash, isPending, isConfirming, isSuccess, error, reset };

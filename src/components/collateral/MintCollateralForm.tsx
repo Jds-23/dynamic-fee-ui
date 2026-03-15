@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useReadContract } from "wagmi";
@@ -25,36 +25,32 @@ export function MintCollateralForm() {
     query: { enabled: !!address },
   });
 
-  const { mint, hash, isPending, isConfirming, isSuccess, error, reset } =
+  const { mint, hash, isPending, isConfirming, error, reset } =
     useMintCollateral();
 
-  useEffect(() => {
-    if (isSuccess && hash) {
-      toast.success("TUSD minted!", {
-        description: `${amount} TUSD sent to your wallet`,
-        action: {
-          label: "View tx",
-          onClick: () => window.open(getExplorerTxUrl(hash, 1301), "_blank"),
-        },
-        duration: 10000,
-      });
-      setAmount("");
-      refetchBalance();
-    }
-  }, [isSuccess, hash, refetchBalance, amount]);
-
-  useEffect(() => {
-    if (error) {
-      toast.error("Mint failed", {
-        description: error.message?.slice(0, 100) || "Transaction failed",
-        duration: 8000,
-      });
-    }
-  }, [error]);
-
   const handleMint = () => {
+    const currentAmount = amount;
     reset();
-    mint(amount);
+    mint(currentAmount, {
+      onSuccess: (txHash) => {
+        toast.success("TUSD minted!", {
+          description: `${currentAmount} TUSD sent to your wallet`,
+          action: {
+            label: "View tx",
+            onClick: () => window.open(getExplorerTxUrl(txHash, 1301), "_blank"),
+          },
+          duration: 10000,
+        });
+        setAmount("");
+        refetchBalance();
+      },
+      onError: (err) => {
+        toast.error("Mint failed", {
+          description: err.message?.slice(0, 100) || "Transaction failed",
+          duration: 8000,
+        });
+      },
+    });
   };
 
   const parsedAmount = Number(amount);

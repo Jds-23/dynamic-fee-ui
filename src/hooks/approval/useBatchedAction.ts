@@ -6,7 +6,7 @@ import { erc20Abi } from "@/abi/erc20";
 import { permit2Abi } from "@/abi/permit2";
 import { MAX_UINT160, MAX_UINT256 } from "@/constants/defaults";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseBatchedActionParams {
   chainId: number;
@@ -80,9 +80,9 @@ export function useBatchedAction({
   }, [tokenAddress, permit2Address, targetAddress, amount, erc20Allowance, permit2Allowance]);
 
   const sendWithApprovals = useCallback(
-    (actionCalls: { to: Hex; data?: Hex; value?: bigint }[]) => {
+    (actionCalls: { to: Hex; data?: Hex; value?: bigint }[], options?: TransactionCallbacks) => {
       const approvalCalls = buildApprovalCalls();
-      tx.send([...approvalCalls, ...actionCalls]);
+      tx.send([...approvalCalls, ...actionCalls], options);
     },
     [buildApprovalCalls, tx],
   );

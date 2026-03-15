@@ -7,7 +7,7 @@ import { useChainId } from "wagmi";
 import { getAddress } from "@/constants/addresses";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseMintPositionParams {
   position?: Position;
@@ -30,7 +30,7 @@ export function useMintPosition({
     // Chain not supported
   }
 
-  const mint = useCallback(() => {
+  const mint = useCallback((options?: TransactionCallbacks) => {
     if (!position || !recipient || !positionManagerAddress) {
       console.error("Missing required parameters for mint");
       return;
@@ -54,7 +54,7 @@ export function useMintPosition({
         to: positionManagerAddress,
         data: calldata as Hex,
         value: BigInt(value),
-      }]);
+      }], options);
     } catch (error) {
       console.error("Error preparing mint transaction:", error);
     }

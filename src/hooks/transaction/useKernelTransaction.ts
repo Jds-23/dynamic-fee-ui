@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import type { Hex } from "viem";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 
@@ -8,8 +9,13 @@ interface Call {
   value?: bigint;
 }
 
+export interface TransactionCallbacks {
+  onSuccess?: (hash: Hex) => void;
+  onError?: (error: Error) => void;
+}
+
 interface UseKernelTransactionResult {
-  send: (calls: Call[]) => void;
+  send: (calls: Call[], options?: TransactionCallbacks) => void;
   hash: Hex | undefined;
   isPending: boolean;
   isConfirming: boolean;
@@ -20,62 +26,62 @@ interface UseKernelTransactionResult {
 
 export function useKernelTransaction(chainId: number): UseKernelTransactionResult {
   const { getClient } = useSmartAccount();
-  const [hash, setHash] = useState<Hex>();
-  const [isPending, setIsPending] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState<Error>();
 
-  const reset = useCallback(() => {
-    setHash(undefined);
-    setIsPending(false);
-    setIsConfirming(false);
-    setIsSuccess(false);
-    setError(undefined);
-  }, []);
-
-  const send = useCallback(
-    async (calls: Call[]) => {
+  const mutation = useMutation<{ hash: Hex }, Error, { calls: Call[]; callbacks?: TransactionCallbacks }>({
+    mutationFn: async ({ calls }) => {
       const client = getClient(chainId);
       if (!client) {
-        setError(new Error("Smart account client not available"));
-        return;
+        throw new Error("Smart account client not available");
       }
 
-      setIsPending(true);
-      setError(undefined);
-      setIsSuccess(false);
-      setHash(undefined);
+      const userOpHash = await client.sendUserOperation({
+        callData: await client.account.encodeCalls(
+          calls.map((c) => ({
+            to: c.to,
+            data: c.data ?? "0x",
+            value: c.value ?? 0n,
+          })),
+        ),
+      });
 
-      try {
-        const userOpHash = await client.sendUserOperation({
-          callData: await client.account.encodeCalls(
-            calls.map((c) => ({
-              to: c.to,
-              data: c.data ?? "0x",
-              value: c.value ?? 0n,
-            })),
-          ),
-        });
+      setIsConfirming(true);
 
-        setIsPending(false);
-        setIsConfirming(true);
+      const receipt = await client.waitForUserOperationReceipt({
+        hash: userOpHash,
+      });
 
-        const receipt = await client.waitForUserOperationReceipt({
-          hash: userOpHash,
-        });
-
-        setHash(receipt.receipt.transactionHash);
-        setIsConfirming(false);
-        setIsSuccess(true);
-      } catch (err) {
-        setIsPending(false);
-        setIsConfirming(false);
-        setError(err instanceof Error ? err : new Error(String(err)));
-      }
+      return { hash: receipt.receipt.transactionHash };
     },
-    [chainId, getClient],
-  );
+    onSuccess: (data, variables) => {
+      setIsConfirming(false);
+      variables.callbacks?.onSuccess?.(data.hash);
+    },
+    onError: (error, variables) => {
+      setIsConfirming(false);
+      variables.callbacks?.onError?.(error);
+    },
+    onSettled: () => {
+      setIsConfirming(false);
+    },
+  });
 
-  return { send, hash, isPending, isConfirming, isSuccess, error, reset };
+  function send(calls: Call[], options?: TransactionCallbacks) {
+    mutation.mutate({ calls, callbacks: options });
+  }
+
+  function reset() {
+    setIsConfirming(false);
+    mutation.reset();
+  }
+
+  return {
+    send,
+    hash: mutation.data?.hash,
+    isPending: mutation.isPending,
+    isConfirming,
+    isSuccess: mutation.isSuccess,
+    error: mutation.error ?? undefined,
+    reset,
+  };
 }

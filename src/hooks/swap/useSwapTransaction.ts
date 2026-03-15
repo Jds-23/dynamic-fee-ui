@@ -8,7 +8,7 @@ import { erc20Abi } from "@/abi/erc20";
 import { getAddress } from "@/constants/addresses";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 import type { PoolKey } from "@/types";
 
 interface UseSwapTransactionParams {
@@ -38,7 +38,7 @@ export function useSwapTransaction({
     // Chain not supported
   }
 
-  const swap = useCallback(() => {
+  const swap = useCallback((options?: TransactionCallbacks) => {
     if (
       !poolKey ||
       !tokenIn ||
@@ -112,7 +112,7 @@ export function useSwapTransaction({
       send([
         { to: tokenIn, data: transferData, value: 0n },
         { to: universalRouterAddress, data: fullCalldata, value: 0n },
-      ]);
+      ], options);
     } catch (error) {
       console.error("Error preparing swap transaction:", error);
     }

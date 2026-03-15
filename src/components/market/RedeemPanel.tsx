@@ -37,7 +37,7 @@ export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: Red
 
         <Button
           className="w-full"
-          onClick={redeem}
+          onClick={() => redeem()}
           disabled={isPending || isConfirming || winnerBalance === 0n}
         >
           {isPending || isConfirming ? "Redeeming..." : "Redeem"}

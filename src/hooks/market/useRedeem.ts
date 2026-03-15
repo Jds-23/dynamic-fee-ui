@@ -5,7 +5,7 @@ import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
 import { erc20Abi } from "@/abi/erc20";
 import { PM_CONTRACTS } from "@/constants/markets";
 import { MAX_UINT256 } from "@/constants/defaults";
-import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseRedeemParams {
   token: Address;
@@ -16,7 +16,7 @@ export function useRedeem({ token, amount }: UseRedeemParams) {
   const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
     useKernelTransaction(unichainSepolia.id);
 
-  function redeem() {
+  function redeem(options?: TransactionCallbacks) {
     send([
       {
         to: token,
@@ -34,7 +34,7 @@ export function useRedeem({ token, amount }: UseRedeemParams) {
           args: [token, amount],
         }),
       },
-    ]);
+    ], options);
   }
 
   return { redeem, hash, isPending, isConfirming, isSuccess, error, reset };

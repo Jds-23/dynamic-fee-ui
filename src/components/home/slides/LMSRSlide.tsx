@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import { parseUnits } from "viem";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ProbabilityBar } from "@/components/market/ProbabilityBar";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
@@ -182,21 +180,23 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
     minAmountOut: MIN_OUT,
   });
 
-  useEffect(() => {
-    if (buyYes.isSuccess) {
-      buyYes.reset();
-      const t = setTimeout(() => refetch(), 2000);
-      return () => clearTimeout(t);
-    }
-  }, [buyYes.isSuccess]);
+  const handleBuyYes = () => {
+    buyYes.trade({
+      onSuccess: () => {
+        buyYes.reset();
+        setTimeout(() => refetch(), 2000);
+      },
+    });
+  };
 
-  useEffect(() => {
-    if (buyNo.isSuccess) {
-      buyNo.reset();
-      const t = setTimeout(() => refetch(), 2000);
-      return () => clearTimeout(t);
-    }
-  }, [buyNo.isSuccess]);
+  const handleBuyNo = () => {
+    buyNo.trade({
+      onSuccess: () => {
+        buyNo.reset();
+        setTimeout(() => refetch(), 2000);
+      },
+    });
+  };
 
   const busy = buyYes.isPending || buyYes.isConfirming || buyNo.isPending || buyNo.isConfirming;
   const error = buyYes.error || buyNo.error;
@@ -226,7 +226,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
             className="flex-1"
             variant="default"
             disabled={busy || market.isResolved}
-            onClick={() => buyYes.trade()}
+            onClick={handleBuyYes}
           >
             {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1000 TUSD"}
           </Button>
@@ -234,7 +234,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
             className="flex-1"
             variant="secondary"
             disabled={busy || market.isResolved}
-            onClick={() => buyNo.trade()}
+            onClick={handleBuyNo}
           >
             {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1000 TUSD"}
           </Button>

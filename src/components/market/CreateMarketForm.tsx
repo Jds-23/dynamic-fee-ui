@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -39,30 +39,34 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
     fundingAmount,
   });
 
-  // Post to API after successful on-chain tx
-  useEffect(() => {
-    if (!create.isSuccess || !conditionId || !address || !privateKey) return;
+  const handleCreate = () => {
+    if (!conditionId || !address || !privateKey) return;
     setPostError(null);
 
-    const signFn = async (args: { message: string }) => {
-      return signMessage(privateKey, args.message);
-    };
+    create.createMarket({
+      onSuccess: async () => {
+        const signFn = async (args: { message: string }) => {
+          return signMessage(privateKey, args.message);
+        };
 
-    postMarket(
-      {
-        conditionId,
-        question: question.trim(),
-        collateralAddress: TUSD.address,
-        creator: address,
+        try {
+          await postMarket(
+            {
+              conditionId,
+              question: question.trim(),
+              collateralAddress: TUSD.address,
+              creator: address,
+            },
+            signFn,
+          );
+          queryClient.invalidateQueries({ queryKey: ["markets"] });
+          onCreated?.(conditionId);
+        } catch (err) {
+          setPostError((err as Error).message);
+        }
       },
-      signFn,
-    )
-      .then(() => {
-        queryClient.invalidateQueries({ queryKey: ["markets"] });
-        if (conditionId) onCreated?.(conditionId);
-      })
-      .catch((err) => setPostError((err as Error).message));
-  }, [create.isSuccess, conditionId, address, privateKey, question, queryClient, onCreated]);
+    });
+  };
 
   const isPending = create.isPending || create.isConfirming;
 
@@ -111,7 +115,7 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
           {/* Action */}
           <Button
             className="w-full"
-            onClick={create.createMarket}
+            onClick={handleCreate}
             disabled={isPending || !conditionId || fundingAmount === 0n}
           >
             {isPending ? "Creating..." : "Create Market"}

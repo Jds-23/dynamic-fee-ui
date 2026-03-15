@@ -134,32 +134,29 @@ export function MintForm() {
     slippageTolerance: DEFAULT_SLIPPAGE_TOLERANCE,
   });
 
-  // Reset form and show toast after successful mint
-  useEffect(() => {
-    if (isSuccess && hash) {
-      setAmount0("");
-      setAmount1("");
-      setActiveInput(null);
-      toast.success("Liquidity added!", {
-        description: "Transaction confirmed",
-        action: {
-          label: "View on Etherscan",
-          onClick: () => window.open(getExplorerTxUrl(hash), "_blank"),
-        },
-        duration: 10000,
-      });
-    }
-  }, [isSuccess, hash]);
-
-  // Show toast on mint error
-  useEffect(() => {
-    if (mintError) {
-      toast.error("Add liquidity failed", {
-        description: mintError.message?.slice(0, 100) || "Transaction failed",
-        duration: 8000,
-      });
-    }
-  }, [mintError]);
+  const handleMint = () => {
+    mint({
+      onSuccess: (txHash) => {
+        setAmount0("");
+        setAmount1("");
+        setActiveInput(null);
+        toast.success("Liquidity added!", {
+          description: "Transaction confirmed",
+          action: {
+            label: "View on Etherscan",
+            onClick: () => window.open(getExplorerTxUrl(txHash), "_blank"),
+          },
+          duration: 10000,
+        });
+      },
+      onError: (err) => {
+        toast.error("Add liquidity failed", {
+          description: err.message?.slice(0, 100) || "Transaction failed",
+          duration: 8000,
+        });
+      },
+    });
+  };
 
   const handleAmount0Change = useCallback(
     (value: string) => {
@@ -298,7 +295,7 @@ export function MintForm() {
           type="button"
           className="w-full"
           disabled={!canMint}
-          onClick={mint}
+          onClick={handleMint}
         >
           {(isPending || isConfirming) && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
