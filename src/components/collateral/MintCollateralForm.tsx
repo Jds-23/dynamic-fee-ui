@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useReadContract } from "wagmi";
+import { unichainSepolia } from "wagmi/chains";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -20,6 +21,7 @@ export function MintCollateralForm() {
     abi: erc20Abi,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
+    chainId: unichainSepolia.id,
     query: { enabled: !!address },
   });
 

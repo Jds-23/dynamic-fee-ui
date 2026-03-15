@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useReadContract } from "wagmi";
+import { unichainSepolia } from "wagmi/chains";
 import { Button } from "@/components/ui/Button";
 import { erc20Abi } from "@/abi/erc20";
 import { TUSD } from "@/constants/markets";
@@ -13,6 +14,12 @@ import { getExplorerTxUrl } from "@/utils/explorer";
 const LOW_BALANCE_THRESHOLD = 10_000;
 const MINT_AMOUNT = "1000000";
 
+function compactBalance(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  return String(Math.round(n));
+}
+
 export function ConnectButton() {
   const { address, isConnected, isInitializing, resetAccount } = useSmartAccount();
   const [copied, setCopied] = useState(false);
@@ -22,6 +29,7 @@ export function ConnectButton() {
     abi: erc20Abi,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
+    chainId: unichainSepolia.id,
     query: { enabled: !!address },
   });
 
@@ -87,9 +95,12 @@ export function ConnectButton() {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="outline" size="sm" onClick={handleCopy} title="Copy address">
-        {copied ? "Copied!" : truncated}
-      </Button>
+      {formattedBalance !== undefined && (
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          {compactBalance(formattedBalance)} TUSD
+        </span>
+      )}
+     
 
       {isMinting ? (
         <Button variant="outline" size="sm" disabled>
@@ -100,15 +111,16 @@ export function ConnectButton() {
         <Button variant="default" size="sm" onClick={() => mint(MINT_AMOUNT)}>
           Get Funded
         </Button>
-      ) : (
-        <Button variant="outline" size="sm" disabled>
-          {formattedBalance!.toLocaleString()} TUSD
-        </Button>
-      )}
+      ) : null}
+
+<Button variant="outline" size="sm" onClick={handleCopy} title="Copy address">
+        {copied ? "Copied!" : truncated}
+      </Button>
 
       <Button variant="ghost" size="sm" onClick={handleReset} title="Reset account">
         Reset
       </Button>
+
     </div>
   );
 }
