@@ -33,6 +33,7 @@ export function useMarketState(condition: MarketCondition) {
       },
     ],
     query: { refetchInterval: 15000 },
+
   });
 
   const { state, yesToken, noToken } = useMemo(() => {

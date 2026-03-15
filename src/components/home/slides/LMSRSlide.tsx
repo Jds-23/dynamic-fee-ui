@@ -96,6 +96,63 @@ function LivePricePanel({ conditionId }: { conditionId?: string }) {
   return <LivePricePanelInner condition={firstMarket.condition} />;
 }
 
+function SemiCircleGauge({ value }: { value: number | null }) {
+  const pct = value !== null ? Math.round(value * 100) : 0;
+  const loading = value === null;
+
+  // SVG arc: 180° semi-circle, radius 45, stroke 8
+  const r = 45;
+  const cx = 50;
+  const cy = 50;
+  const circumference = Math.PI * r; // half-circle
+  const filled = loading ? 0 : (pct / 100) * circumference;
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 100 58" className="w-28 h-auto">
+        {/* Background arc */}
+        <path
+          d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+          fill="none"
+          stroke="currentColor"
+          className="text-muted"
+          strokeWidth={8}
+          strokeLinecap="round"
+        />
+        {/* Filled arc */}
+        <path
+          d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+          fill="none"
+          stroke="url(#gauge-gradient)"
+          strokeWidth={8}
+          strokeLinecap="round"
+          strokeDasharray={`${circumference}`}
+          strokeDashoffset={`${circumference - filled}`}
+          className={loading ? "animate-pulse" : "transition-all duration-500"}
+        />
+        <defs>
+          <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#22c55e" />
+          </linearGradient>
+        </defs>
+        {/* Center label */}
+        <text
+          x={cx}
+          y={cy - 8}
+          textAnchor="middle"
+          className="fill-foreground text-xl font-bold"
+          style={{ fontSize: 18 }}
+        >
+          {loading ? "—" : `${pct}%`}
+        </text>
+      </svg>
+      <span className="text-xs font-medium text-green-400 -mt-1">YES</span>
+    </div>
+  );
+}
+
 function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
   const market = useMarketState(condition);
   const { refetch } = market;
@@ -148,15 +205,21 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
   return (
     <Card className="w-full">
       <CardContent className="space-y-4 p-6">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          Live Probabilities
-        </h3>
-        <p className="text-lg font-semibold">{condition.question}</p>
-        <ProbabilityBar yesProb={market.yesProb} noProb={market.noProb} />
+        <div className="flex items-start gap-5">
+          <SemiCircleGauge value={market.yesProb} />
+          <div className="flex-1 space-y-1">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Live Probabilities
+            </h3>
+            <p className="text-lg font-semibold">{condition.question}</p>
+          </div>
+        </div>
+
+        {/* <ProbabilityBar yesProb={market.yesProb} noProb={market.noProb} />
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>YES</span>
           <span>NO</span>
-        </div>
+        </div> */}
 
         <div className="flex gap-3">
           <Button
@@ -176,10 +239,6 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
             {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1000 TUSD"}
           </Button>
         </div>
-
-        {(buyYes.isPending || buyNo.isPending) && (
-          <p className="text-xs text-muted-foreground">Waiting for wallet…</p>
-        )}
         {(buyYes.isConfirming || buyNo.isConfirming) && confirmingHash && (
           <p className="text-xs text-muted-foreground">
             Confirming…{" "}
