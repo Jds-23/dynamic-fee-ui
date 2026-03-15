@@ -10,7 +10,7 @@ import { LMSRSlideInfo, LMSRSlidePanel } from "@/components/home/slides/LMSRSlid
 import { ResolutionSlideInfo, ResolutionSlidePanel } from "@/components/home/slides/ResolutionSlide";
 
 const STEPS = [
-  { title: "Welcome", Info: HeroSlideInfo, Panel: HeroSlidePanel },
+  { title: "Welcome", Info: HeroSlideInfo, Panel: null },
   { title: "Multiverse", Info: MultiverseSlideInfo, Panel: MultiverseSlidePanel },
   { title: "Creation", Info: CreateMarketSlideInfo, Panel: CreateMarketSlidePanel },
   { title: "Swaps", Info: TradeSlideInfo, Panel: TradeSlidePanel },
@@ -87,10 +87,10 @@ export function HomePage() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: direction * -40, opacity: 0 }}
               transition={stepTransition}
-              className="absolute inset-0 grid grid-cols-1 items-center gap-12 overflow-y-auto px-4 pb-16 pt-12 lg:grid-cols-2"
+              className={`absolute inset-0 grid grid-cols-1 items-center gap-12 overflow-y-auto px-4 pb-16 pt-12 ${Panel ? "lg:grid-cols-2" : ""}`}
             >
               <Info />
-              <Panel {...panelProps} />
+              {Panel && <Panel {...panelProps} />}
             </motion.div>
           </AnimatePresence>
         </div>
