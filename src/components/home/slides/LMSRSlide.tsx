@@ -1,6 +1,5 @@
 import { parseUnits } from "viem";
 
-import { Button } from "@/components/ui/Button";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
@@ -214,22 +213,22 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
       </div>
 
       <div className="flex gap-3">
-        <Button
-          className="flex-1"
-          variant="default"
+        <button
+          type="button"
+          className="flex-1 rounded-lg bg-success py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-success/90 disabled:opacity-50"
           disabled={busy || market.isResolved}
           onClick={handleBuyYes}
         >
-          {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1000 TUSD"}
-        </Button>
-        <Button
-          className="flex-1"
-          variant="secondary"
+          {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy Yes — 1000 TUSD"}
+        </button>
+        <button
+          type="button"
+          className="flex-1 rounded-lg bg-destructive py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-destructive/90 disabled:opacity-50"
           disabled={busy || market.isResolved}
           onClick={handleBuyNo}
         >
-          {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1000 TUSD"}
-        </Button>
+          {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy No — 1000 TUSD"}
+        </button>
       </div>
 
       {/* Status banners */}

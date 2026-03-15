@@ -82,11 +82,11 @@ export function TradeForm({ market }: TradeFormProps) {
           className={cn(
             "flex-1 rounded-lg py-3 text-center text-sm font-semibold transition-colors",
             side === "YES"
-              ? "bg-green-600 text-white"
-              : "bg-muted text-muted-foreground hover:bg-muted/80",
+              ? "bg-success text-white"
+              : "bg-success/15 text-success hover:bg-success/25",
           )}
         >
-          Yes {yesPrice !== null && `${yesPrice}¢`}
+          {direction === "buy" ? "Buy" : "Sell"} Yes{yesPrice !== null ? ` ${yesPrice}¢` : ""}
         </button>
         <button
           type="button"
@@ -94,11 +94,11 @@ export function TradeForm({ market }: TradeFormProps) {
           className={cn(
             "flex-1 rounded-lg py-3 text-center text-sm font-semibold transition-colors",
             side === "NO"
-              ? "bg-red-600 text-white"
-              : "bg-muted text-muted-foreground hover:bg-muted/80",
+              ? "bg-destructive text-white"
+              : "bg-destructive/15 text-destructive hover:bg-destructive/25",
           )}
         >
-          No {noPrice !== null && `${noPrice}¢`}
+          {direction === "buy" ? "Buy" : "Sell"} No{noPrice !== null ? ` ${noPrice}¢` : ""}
         </button>
       </div>
 
