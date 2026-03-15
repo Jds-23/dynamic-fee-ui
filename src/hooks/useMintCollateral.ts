@@ -27,7 +27,7 @@ export function useMintCollateral() {
           functionName: "mint",
           args: [address, parsedAmount],
         }),
-      }], options);
+      }], { invalidateScopes: ["balances"], ...options });
     },
     [address, send],
   );

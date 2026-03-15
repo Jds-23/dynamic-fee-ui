@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import type { Hex } from "viem";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { useInvalidateQueries, type InvalidationScope } from "@/hooks/useInvalidateQueries";
 
 interface Call {
   to: Hex;
@@ -12,6 +13,7 @@ interface Call {
 export interface TransactionCallbacks {
   onSuccess?: (hash: Hex) => void;
   onError?: (error: Error) => void;
+  invalidateScopes?: InvalidationScope[];
 }
 
 interface UseKernelTransactionResult {
@@ -26,6 +28,7 @@ interface UseKernelTransactionResult {
 
 export function useKernelTransaction(chainId: number): UseKernelTransactionResult {
   const { getClient } = useSmartAccount();
+  const invalidate = useInvalidateQueries();
   const [isConfirming, setIsConfirming] = useState(false);
 
   const mutation = useMutation<{ hash: Hex }, Error, { calls: Call[]; callbacks?: TransactionCallbacks }>({
@@ -55,6 +58,9 @@ export function useKernelTransaction(chainId: number): UseKernelTransactionResul
     },
     onSuccess: (data, variables) => {
       setIsConfirming(false);
+      if (variables.callbacks?.invalidateScopes?.length) {
+        invalidate(variables.callbacks.invalidateScopes);
+      }
       variables.callbacks?.onSuccess?.(data.hash);
     },
     onError: (error, variables) => {

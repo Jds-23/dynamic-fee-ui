@@ -151,7 +151,7 @@ export function TradeForm({ market }: TradeFormProps) {
       {/* Trade button */}
       <Button
         className="w-full"
-        onClick={() => trade.trade({ onSuccess: () => market.refetch() })}
+        onClick={() => trade.trade()}
         disabled={isPending || amountIn === 0n || !market.state}
       >
         {isPending ? "Trading..." : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}

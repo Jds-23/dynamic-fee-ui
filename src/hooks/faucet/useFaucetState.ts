@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useChainId, useReadContracts } from "wagmi";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { faucetAbi } from "@/abi/faucet";
@@ -64,11 +64,13 @@ export function useFaucetState(): FaucetState {
     ],
     query: {
       enabled: !!faucetAddress && !!address,
-      refetchInterval: 10000, // Refetch every 10 seconds for countdown
+      staleTime: 60_000,
+      refetchOnWindowFocus: true,
     },
   });
 
-  const state = useMemo(() => {
+  // Parse chain data
+  const chainState = useMemo(() => {
     const canDripResult = data?.[0];
     const timeUntilNextDripResult = data?.[1];
     const dripAmount0Result = data?.[2];
@@ -108,8 +110,32 @@ export function useFaucetState(): FaucetState {
     };
   }, [data]);
 
+  // Client-side countdown timer
+  const [countdown, setCountdown] = useState<bigint>(0n);
+
+  // Sync countdown from chain data
+  useEffect(() => {
+    setCountdown(chainState.timeUntilNextDrip);
+  }, [chainState.timeUntilNextDrip]);
+
+  // Tick down every second
+  useEffect(() => {
+    if (countdown <= 0n) return;
+    const id = setInterval(() => {
+      setCountdown((prev) => (prev > 0n ? prev - 1n : 0n));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [countdown > 0n]);
+
+  const canDrip = chainState.canDrip || countdown === 0n;
+
   return {
-    ...state,
+    canDrip,
+    timeUntilNextDrip: countdown,
+    dripAmount0: chainState.dripAmount0,
+    dripAmount1: chainState.dripAmount1,
+    faucetBalance0: chainState.faucetBalance0,
+    faucetBalance1: chainState.faucetBalance1,
     isLoading,
     refetch,
   };

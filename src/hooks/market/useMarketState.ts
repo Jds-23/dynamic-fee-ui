@@ -32,7 +32,7 @@ export function useMarketState(condition: MarketCondition) {
         chainId,
       },
     ],
-    query: { refetchInterval: 15000 },
+    query: { staleTime: 30_000, refetchOnWindowFocus: true },
 
   });
 
@@ -87,7 +87,8 @@ export function useMarketState(condition: MarketCondition) {
     ],
     query: {
       enabled: yesToken !== zeroAddress,
-      refetchInterval: 15000,
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
     },
   });
 

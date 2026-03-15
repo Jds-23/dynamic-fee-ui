@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { parseUnits } from "viem";
-import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
@@ -22,7 +21,6 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
   const [postError, setPostError] = useState<string | null>(null);
 
   const { address, privateKey } = useSmartAccount();
-  const queryClient = useQueryClient();
 
   const conditionId = useMemo(() => {
     if (!question.trim()) return undefined;
@@ -60,7 +58,6 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
             },
             signFn,
           );
-          queryClient.invalidateQueries({ queryKey: ["markets"] });
           onCreated?.(conditionId);
         } catch (err) {
           setPostError((err as Error).message);

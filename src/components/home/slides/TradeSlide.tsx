@@ -58,7 +58,7 @@ export function TradeSlidePanel({ onGoTo, conditionId }: TradeSlidePanelProps) {
 }
 
 function TradeSlideInner({ onGoTo, conditionId }: TradeSlidePanelProps) {
-  const { markets, isLoading, refetch: listRefetch } = useMarketList();
+  const { markets, isLoading } = useMarketList();
   const target = conditionId
     ? markets.find((m) => m.condition.conditionId === conditionId)
     : markets[0];
@@ -80,31 +80,18 @@ function TradeSlideInner({ onGoTo, conditionId }: TradeSlidePanelProps) {
   }
 
   return (
-    <TradeSlideWithMarket
-      condition={firstMarket.condition}
-      listRefetch={listRefetch}
-    />
+    <TradeSlideWithMarket condition={firstMarket.condition} />
   );
 }
 
 function TradeSlideWithMarket({
   condition,
-  listRefetch,
 }: {
   condition: Parameters<typeof useMarketState>[0];
-  listRefetch: () => void;
 }) {
   const marketState = useMarketState(condition);
 
   return (
-    <TradeForm
-      market={{
-        ...marketState,
-        refetch: () => {
-          marketState.refetch();
-          listRefetch();
-        },
-      }}
-    />
+    <TradeForm market={marketState} />
   );
 }

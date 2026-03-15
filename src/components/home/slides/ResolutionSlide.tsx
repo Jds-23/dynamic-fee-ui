@@ -85,8 +85,7 @@ function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
 
   const onResolved = useCallback((outcome: "YES" | "NO") => {
     setOptimisticOutcome(outcome);
-    market.refetch();
-  }, [market.refetch]);
+  }, []);
 
   const resolvedOutcome = market.resolvedOutcome ?? optimisticOutcome;
 

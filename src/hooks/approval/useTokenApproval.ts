@@ -16,7 +16,7 @@ interface UseTokenApprovalParams {
 export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenApprovalParams) {
   const { address } = useSmartAccount();
 
-  const { data: allowance, refetch } = useReadContract({
+  const { data: allowance } = useReadContract({
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "allowance",
@@ -40,8 +40,8 @@ export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenAppr
         functionName: "approve",
         args: [spender, MAX_UINT256],
       }),
-    }], { onSuccess: () => refetch() });
+    }], { invalidateScopes: ["allowances"] });
   }
 
-  return { needsApproval, approve, isPending, isConfirming, refetch, reset };
+  return { needsApproval, approve, isPending, isConfirming, reset };
 }

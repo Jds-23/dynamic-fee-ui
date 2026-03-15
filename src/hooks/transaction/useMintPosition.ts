@@ -54,7 +54,7 @@ export function useMintPosition({
         to: positionManagerAddress,
         data: calldata as Hex,
         value: BigInt(value),
-      }], options);
+      }], { invalidateScopes: ["positions", "balances"], ...options });
     } catch (error) {
       console.error("Error preparing mint transaction:", error);
     }

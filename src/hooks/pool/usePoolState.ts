@@ -43,6 +43,8 @@ export function usePoolState(poolKey: PoolKey | undefined) {
     ],
     query: {
       enabled: !!poolId && !!stateView,
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
     },
   });
 

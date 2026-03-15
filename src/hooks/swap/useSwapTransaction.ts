@@ -112,7 +112,7 @@ export function useSwapTransaction({
       send([
         { to: tokenIn, data: transferData, value: 0n },
         { to: universalRouterAddress, data: fullCalldata, value: 0n },
-      ], options);
+      ], { invalidateScopes: ["balances", "pool"], ...options });
     } catch (error) {
       console.error("Error preparing swap transaction:", error);
     }

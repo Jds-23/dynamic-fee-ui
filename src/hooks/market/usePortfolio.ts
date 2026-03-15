@@ -50,7 +50,8 @@ export function usePortfolio() {
     contracts: balanceCalls,
     query: {
       enabled: balanceCalls.length > 0,
-      refetchInterval: 15000,
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
     },
   });
 

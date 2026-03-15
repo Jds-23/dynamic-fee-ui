@@ -34,7 +34,7 @@ export function useRedeem({ token, amount }: UseRedeemParams) {
           args: [token, amount],
         }),
       },
-    ], options);
+    ], { invalidateScopes: ["market-state", "balances"], ...options });
   }
 
   return { redeem, hash, isPending, isConfirming, isSuccess, error, reset };

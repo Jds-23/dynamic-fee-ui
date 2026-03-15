@@ -22,7 +22,7 @@ export function useResolveMarket({ conditionId, winner }: UseResolveMarketParams
         functionName: "resolve",
         args: [conditionId, winner],
       }),
-    }], options);
+    }], { invalidateScopes: ["market-state"], ...options });
   }
 
   return { resolve, hash, isPending, isConfirming, isSuccess, error, reset };

@@ -15,7 +15,7 @@ export function MintCollateralForm() {
   const { address, isConnected } = useSmartAccount();
   const [amount, setAmount] = useState("");
 
-  const { data: balance, refetch: refetchBalance } = useReadContract({
+  const { data: balance } = useReadContract({
     address: TUSD.address,
     abi: erc20Abi,
     functionName: "balanceOf",
@@ -33,7 +33,6 @@ export function MintCollateralForm() {
     mint(currentAmount, {
       onSuccess: () => {
         setAmount("");
-        refetchBalance();
       },
     });
   };

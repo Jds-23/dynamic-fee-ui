@@ -32,7 +32,7 @@ export function useDrip() {
         abi: faucetAbi,
         functionName: "drip",
       }),
-    }], options);
+    }], { invalidateScopes: ["faucet", "balances"], ...options });
   }, [address, faucetAddress, send]);
 
   return { drip, hash, isPending, isConfirming, isSuccess, error, reset };

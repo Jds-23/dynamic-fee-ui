@@ -94,7 +94,7 @@ export function useMarketTrade({ market, side, direction, amountIn, minAmountOut
 
   const trade = useCallback((options?: TransactionCallbacks) => {
     const calls = buildCalls();
-    if (calls) send(calls, options);
+    if (calls) send(calls, { invalidateScopes: ["market-state", "balances"], ...options });
   }, [buildCalls, send]);
 
   return { trade, buildCalls, hash, isPending, isConfirming, isSuccess, error, reset };

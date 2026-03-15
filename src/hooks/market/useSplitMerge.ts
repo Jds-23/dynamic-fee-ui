@@ -22,7 +22,7 @@ export function useSplitMerge({ conditionId, amount, mode }: UseSplitMergeParams
         functionName: mode,
         args: [conditionId, amount],
       }),
-    }], options);
+    }], { invalidateScopes: ["market-state", "balances"], ...options });
   }
 
   return { execute, hash, isPending, isConfirming, isSuccess, error, reset };

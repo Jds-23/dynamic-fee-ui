@@ -41,7 +41,8 @@ export function useMarketList() {
     contracts: batch1Contracts,
     query: {
       enabled: conditions.length > 0,
-      refetchInterval: 15000,
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
     },
   });
 
@@ -110,7 +111,8 @@ export function useMarketList() {
     contracts: batch2Contracts,
     query: {
       enabled: anyTokens,
-      refetchInterval: 15000,
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
     },
   });
 

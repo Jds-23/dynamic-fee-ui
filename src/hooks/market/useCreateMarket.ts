@@ -55,7 +55,7 @@ export function useCreateMarket({ conditionId, collateralAddress, fundingAmount 
       }),
     });
 
-    send(calls, options);
+    send(calls, { invalidateScopes: ["market-list", "balances", "allowances"], ...options });
   }
 
   return { createMarket, hash, isPending, isConfirming, isSuccess, error, reset };

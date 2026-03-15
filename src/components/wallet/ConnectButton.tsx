@@ -24,7 +24,7 @@ export function ConnectButton() {
   const { address, isConnected, isInitializing, resetAccount } = useSmartAccount();
   const [copied, setCopied] = useState(false);
 
-  const { data: balance, refetch: refetchBalance } = useReadContract({
+  const { data: balance } = useReadContract({
     address: TUSD.address,
     abi: erc20Abi,
     functionName: "balanceOf",
@@ -45,10 +45,9 @@ export function ConnectButton() {
           onClick: () => window.open(getExplorerTxUrl(hash, 1301), "_blank"),
         },
       });
-      refetchBalance();
       reset();
     }
-  }, [isSuccess, hash, refetchBalance, reset]);
+  }, [isSuccess, hash, reset]);
 
   useEffect(() => {
     if (error) {
