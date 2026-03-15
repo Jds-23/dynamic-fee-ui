@@ -20,7 +20,7 @@ export function TradeSlideInfo() {
       </p>
 
       <div className="space-y-2 rounded-lg bg-muted/60 p-4 text-xs font-mono leading-relaxed">
-        <p className="text-muted-foreground">// Buy YES flow</p>
+        <p className="text-muted-foreground">{"// Buy YES flow"}</p>
         <p>1. Collateral deposited</p>
         <p>2. Split → equal YES + NO minted</p>
         <p>3. User receives YES</p>

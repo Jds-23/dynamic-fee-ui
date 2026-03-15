@@ -25,7 +25,7 @@ export function StepperRail({
             const isCurrent = i === currentStep;
             return (
               <li
-                key={i}
+                key={step.title}
                 className="relative flex items-start gap-3 pb-8 last:pb-0"
               >
                 {/* Connecting line */}

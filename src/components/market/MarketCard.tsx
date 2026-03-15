@@ -26,7 +26,11 @@ export function MarketCard({ market }: MarketCardProps) {
       <CardContent className="space-y-3">
         <ProbabilityBar yesProb={market.yesProb} noProb={market.noProb} />
         {!market.isResolved && (
-          <div onClick={(e) => e.stopPropagation()}>
+          // biome-ignore lint/a11y/noStaticElementInteractions: stops click propagation only
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
             <Button variant="outline" size="sm" asChild>
               <Link
                 to="/markets/$conditionId/resolve"

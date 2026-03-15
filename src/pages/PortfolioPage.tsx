@@ -52,7 +52,9 @@ export function PortfolioPage() {
       {redeemPosition?.winnerToken && (
         <div className="mx-auto mt-6 max-w-lg">
           <RedeemPanel
-            resolvedOutcome={redeemPosition.market.resolvedOutcome!}
+            resolvedOutcome={
+              redeemPosition.market.resolvedOutcome as "YES" | "NO"
+            }
             winnerToken={redeemPosition.winnerToken}
             winnerBalance={redeemPosition.winnerBalance}
           />

@@ -87,7 +87,9 @@ export function HomePage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleNext, handlePrev]);
 
-  const { Info, Panel } = STEPS[currentStep]!;
+  const step = STEPS[currentStep];
+  if (!step) return null;
+  const { Info, Panel } = step;
 
   // Props forwarded to panels that accept them
   const panelProps: Record<string, unknown> = {};
