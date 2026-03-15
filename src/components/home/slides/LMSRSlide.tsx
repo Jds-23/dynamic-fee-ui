@@ -215,7 +215,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
       <div className="flex gap-3">
         <button
           type="button"
-          className="flex-1 rounded-lg bg-success py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-success/90 disabled:opacity-50"
+          className="flex-1 rounded-lg bg-success/15 py-3 text-center text-sm font-semibold text-success transition-colors hover:bg-success/90 hover:text-white disabled:opacity-50"
           disabled={busy || market.isResolved}
           onClick={handleBuyYes}
         >
@@ -223,7 +223,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
         </button>
         <button
           type="button"
-          className="flex-1 rounded-lg bg-destructive py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-destructive/90 disabled:opacity-50"
+          className="flex-1 rounded-lg bg-destructive/15 py-3 text-center text-sm font-semibold text-destructive transition-colors hover:bg-destructive/90 hover:text-white disabled:opacity-50"
           disabled={busy || market.isResolved}
           onClick={handleBuyNo}
         >

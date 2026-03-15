@@ -1,7 +1,8 @@
 import type { Address } from "viem";
-import { useChainId, useReadContract } from "wagmi";
+import { useReadContract } from "wagmi";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { erc20Abi } from "@/abi/erc20";
+import { unichainSepolia } from "viem/chains";
 
 interface UseTokenBalanceResult {
   balance: bigint | undefined;
@@ -12,7 +13,7 @@ interface UseTokenBalanceResult {
 
 export function useTokenBalance(tokenAddress?: Address): UseTokenBalanceResult {
   const { address: userAddress } = useSmartAccount();
-  const chainId = useChainId();
+  const chainId = unichainSepolia.id;
 
   const { data, isLoading, error, refetch } = useReadContract({
     address: tokenAddress,

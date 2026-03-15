@@ -100,7 +100,10 @@ function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
 
   return (
     <div className="space-y-4">
-      <ResolvePanel market={market} onResolved={onResolved} />
+      {
+        !winnerToken &&
+        <ResolvePanel market={market} onResolved={onResolved} />
+      }
       {resolvedOutcome && winnerToken && (
         <RedeemPanel
           resolvedOutcome={resolvedOutcome}
