@@ -1,11 +1,9 @@
-import { ArrowDown, Loader2 } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
 import { formatUnits, parseUnits } from "viem";
 import { useChainId } from "wagmi";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { DEFAULT_POOL, DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { COMMON_TOKENS } from "@/constants/tokens";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
@@ -98,22 +96,8 @@ export function SwapForm() {
 
   const handleSwap = () => {
     swap({
-      onSuccess: (txHash) => {
+      onSuccess: () => {
         setAmountIn("");
-        toast.success("Swap successful!", {
-          description: "Transaction confirmed",
-          action: {
-            label: "View on Etherscan",
-            onClick: () => window.open(getExplorerTxUrl(txHash), "_blank"),
-          },
-          duration: 10000,
-        });
-      },
-      onError: (err) => {
-        toast.error("Swap failed", {
-          description: err.message?.slice(0, 100) || "Transaction failed",
-          duration: 8000,
-        });
       },
     });
   };
@@ -156,7 +140,7 @@ export function SwapForm() {
     if (poolLoading) return "Loading...";
     if (!quote) return "Insufficient liquidity";
     if (isPending) return "Sending...";
-    if (isConfirming) return "Confirming...";
+    if (isConfirming) return "Swapping...";
     if (isSuccess) return "Success!";
     return "Swap";
   };
@@ -166,100 +150,103 @@ export function SwapForm() {
     quote && tokenOut ? formatUnits(quote.amountOut, tokenOut.decimals) : "";
 
   return (
-    <Card className="mx-auto w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Swap</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <TokenAmountInput
-          label="You pay"
-          token={tokenIn}
-          amount={amountIn}
-          onAmountChange={handleAmountInChange}
-          onTokenSelect={handleTokenInSelect}
-          tokens={tokens.filter((t) => t.address !== tokenOut?.address)}
-          disabled={!isConnected || isPending || isConfirming}
-        />
+    <div className="mx-auto w-full max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
+        <h3 className="text-base font-semibold leading-tight">Swap</h3>
+      </div>
 
-        <div className="flex justify-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="rounded-full p-2"
-            onClick={handleSwapDirection}
-            disabled={isPending || isConfirming}
-          >
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-        </div>
+      <TokenAmountInput
+        label="You pay"
+        token={tokenIn}
+        amount={amountIn}
+        onAmountChange={handleAmountInChange}
+        onTokenSelect={handleTokenInSelect}
+        tokens={tokens.filter((t) => t.address !== tokenOut?.address)}
+        disabled={!isConnected || isPending || isConfirming}
+      />
 
-        <TokenAmountInput
-          label="You receive"
-          token={tokenOut}
-          amount={amountOut}
-          onAmountChange={() => {}}
-          onTokenSelect={handleTokenOutSelect}
-          tokens={tokens.filter((t) => t.address !== tokenIn?.address)}
-          disabled={!isConnected || isPending || isConfirming}
-          readOnly
-        />
-
-        {poolLoading && (
-          <div className="text-center text-sm text-muted-foreground">
-            Loading pool state...
-          </div>
-        )}
-
-        {quote && (
-          <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Price</span>
-              <span>{quote.executionPrice}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Minimum received</span>
-              <span>
-                {tokenOut
-                  ? formatUnits(quote.minimumAmountOut, tokenOut.decimals)
-                  : "0"}{" "}
-                {tokenOut?.symbol}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Slippage tolerance</span>
-              <span>{DEFAULT_SLIPPAGE_TOLERANCE / 100}%</span>
-            </div>
-          </div>
-        )}
-
-        {swapError && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-            {swapError.message}
-          </div>
-        )}
-
+      <div className="flex justify-center">
         <Button
           type="button"
-          className="w-full"
-          disabled={!canSwap}
-          onClick={handleSwap}
+          variant="ghost"
+          size="sm"
+          className="rounded-full p-2"
+          onClick={handleSwapDirection}
+          disabled={isPending || isConfirming}
         >
-          {(isPending || isConfirming) && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          {getButtonText()}
+          <ArrowDown className="h-4 w-4" />
         </Button>
+      </div>
 
-        {hash && (
-          <div className="text-center text-sm text-muted-foreground">
-            Transaction:{" "}
-            <span className="font-mono">
-              {hash.slice(0, 10)}...{hash.slice(-8)}
+      <TokenAmountInput
+        label="You receive"
+        token={tokenOut}
+        amount={amountOut}
+        onAmountChange={() => {}}
+        onTokenSelect={handleTokenOutSelect}
+        tokens={tokens.filter((t) => t.address !== tokenIn?.address)}
+        disabled={!isConnected || isPending || isConfirming}
+        readOnly
+      />
+
+      {poolLoading && (
+        <div className="text-center text-sm text-muted-foreground">
+          Loading pool state...
+        </div>
+      )}
+
+      {quote && (
+        <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Price</span>
+            <span>{quote.executionPrice}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Minimum received</span>
+            <span>
+              {tokenOut
+                ? formatUnits(quote.minimumAmountOut, tokenOut.decimals)
+                : "0"}{" "}
+              {tokenOut?.symbol}
             </span>
           </div>
-        )}
-      </CardContent>
-    </Card>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Slippage tolerance</span>
+            <span>{DEFAULT_SLIPPAGE_TOLERANCE / 100}%</span>
+          </div>
+        </div>
+      )}
+
+      <Button
+        type="button"
+        className="w-full"
+        disabled={!canSwap}
+        onClick={handleSwap}
+      >
+        {getButtonText()}
+      </Button>
+
+      {/* Status banners */}
+      {isSuccess && hash && (
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+          Swap successful!{" "}
+          <a
+            href={getExplorerTxUrl(hash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            View tx
+          </a>
+        </div>
+      )}
+      {swapError && (
+        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+          {swapError.message?.slice(0, 100)}
+        </div>
+      )}
+    </div>
   );
 }

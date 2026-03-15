@@ -1,13 +1,9 @@
-import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useChainId } from "wagmi";
 import { TickRangeSelector } from "@/components/position/TickRangeSelector";
 import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Label } from "@/components/ui/Label";
 import {
   DEFAULT_POOL,
   DEFAULT_SLIPPAGE_TOLERANCE,
@@ -136,24 +132,10 @@ export function MintForm() {
 
   const handleMint = () => {
     mint({
-      onSuccess: (txHash) => {
+      onSuccess: () => {
         setAmount0("");
         setAmount1("");
         setActiveInput(null);
-        toast.success("Liquidity added!", {
-          description: "Transaction confirmed",
-          action: {
-            label: "View on Etherscan",
-            onClick: () => window.open(getExplorerTxUrl(txHash), "_blank"),
-          },
-          duration: 10000,
-        });
-      },
-      onError: (err) => {
-        toast.error("Add liquidity failed", {
-          description: err.message?.slice(0, 100) || "Transaction failed",
-          duration: 8000,
-        });
       },
     });
   };
@@ -206,112 +188,115 @@ export function MintForm() {
   };
 
   return (
-    <Card className="mx-auto w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Add Liquidity</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <TokenAmountInput
-          label="Token 0"
-          token={token0}
-          amount={amount0}
-          onAmountChange={handleAmount0Change}
-          onTokenSelect={handleToken0Select}
-          tokens={tokens.filter((t) => t.address !== token1?.address)}
+    <div className="mx-auto w-full max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
+        <h3 className="text-base font-semibold leading-tight">Add Liquidity</h3>
+      </div>
+
+      <TokenAmountInput
+        label="Token 0"
+        token={token0}
+        amount={amount0}
+        onAmountChange={handleAmount0Change}
+        onTokenSelect={handleToken0Select}
+        tokens={tokens.filter((t) => t.address !== token1?.address)}
+        disabled={!isConnected || isPending || isConfirming}
+      />
+
+      <TokenAmountInput
+        label="Token 1"
+        token={token1}
+        amount={amount1}
+        onAmountChange={handleAmount1Change}
+        onTokenSelect={handleToken1Select}
+        tokens={tokens.filter((t) => t.address !== token0?.address)}
+        disabled={!isConnected || isPending || isConfirming}
+      />
+
+      <div>
+        <span className="mb-2 block text-sm font-medium text-muted-foreground">Pool Type</span>
+        <div className="rounded-lg bg-muted p-3 text-sm">
+          <span className="font-medium">Dynamic Fee Pool</span>
+          <span className="ml-2 text-xs text-muted-foreground">
+            (Fee varies per swap)
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <span className="mb-2 block text-sm font-medium text-muted-foreground">Price Range</span>
+        <TickRangeSelector
+          tickLower={tickLower}
+          tickUpper={tickUpper}
+          tickSpacing={tickSpacing}
+          currentTick={poolState?.tick}
+          onTickLowerChange={setTickLower}
+          onTickUpperChange={setTickUpper}
           disabled={!isConnected || isPending || isConfirming}
         />
+      </div>
 
-        <TokenAmountInput
-          label="Token 1"
-          token={token1}
-          amount={amount1}
-          onAmountChange={handleAmount1Change}
-          onTokenSelect={handleToken1Select}
-          tokens={tokens.filter((t) => t.address !== token0?.address)}
-          disabled={!isConnected || isPending || isConfirming}
-        />
+      {poolLoading && (
+        <div className="text-center text-sm text-muted-foreground">
+          Loading pool state...
+        </div>
+      )}
 
-        <div>
-          <Label className="mb-2 block">Pool Type</Label>
-          <div className="rounded-lg border bg-muted/50 px-4 py-3">
-            <span className="text-sm font-medium">Dynamic Fee Pool</span>
-            <span className="ml-2 text-xs text-muted-foreground">
-              (Fee varies per swap)
+      {positionData && (
+        <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Liquidity</span>
+            <span>{positionData.liquidity.toString()}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">
+              {token0?.symbol ?? "Token 0"} Amount
+            </span>
+            <span>
+              {formatUnits(positionData.amount0, token0?.decimals ?? 18)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">
+              {token1?.symbol ?? "Token 1"} Amount
+            </span>
+            <span>
+              {formatUnits(positionData.amount1, token1?.decimals ?? 18)}
             </span>
           </div>
         </div>
+      )}
 
-        <div>
-          <Label className="mb-2 block">Price Range</Label>
-          <TickRangeSelector
-            tickLower={tickLower}
-            tickUpper={tickUpper}
-            tickSpacing={tickSpacing}
-            currentTick={poolState?.tick}
-            onTickLowerChange={setTickLower}
-            onTickUpperChange={setTickUpper}
-            disabled={!isConnected || isPending || isConfirming}
-          />
+      <Button
+        type="button"
+        className="w-full"
+        disabled={!canMint}
+        onClick={handleMint}
+      >
+        {getButtonText()}
+      </Button>
+
+      {/* Status banners */}
+      {isSuccess && hash && (
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+          Liquidity added!{" "}
+          <a
+            href={getExplorerTxUrl(hash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            View tx
+          </a>
         </div>
-
-        {poolLoading && (
-          <div className="text-center text-sm text-muted-foreground">
-            Loading pool state...
-          </div>
-        )}
-
-        {positionData && (
-          <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Liquidity</span>
-              <span>{positionData.liquidity.toString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {token0?.symbol ?? "Token 0"} Amount
-              </span>
-              <span>
-                {formatUnits(positionData.amount0, token0?.decimals ?? 18)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">
-                {token1?.symbol ?? "Token 1"} Amount
-              </span>
-              <span>
-                {formatUnits(positionData.amount1, token1?.decimals ?? 18)}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {mintError && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-            {mintError.message}
-          </div>
-        )}
-
-        <Button
-          type="button"
-          className="w-full"
-          disabled={!canMint}
-          onClick={handleMint}
-        >
-          {(isPending || isConfirming) && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          {getButtonText()}
-        </Button>
-
-        {hash && (
-          <div className="text-center text-sm text-muted-foreground">
-            Transaction:{" "}
-            <span className="font-mono">
-              {hash.slice(0, 10)}...{hash.slice(-8)}
-            </span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      )}
+      {mintError && (
+        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+          {mintError.message?.slice(0, 100)}
+        </div>
+      )}
+    </div>
   );
 }

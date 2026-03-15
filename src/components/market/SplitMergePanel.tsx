@@ -1,12 +1,14 @@
 import { useState, useMemo } from "react";
 import { parseUnits } from "viem";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useTokenApproval } from "@/hooks/approval/useTokenApproval";
 import { useSplitMerge } from "@/hooks/market/useSplitMerge";
 import { PM_CONTRACTS, TUSD } from "@/constants/markets";
 import { getExplorerTxUrl } from "@/utils/explorer";
 import type { MarketWithPrices } from "@/types";
+
+const QUICK_AMOUNTS = [1, 5, 10, 100] as const;
 
 interface SplitMergePanelProps {
   market: MarketWithPrices;
@@ -65,6 +67,11 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
     }
   }
 
+  function addAmount(increment: number) {
+    const current = Number(amountStr) || 0;
+    setAmountStr(String(current + increment));
+  }
+
   if (!open) {
     return (
       <button
@@ -78,83 +85,116 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Split / Merge</CardTitle>
-          <button
-            type="button"
-            className="text-sm text-muted-foreground hover:text-foreground"
-            onClick={() => setOpen(false)}
-          >
-            Close
-          </button>
+    <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
+          <h3 className="text-base font-semibold leading-tight">Split / Merge</h3>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Mode toggle */}
-        <div className="flex gap-2">
-          <Button
-            variant={mode === "split" ? "default" : "outline"}
-            size="sm"
-            className="flex-1"
-            onClick={() => setMode("split")}
+        <button
+          type="button"
+          className="text-sm text-muted-foreground hover:text-foreground"
+          onClick={() => setOpen(false)}
+        >
+          Close
+        </button>
+      </div>
+
+      {/* Mode toggle — underline Tabs */}
+      <Tabs
+        value={mode}
+        onValueChange={(v) => setMode(v as "split" | "merge")}
+      >
+        <TabsList className="w-full rounded-none border-b border-border bg-transparent p-0">
+          <TabsTrigger
+            value="split"
+            className="flex-1 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-2 text-sm font-medium text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
           >
             Split
-          </Button>
-          <Button
-            variant={mode === "merge" ? "default" : "outline"}
-            size="sm"
-            className="flex-1"
-            onClick={() => setMode("merge")}
+          </TabsTrigger>
+          <TabsTrigger
+            value="merge"
+            className="flex-1 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-2 text-sm font-medium text-muted-foreground shadow-none data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
           >
             Merge
-          </Button>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <p className="text-xs text-muted-foreground">
+        {mode === "split"
+          ? "Split collateral into equal YES + NO tokens"
+          : "Merge equal YES + NO tokens back into collateral"}
+      </p>
+
+      {/* Amount input */}
+      <div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-muted-foreground">Amount</span>
+          <div className="relative">
+            <span className="pointer-events-none text-4xl font-semibold">
+              ${amountStr || "0"}
+            </span>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={amountStr}
+              onChange={(e) => setAmountStr(e.target.value)}
+              className="absolute inset-0 w-full bg-transparent text-right text-4xl font-semibold opacity-0"
+            />
+          </div>
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          {mode === "split"
-            ? "Split collateral into equal YES + NO tokens"
-            : "Merge equal YES + NO tokens back into collateral"}
-        </p>
-
-        <input
-          type="text"
-          inputMode="decimal"
-          placeholder="0.0"
-          value={amountStr}
-          onChange={(e) => setAmountStr(e.target.value)}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-        />
-
-        {needsApproval && amount > 0n ? (
-          <Button className="w-full" onClick={handleApprove} disabled={isApproving}>
-            {isApproving ? "Approving..." : "Approve"}
-          </Button>
-        ) : (
-          <Button
-            className="w-full"
-            onClick={() => op.execute()}
-            disabled={op.isPending || op.isConfirming || amount === 0n}
+        {/* Quick-add buttons */}
+        <div className="mt-3 flex justify-end gap-2">
+          {QUICK_AMOUNTS.map((amt) => (
+            <button
+              key={amt}
+              type="button"
+              onClick={() => addAmount(amt)}
+              className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+            >
+              +${amt}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80"
           >
-            {op.isPending || op.isConfirming ? "Executing..." : mode === "split" ? "Split" : "Merge"}
-          </Button>
-        )}
+            Max
+          </button>
+        </div>
+      </div>
 
-        {op.isSuccess && op.hash && (
-          <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
-            {mode === "split" ? "Split" : "Merge"} successful!{" "}
-            <a href={getExplorerTxUrl(op.hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
-              View tx
-            </a>
-          </div>
-        )}
-        {op.error && (
-          <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
-            {(op.error as Error).message?.slice(0, 100)}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {needsApproval && amount > 0n ? (
+        <Button className="w-full" onClick={handleApprove} disabled={isApproving}>
+          {isApproving ? "Approving..." : "Approve"}
+        </Button>
+      ) : (
+        <Button
+          className="w-full"
+          onClick={() => op.execute()}
+          disabled={op.isPending || op.isConfirming || amount === 0n}
+        >
+          {op.isPending || op.isConfirming ? "Executing..." : mode === "split" ? "Split" : "Merge"}
+        </Button>
+      )}
+
+      {/* Status banners */}
+      {op.isSuccess && op.hash && (
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+          {mode === "split" ? "Split" : "Merge"} successful!{" "}
+          <a href={getExplorerTxUrl(op.hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
+            View tx
+          </a>
+        </div>
+      )}
+      {op.error && (
+        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+          {(op.error as Error).message?.slice(0, 100)}
+        </div>
+      )}
+    </div>
   );
 }

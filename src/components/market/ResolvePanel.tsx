@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import { useResolveMarket } from "@/hooks/market/useResolveMarket";
 import { getExplorerTxUrl } from "@/utils/explorer";
 import type { MarketWithPrices } from "@/types";
@@ -32,105 +32,105 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
 
   if (market.isResolved) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Resolution</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
-            Resolved: <strong>{market.resolvedOutcome}</strong> wins
-          </div>
-        </CardContent>
-      </Card>
+      <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+        <div className="flex items-center gap-3">
+          <h3 className="text-base font-semibold leading-tight">Resolution</h3>
+        </div>
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+          Resolved: <strong>{market.resolvedOutcome}</strong> wins
+        </div>
+      </div>
     );
   }
 
   if (isSuccess) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Resolution</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
-            Resolved: <strong>{selected}</strong> wins!{" "}
-            {hash && (
-              <a href={getExplorerTxUrl(hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
-                View tx
-              </a>
-            )}
-          </div>
-          <Button variant="outline" className="w-full" asChild>
-            <Link to="/markets/$conditionId" params={{ conditionId: market.condition.conditionId }}>
-              Go to Redeem
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+        <div className="flex items-center gap-3">
+          <h3 className="text-base font-semibold leading-tight">Resolution</h3>
+        </div>
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+          Resolved: <strong>{selected}</strong> wins!{" "}
+          {hash && (
+            <a href={getExplorerTxUrl(hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
+              View tx
+            </a>
+          )}
+        </div>
+        <Button variant="outline" className="w-full" asChild>
+          <Link to="/markets/$conditionId" params={{ conditionId: market.condition.conditionId }}>
+            Go to Redeem
+          </Link>
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Resolve Market</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">Select the winning outcome:</p>
+    <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
+        <h3 className="text-base font-semibold leading-tight">Resolve Market</h3>
+      </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setSelected("YES")}
-            className={`rounded-md border p-3 text-center text-sm font-medium transition-colors ${
-              selected === "YES"
-                ? "border-green-500 bg-green-500/10 text-green-400"
-                : "border-input hover:border-foreground/20"
-            }`}
-          >
-            YES
-            {market.yesProb != null && (
-              <span className="ml-1 text-xs text-muted-foreground">
-                ({(market.yesProb * 100).toFixed(0)}%)
-              </span>
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelected("NO")}
-            className={`rounded-md border p-3 text-center text-sm font-medium transition-colors ${
-              selected === "NO"
-                ? "border-red-500 bg-red-500/10 text-red-400"
-                : "border-input hover:border-foreground/20"
-            }`}
-          >
-            NO
-            {market.noProb != null && (
-              <span className="ml-1 text-xs text-muted-foreground">
-                ({(market.noProb * 100).toFixed(0)}%)
-              </span>
-            )}
-          </button>
-        </div>
+      <p className="text-sm text-muted-foreground">Select the winning outcome:</p>
 
-        <p className="text-xs text-yellow-500">This action is irreversible.</p>
-
-        <Button
-          className="w-full"
-          onClick={handleResolve}
-          disabled={!selected || isPending || isConfirming}
+      {/* YES / NO outcome buttons */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() => setSelected("YES")}
+          className={cn(
+            "flex-1 rounded-lg py-3 text-center text-sm font-semibold transition-colors",
+            selected === "YES"
+              ? "bg-green-600 text-white"
+              : "bg-muted text-muted-foreground hover:bg-muted/80",
+          )}
         >
-          {isPending || isConfirming ? "Resolving..." : "Resolve Market"}
-        </Button>
+          YES
+          {market.yesProb != null && (
+            <span className="ml-1 text-xs">
+              ({(market.yesProb * 100).toFixed(0)}%)
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelected("NO")}
+          className={cn(
+            "flex-1 rounded-lg py-3 text-center text-sm font-semibold transition-colors",
+            selected === "NO"
+              ? "bg-red-600 text-white"
+              : "bg-muted text-muted-foreground hover:bg-muted/80",
+          )}
+        >
+          NO
+          {market.noProb != null && (
+            <span className="ml-1 text-xs">
+              ({(market.noProb * 100).toFixed(0)}%)
+            </span>
+          )}
+        </button>
+      </div>
 
-        {error && (
-          <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
-            {(error as Error).message?.includes("ConditionAlreadyResolved")
-              ? "This market has already been resolved."
-              : (error as Error).message?.slice(0, 100)}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      <p className="text-xs text-yellow-400">This action is irreversible.</p>
+
+      <Button
+        className="w-full"
+        onClick={handleResolve}
+        disabled={!selected || isPending || isConfirming}
+      >
+        {isPending || isConfirming ? "Resolving..." : "Resolve Market"}
+      </Button>
+
+      {error && (
+        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+          {(error as Error).message?.includes("ConditionAlreadyResolved")
+            ? "This market has already been resolved."
+            : (error as Error).message?.slice(0, 100)}
+        </div>
+      )}
+    </div>
   );
 }

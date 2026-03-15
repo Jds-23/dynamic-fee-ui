@@ -1,5 +1,5 @@
 import { parseUnits } from "viem";
-import { Card, CardContent } from "@/components/ui/Card";
+
 import { Button } from "@/components/ui/Button";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
@@ -81,13 +81,11 @@ function LivePricePanel({ conditionId }: { conditionId?: string }) {
 
   if (!firstMarket) {
     return (
-      <Card className="w-full">
-        <CardContent className="p-6 text-center">
-          <p className="text-muted-foreground">
-            No markets yet — create one to see live prices.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="w-full rounded-xl border border-border bg-card p-6 text-center">
+        <p className="text-muted-foreground">
+          No markets yet — create one to see live prices.
+        </p>
+      </div>
     );
   }
 
@@ -203,61 +201,56 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
   const confirmingHash = buyYes.hash || buyNo.hash;
 
   return (
-    <Card className="w-full">
-      <CardContent className="space-y-4 p-6">
-        <div className="flex items-start gap-5">
-          <SemiCircleGauge value={market.yesProb} />
-          <div className="flex-1 space-y-1">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Live Probabilities
-            </h3>
-            <p className="text-lg font-semibold">{condition.question}</p>
-          </div>
+    <div className="w-full rounded-xl border border-border bg-card p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-start gap-5">
+        <SemiCircleGauge value={market.yesProb} />
+        <div className="flex-1 space-y-1">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Live Probabilities
+          </h3>
+          <p className="text-lg font-semibold">{condition.question}</p>
         </div>
+      </div>
 
-        {/* <ProbabilityBar yesProb={market.yesProb} noProb={market.noProb} />
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>YES</span>
-          <span>NO</span>
-        </div> */}
+      <div className="flex gap-3">
+        <Button
+          className="flex-1"
+          variant="default"
+          disabled={busy || market.isResolved}
+          onClick={handleBuyYes}
+        >
+          {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1000 TUSD"}
+        </Button>
+        <Button
+          className="flex-1"
+          variant="secondary"
+          disabled={busy || market.isResolved}
+          onClick={handleBuyNo}
+        >
+          {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1000 TUSD"}
+        </Button>
+      </div>
 
-        <div className="flex gap-3">
-          <Button
-            className="flex-1"
-            variant="default"
-            disabled={busy || market.isResolved}
-            onClick={handleBuyYes}
+      {/* Status banners */}
+      {(buyYes.isConfirming || buyNo.isConfirming) && confirmingHash && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Confirming…{" "}
+          <a
+            href={getExplorerTxUrl(confirmingHash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
           >
-            {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy YES — 1000 TUSD"}
-          </Button>
-          <Button
-            className="flex-1"
-            variant="secondary"
-            disabled={busy || market.isResolved}
-            onClick={handleBuyNo}
-          >
-            {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy NO — 1000 TUSD"}
-          </Button>
+            View tx
+          </a>
         </div>
-        {(buyYes.isConfirming || buyNo.isConfirming) && confirmingHash && (
-          <p className="text-xs text-muted-foreground">
-            Confirming…{" "}
-            <a
-              href={getExplorerTxUrl(confirmingHash)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              View tx
-            </a>
-          </p>
-        )}
-        {error && (
-          <p className="text-xs text-destructive">
-            {error instanceof Error ? error.message : "Transaction failed"}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+      )}
+      {error && (
+        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+          {error instanceof Error ? error.message : "Transaction failed"}
+        </div>
+      )}
+    </div>
   );
 }

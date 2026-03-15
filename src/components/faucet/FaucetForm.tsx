@@ -1,10 +1,7 @@
-import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useDrip } from "@/hooks/faucet/useDrip";
 import { useFaucetState } from "@/hooks/faucet/useFaucetState";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -71,22 +68,8 @@ export function FaucetForm() {
   const handleClaim = () => {
     reset();
     drip({
-      onSuccess: (txHash) => {
-        toast.success("Tokens claimed!", {
-          description: "mUSDC and mUSDT have been sent to your wallet",
-          action: {
-            label: "View on Etherscan",
-            onClick: () => window.open(getExplorerTxUrl(txHash), "_blank"),
-          },
-          duration: 10000,
-        });
+      onSuccess: () => {
         refetch();
-      },
-      onError: (err) => {
-        toast.error("Claim failed", {
-          description: err.message?.slice(0, 100) || "Transaction failed",
-          duration: 8000,
-        });
       },
     });
   };
@@ -107,93 +90,96 @@ export function FaucetForm() {
     isConnected && canDrip && faucetHasTokens && !isPending && !isConfirming && !isLoading;
 
   return (
-    <Card className="mx-auto w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Test Token Faucet</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Claim test tokens to use with the Uniswap V4 pool. Tokens can be claimed once per cooldown period.
-        </p>
+    <div className="mx-auto w-full max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
+        <h3 className="text-base font-semibold leading-tight">Test Token Faucet</h3>
+      </div>
 
-        {!isConnected && (
-          <div className="rounded-lg bg-muted p-4 text-center text-sm text-muted-foreground">
-            Initializing...
-          </div>
-        )}
+      <p className="text-sm text-muted-foreground">
+        Claim test tokens to use with the Uniswap V4 pool. Tokens can be claimed once per cooldown period.
+      </p>
 
-        {isConnected && isLoading && (
-          <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        )}
+      {!isConnected && (
+        <div className="rounded-md bg-muted p-4 text-center text-sm text-muted-foreground">
+          Initializing...
+        </div>
+      )}
 
-        {isConnected && !isLoading && (
-          <>
-            <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
-              <div className="font-medium">You will receive:</div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">mUSDC</span>
-                <span>{formatUnits(dripAmount0, 18)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">mUSDT</span>
-                <span>{formatUnits(dripAmount1, 18)}</span>
-              </div>
+      {isConnected && isLoading && (
+        <div className="text-center text-sm text-muted-foreground py-4">
+          Loading faucet state...
+        </div>
+      )}
+
+      {isConnected && !isLoading && (
+        <>
+          <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
+            <div className="font-medium">You will receive:</div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">mUSDC</span>
+              <span>{formatUnits(dripAmount0, 18)}</span>
             </div>
-
-            <div className="space-y-2 rounded-lg border p-4 text-sm">
-              <div className="font-medium">Faucet Balances:</div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">mUSDC</span>
-                <span>{formatUnits(faucetBalance0, 18)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">mUSDT</span>
-                <span>{formatUnits(faucetBalance1, 18)}</span>
-              </div>
-              {!faucetHasTokens && (
-                <div className="mt-2 rounded bg-destructive/10 p-2 text-center text-xs text-destructive">
-                  Faucet does not have enough tokens
-                </div>
-              )}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">mUSDT</span>
+              <span>{formatUnits(dripAmount1, 18)}</span>
             </div>
+          </div>
 
-            {!canDrip && countdown > 0n && (
-              <div className="rounded-lg bg-yellow-500/10 p-3 text-center text-sm text-yellow-600 dark:text-yellow-400">
-                Next claim available in: {formatCountdown(countdown)}
+          <div className="space-y-2 rounded-lg bg-muted p-4 text-sm">
+            <div className="font-medium">Faucet Balances:</div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">mUSDC</span>
+              <span>{formatUnits(faucetBalance0, 18)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">mUSDT</span>
+              <span>{formatUnits(faucetBalance1, 18)}</span>
+            </div>
+            {!faucetHasTokens && (
+              <div className="mt-2 rounded-md bg-red-500/10 p-2 text-center text-xs text-red-400">
+                Faucet does not have enough tokens
               </div>
             )}
-          </>
-        )}
-
-        {error && (
-          <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-            {error.message}
           </div>
-        )}
 
-        <Button
-          type="button"
-          className="w-full"
-          disabled={!canClaim}
-          onClick={handleClaim}
-        >
-          {(isPending || isConfirming || isLoading) && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          {!canDrip && countdown > 0n && (
+            <div className="rounded-md bg-yellow-500/10 p-3 text-center text-sm text-yellow-400">
+              Next claim available in: {formatCountdown(countdown)}
+            </div>
           )}
-          {getButtonText()}
-        </Button>
+        </>
+      )}
 
-        {hash && (
-          <div className="text-center text-sm text-muted-foreground">
-            Transaction:{" "}
-            <span className="font-mono">
-              {hash.slice(0, 10)}...{hash.slice(-8)}
-            </span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      <Button
+        type="button"
+        className="w-full"
+        disabled={!canClaim}
+        onClick={handleClaim}
+      >
+        {getButtonText()}
+      </Button>
+
+      {/* Status banners */}
+      {hash && (
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+          Tokens claimed!{" "}
+          <a
+            href={getExplorerTxUrl(hash)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            View tx
+          </a>
+        </div>
+      )}
+      {error && (
+        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+          {error.message?.slice(0, 100)}
+        </div>
+      )}
+    </div>
   );
 }

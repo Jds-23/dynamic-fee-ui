@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { parseUnits } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
@@ -10,6 +9,8 @@ import { computeConditionId } from "@/lib/market";
 import { postMarket } from "@/lib/api";
 import { signMessage } from "@/lib/smartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
+
+const QUICK_AMOUNTS = [1, 5, 10, 100] as const;
 
 interface CreateMarketFormProps {
   onCreated?: (conditionId: string) => void;
@@ -70,83 +71,114 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
 
   const isPending = create.isPending || create.isConfirming;
 
+  function addFunding(increment: number) {
+    const current = Number(fundingStr) || 0;
+    setFundingStr(String(current + increment));
+  }
+
   return (
     <div className="py-8">
-      <Card className="mx-auto max-w-md">
-        <CardHeader>
-          <CardTitle>Create Market</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Question */}
-          <div>
-            <label className="mb-1 block text-sm text-muted-foreground">Question</label>
-            <input
-              type="text"
-              placeholder="Will ETH reach $10k by end of 2025?"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+      <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <h3 className="text-base font-semibold leading-tight">Create Market</h3>
+        </div>
+
+        {/* Question */}
+        <div>
+          <span className="text-sm font-medium text-muted-foreground">Question</span>
+          <input
+            type="text"
+            placeholder="Will ETH reach $10k by end of 2025?"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            className="mt-1 w-full bg-transparent text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none"
+          />
+        </div>
+
+        {/* Condition ID preview */}
+        {conditionId && (
+          <div className="rounded-md bg-muted p-2">
+            <span className="text-xs text-muted-foreground">Condition ID: </span>
+            <span className="break-all font-mono text-xs">{conditionId}</span>
           </div>
+        )}
 
-          {/* Condition ID preview */}
-          {conditionId && (
-            <div className="rounded-md bg-muted p-2">
-              <span className="text-xs text-muted-foreground">Condition ID: </span>
-              <span className="break-all font-mono text-xs">{conditionId}</span>
-            </div>
-          )}
-
-          {/* Funding amount */}
-          <div>
-            <label className="mb-1 block text-sm text-muted-foreground">
+        {/* Funding amount */}
+        <div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">
               Initial Funding ({TUSD.symbol})
-            </label>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.0"
-              value={fundingStr}
-              onChange={(e) => setFundingStr(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            />
+            </span>
+            <div className="relative">
+              <span className="pointer-events-none text-4xl font-semibold">
+                ${fundingStr || "0"}
+              </span>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={fundingStr}
+                onChange={(e) => setFundingStr(e.target.value)}
+                className="absolute inset-0 w-full bg-transparent text-right text-4xl font-semibold opacity-0"
+              />
+            </div>
           </div>
 
-          {/* Action */}
-          <Button
-            className="w-full"
-            onClick={handleCreate}
-            disabled={isPending || !conditionId || fundingAmount === 0n}
-          >
-            {isPending ? "Creating..." : "Create Market"}
-          </Button>
-
-          {/* Status */}
-          {create.isSuccess && create.hash && (
-            <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
-              Market created!{" "}
-              <a
-                href={getExplorerTxUrl(create.hash, 1301)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
+          {/* Quick-add buttons */}
+          <div className="mt-3 flex justify-end gap-2">
+            {QUICK_AMOUNTS.map((amt) => (
+              <button
+                key={amt}
+                type="button"
+                onClick={() => addFunding(amt)}
+                className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80"
               >
-                View tx
-              </a>
-            </div>
-          )}
-          {postError && (
-            <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
-              Market created on-chain but failed to register: {postError}
-            </div>
-          )}
-          {create.error && (
-            <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
-              {(create.error as Error).message?.slice(0, 100)}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                +${amt}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/80"
+            >
+              Max
+            </button>
+          </div>
+        </div>
+
+        {/* Action */}
+        <Button
+          className="w-full"
+          onClick={handleCreate}
+          disabled={isPending || !conditionId || fundingAmount === 0n}
+        >
+          {isPending ? "Creating..." : "Create Market"}
+        </Button>
+
+        {/* Status */}
+        {create.isSuccess && create.hash && (
+          <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
+            Market created!{" "}
+            <a
+              href={getExplorerTxUrl(create.hash, 1301)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              View tx
+            </a>
+          </div>
+        )}
+        {postError && (
+          <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+            Market created on-chain but failed to register: {postError}
+          </div>
+        )}
+        {create.error && (
+          <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+            {(create.error as Error).message?.slice(0, 100)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
