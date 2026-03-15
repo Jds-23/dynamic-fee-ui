@@ -51,7 +51,7 @@ interface TradeSlidePanelProps {
 
 export function TradeSlidePanel({ onGoTo, conditionId }: TradeSlidePanelProps) {
   return (
-    <div className="min-h-[28rem] overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
+    <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
       <TradeSlideInner onGoTo={onGoTo} conditionId={conditionId} />
     </div>
   );

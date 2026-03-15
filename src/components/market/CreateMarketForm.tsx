@@ -78,7 +78,7 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
   }
 
   return (
-    <div className="py-8">
+    <div className="py-8 w-full">
       <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3">

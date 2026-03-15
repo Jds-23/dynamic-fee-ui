@@ -61,7 +61,7 @@ export function LMSRSlideInfo() {
 
 export function LMSRSlidePanel({ conditionId }: { conditionId?: string }) {
   return (
-    <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-6">
+    <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-6">
       <LivePricePanel conditionId={conditionId} />
     </div>
   );

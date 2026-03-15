@@ -75,7 +75,7 @@ export function CreateMarketSlidePanel() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-[28rem] overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
+    <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
       <CreateMarketForm
         onCreated={(conditionId) =>
           navigate({ to: "/", search: { market: conditionId } })

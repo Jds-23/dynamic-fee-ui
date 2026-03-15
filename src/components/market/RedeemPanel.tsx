@@ -20,7 +20,7 @@ export function RedeemPanel({ resolvedOutcome, winnerToken, winnerBalance }: Red
   });
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 space-y-5">
+    <div className="rounded-xl border border-border bg-card p-5 space-y-5 w-full">
       {/* Header */}
       <div className="flex items-center gap-3">
         <h3 className="text-base font-semibold leading-tight">Redeem</h3>

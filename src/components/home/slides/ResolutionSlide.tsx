@@ -58,7 +58,7 @@ export function ResolutionSlidePanel({ conditionId }: { conditionId?: string }) 
 
   if (isLoading && markets.length === 0) {
     return (
-      <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
+      <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
         <div className="h-48 w-full animate-pulse rounded-lg bg-muted" />
       </div>
     );
@@ -66,14 +66,14 @@ export function ResolutionSlidePanel({ conditionId }: { conditionId?: string }) 
 
   if (!firstMarket) {
     return (
-      <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
+      <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
         <p className="text-sm text-muted-foreground">No markets available</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[28rem] overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
+    <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
       <ResolutionSlideInner condition={firstMarket.condition} />
     </div>
   );
@@ -99,7 +99,7 @@ function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
   const { balance: winnerBalance } = useTokenBalance(winnerToken);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       {
         !winnerToken &&
         <ResolvePanel market={market} onResolved={onResolved} />

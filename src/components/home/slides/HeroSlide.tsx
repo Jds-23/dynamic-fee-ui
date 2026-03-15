@@ -78,7 +78,7 @@ export function HeroSlideInfo() {
 
 export function HeroSlidePanel() {
   return (
-    <div className="flex min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
+    <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
       <h2 className="text-lg font-semibold">Demo</h2>
     </div>
   );
