@@ -1,11 +1,15 @@
 import type { Address } from "viem";
-import { keccak256, toBytes } from "viem";
+import { keccak256, toBytes, toHex } from "viem";
 import type { PoolKey } from "@/types";
 import { sortTokens } from "@/lib/poolId";
 import { PM_POOL_CONFIG } from "@/constants/markets";
 
 export function computeConditionId(question: string): `0x${string}` {
   return keccak256(toBytes(question));
+}
+
+export function randomConditionId(): `0x${string}` {
+  return toHex(crypto.getRandomValues(new Uint8Array(32)));
 }
 
 export function buildMarketPoolKey(

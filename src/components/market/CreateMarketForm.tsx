@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { TUSD } from "@/constants/markets";
-import { computeConditionId } from "@/lib/market";
+import { randomConditionId } from "@/lib/market";
+import { getRandomQuestion } from "@/constants/oscarQuestions";
 import { postMarket } from "@/lib/api";
 import { signMessage } from "@/lib/smartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -17,7 +18,7 @@ interface CreateMarketFormProps {
 }
 
 export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState(getRandomQuestion);
   const [fundingStr, setFundingStr] = useState("10000");
   const [postError, setPostError] = useState<string | null>(null);
 
@@ -26,7 +27,7 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
 
   const conditionId = useMemo(() => {
     if (!question.trim()) return undefined;
-    return computeConditionId(question.trim());
+    return randomConditionId();
   }, [question]);
 
   const fundingAmount = useMemo(() => {
@@ -87,22 +88,14 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
         {/* Question */}
         <div>
           <span className="text-sm font-medium text-muted-foreground">Question</span>
-          <input
-            type="text"
+          <textarea
+            rows={2}
             placeholder="Will ETH reach $10k by end of 2025?"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="mt-1 w-full bg-transparent text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none"
+            className="mt-1 w-full resize-none bg-transparent text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none"
           />
         </div>
-
-        {/* Condition ID preview */}
-        {conditionId && (
-          <div className="rounded-md bg-muted p-2">
-            <span className="text-xs text-muted-foreground">Condition ID: </span>
-            <span className="break-all font-mono text-xs">{conditionId}</span>
-          </div>
-        )}
 
         {/* Funding amount */}
         <div>
