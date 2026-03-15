@@ -84,6 +84,7 @@ export function useMarketList() {
           : zeroAddress;
 
       states.push({
+        // @ts-ignore
         conditionId: conditions[i]?.conditionId,
         collateralAddress: collateralToken,
         yesTokenAddress: yes,

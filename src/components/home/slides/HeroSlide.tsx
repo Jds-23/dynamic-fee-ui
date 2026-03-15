@@ -1,25 +1,3 @@
-import { Card, CardContent } from "@/components/ui/Card";
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
-function _FeatureCard({ icon, title, description }: FeatureCardProps) {
-  return (
-    <Card className="p-4">
-      <CardContent className="flex items-center gap-3 p-0">
-        <div className="text-primary">{icon}</div>
-        <div>
-          <h3 className="font-medium">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 export function HeroSlideInfo() {
   return (
     <div className="space-y-8">

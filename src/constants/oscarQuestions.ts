@@ -27,5 +27,6 @@ export const OSCAR_QUESTIONS: string[] = [
 ];
 
 export function getRandomQuestion(): string {
+  // @ts-ignore
   return OSCAR_QUESTIONS[Math.floor(Math.random() * OSCAR_QUESTIONS.length)];
 }
