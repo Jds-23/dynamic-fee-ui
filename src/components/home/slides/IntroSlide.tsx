@@ -46,9 +46,14 @@ export function MultiverseSlideInfo() {
 export function MultiverseSlidePanel() {
   return (
     <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
-      <div className="flex h-64 w-full items-center justify-center rounded-xl bg-muted">
-        <span className="text-sm text-muted-foreground">Image coming soon</span>
-      </div>
+      <video
+        className="w-full rounded-xl mix-blend-lighten"
+        src="https://ik.imagekit.io/pradipto/64a113d811768b7c91ef0fb6915c87608db54df8.mp4?tr=orig"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
     </div>
   );
 }
