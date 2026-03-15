@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
 import { useResolveMarket } from "@/hooks/market/useResolveMarket";
-import { getExplorerTxUrl } from "@/utils/explorer";
+import { cn } from "@/lib/utils";
 import type { MarketWithPrices } from "@/types";
+import { getExplorerTxUrl } from "@/utils/explorer";
 
 interface ResolvePanelProps {
   market: MarketWithPrices;
@@ -14,16 +14,18 @@ interface ResolvePanelProps {
 export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
   const [selected, setSelected] = useState<"YES" | "NO" | null>(null);
 
-  const winner = selected === "YES"
-    ? market.state?.yesTokenAddress
-    : selected === "NO"
-      ? market.state?.noTokenAddress
-      : undefined;
+  const winner =
+    selected === "YES"
+      ? market.state?.yesTokenAddress
+      : selected === "NO"
+        ? market.state?.noTokenAddress
+        : undefined;
 
-  const { resolve, hash, isPending, isConfirming, isSuccess, error } = useResolveMarket({
-    conditionId: market.condition.conditionId,
-    winner: winner ?? "0x0000000000000000000000000000000000000000",
-  });
+  const { resolve, hash, isPending, isConfirming, isSuccess, error } =
+    useResolveMarket({
+      conditionId: market.condition.conditionId,
+      winner: winner ?? "0x0000000000000000000000000000000000000000",
+    });
 
   const handleResolve = () => {
     if (!selected) return;
@@ -52,13 +54,21 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
         <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
           Resolved: <strong>{selected}</strong> wins!{" "}
           {hash && (
-            <a href={getExplorerTxUrl(hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
+            <a
+              href={getExplorerTxUrl(hash, 1301)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
               View tx
             </a>
           )}
         </div>
         <Button variant="outline" className="w-full" asChild>
-          <Link to="/markets/$conditionId" params={{ conditionId: market.condition.conditionId }}>
+          <Link
+            to="/markets/$conditionId"
+            params={{ conditionId: market.condition.conditionId }}
+          >
             Go to Redeem
           </Link>
         </Button>
@@ -71,10 +81,14 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
-        <h3 className="text-base font-semibold leading-tight">Resolve Market</h3>
+        <h3 className="text-base font-semibold leading-tight">
+          Resolve Market
+        </h3>
       </div>
 
-      <p className="text-sm text-muted-foreground">Select the winning outcome:</p>
+      <p className="text-sm text-muted-foreground">
+        Select the winning outcome:
+      </p>
 
       {/* YES / NO outcome buttons */}
       <div className="flex gap-3">
@@ -101,9 +115,9 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
           className={cn(
             "flex-1 rounded-lg py-3 text-center text-sm font-semibold transition-colors",
             selected === "NO"
-            ? "bg-destructive text-white"
-            : "bg-destructive/15 text-destructive hover:bg-destructive/25",
-        )}
+              ? "bg-destructive text-white"
+              : "bg-destructive/15 text-destructive hover:bg-destructive/25",
+          )}
         >
           NO
           {market.noProb != null && (

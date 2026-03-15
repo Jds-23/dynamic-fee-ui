@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { useReadContracts } from "wagmi";
-import { zeroAddress } from "viem";
 import type { Address } from "viem";
+import { zeroAddress } from "viem";
+import { useReadContracts } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
 import { conditionalLMSRHookAbi } from "@/abi/conditionalLMSRHook";
 import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
@@ -33,7 +33,6 @@ export function useMarketState(condition: MarketCondition) {
       },
     ],
     query: { refetchInterval: 15000 },
-
   });
 
   const { state, yesToken, noToken } = useMemo(() => {
@@ -44,8 +43,23 @@ export function useMarketState(condition: MarketCondition) {
       return { state: null, yesToken: zeroAddress, noToken: zeroAddress };
     }
 
-    const [collateralToken, yes, no, funding, reserveYes, reserveNo, reserveCollateral] =
-      marketsResult.result as [Address, Address, Address, bigint, bigint, bigint, bigint];
+    const [
+      collateralToken,
+      yes,
+      no,
+      funding,
+      reserveYes,
+      reserveNo,
+      reserveCollateral,
+    ] = marketsResult.result as [
+      Address,
+      Address,
+      Address,
+      bigint,
+      bigint,
+      bigint,
+      bigint,
+    ];
 
     const resolved =
       resolvedResult?.status === "success"

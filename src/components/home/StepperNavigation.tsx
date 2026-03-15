@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface StepperNavigationProps {
@@ -24,7 +24,10 @@ export function StepperRail({
             const isCompleted = i < currentStep;
             const isCurrent = i === currentStep;
             return (
-              <li key={i} className="relative flex items-start gap-3 pb-8 last:pb-0">
+              <li
+                key={i}
+                className="relative flex items-start gap-3 pb-8 last:pb-0"
+              >
                 {/* Connecting line */}
                 {i < steps.length - 1 && (
                   <span
@@ -78,7 +81,10 @@ export function StepperRail({
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Step {currentStep + 1} of {steps.length} — <span className="font-medium text-foreground">{steps[currentStep]?.title}</span>
+          Step {currentStep + 1} of {steps.length} —{" "}
+          <span className="font-medium text-foreground">
+            {steps[currentStep]?.title}
+          </span>
         </p>
       </div>
     </>
@@ -90,7 +96,9 @@ export function StepperBottomNav({
   totalSteps,
   onPrev,
   onNext,
-}: Pick<StepperNavigationProps, "currentStep" | "onPrev" | "onNext"> & { totalSteps: number }) {
+}: Pick<StepperNavigationProps, "currentStep" | "onPrev" | "onNext"> & {
+  totalSteps: number;
+}) {
   const isLast = currentStep === totalSteps - 1;
 
   return (

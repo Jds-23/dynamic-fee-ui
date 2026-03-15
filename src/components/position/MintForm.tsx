@@ -10,10 +10,10 @@ import {
   TICK_RANGE_FULL,
 } from "@/constants/defaults";
 import { COMMON_TOKENS } from "@/constants/tokens";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { usePoolState } from "@/hooks/pool/usePoolState";
 import { usePosition } from "@/hooks/position/usePosition";
 import { useMintPosition } from "@/hooks/transaction/useMintPosition";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { sortTokens } from "@/lib/poolId";
 import type { PoolKey, TokenData } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -172,11 +172,7 @@ export function MintForm() {
     setActiveInput(null);
   }, []);
 
-  const canMint =
-    isConnected &&
-    positionData &&
-    !isPending &&
-    !isConfirming;
+  const canMint = isConnected && positionData && !isPending && !isConfirming;
 
   const getButtonText = () => {
     if (!isConnected) return "Initializing...";
@@ -216,7 +212,9 @@ export function MintForm() {
       />
 
       <div>
-        <span className="mb-2 block text-sm font-medium text-muted-foreground">Pool Type</span>
+        <span className="mb-2 block text-sm font-medium text-muted-foreground">
+          Pool Type
+        </span>
         <div className="rounded-lg bg-muted p-3 text-sm">
           <span className="font-medium">Dynamic Fee Pool</span>
           <span className="ml-2 text-xs text-muted-foreground">
@@ -226,7 +224,9 @@ export function MintForm() {
       </div>
 
       <div>
-        <span className="mb-2 block text-sm font-medium text-muted-foreground">Price Range</span>
+        <span className="mb-2 block text-sm font-medium text-muted-foreground">
+          Price Range
+        </span>
         <TickRangeSelector
           tickLower={tickLower}
           tickUpper={tickUpper}

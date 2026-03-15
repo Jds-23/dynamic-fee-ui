@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ProbabilityBar } from "./ProbabilityBar";
-import { MarketStatusBadge } from "./MarketStatusBadge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import type { MarketWithPrices } from "@/types";
+import { MarketStatusBadge } from "./MarketStatusBadge";
+import { ProbabilityBar } from "./ProbabilityBar";
 
 interface MarketCardProps {
   market: MarketWithPrices;
@@ -11,12 +11,12 @@ interface MarketCardProps {
 
 export function MarketCard({ market }: MarketCardProps) {
   return (
-    <Card
-      className="cursor-pointer transition-colors hover:border-foreground/20"
-    >
+    <Card className="cursor-pointer transition-colors hover:border-foreground/20">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-base">{market.condition.question}</CardTitle>
+          <CardTitle className="text-base">
+            {market.condition.question}
+          </CardTitle>
           <MarketStatusBadge
             isResolved={market.isResolved}
             resolvedOutcome={market.resolvedOutcome}

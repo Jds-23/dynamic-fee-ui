@@ -6,7 +6,8 @@ const CHAINS_BY_ID: Record<number, Chain> = {
 };
 
 export function getExplorerTxUrl(hash: string, chainId?: number): string {
-  const chain = chainId ? CHAINS_BY_ID[chainId] ?? sepolia : sepolia;
-  const baseUrl = chain.blockExplorers?.default.url ?? "https://sepolia.etherscan.io";
+  const chain = chainId ? (CHAINS_BY_ID[chainId] ?? sepolia) : sepolia;
+  const baseUrl =
+    chain.blockExplorers?.default.url ?? "https://sepolia.etherscan.io";
   return `${baseUrl}/tx/${hash}`;
 }

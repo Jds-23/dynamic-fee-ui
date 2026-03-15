@@ -3,8 +3,11 @@ import { encodeFunctionData, parseUnits } from "viem";
 import { unichainSepolia } from "wagmi/chains";
 import { simpleERC20Abi } from "@/abi/simpleERC20";
 import { TUSD } from "@/constants/markets";
+import {
+  type TransactionCallbacks,
+  useKernelTransaction,
+} from "@/hooks/transaction/useKernelTransaction";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 export function useMintCollateral() {
   const { address } = useSmartAccount();
@@ -20,14 +23,19 @@ export function useMintCollateral() {
 
       const parsedAmount = parseUnits(amount, TUSD.decimals);
 
-      send([{
-        to: TUSD.address,
-        data: encodeFunctionData({
-          abi: simpleERC20Abi,
-          functionName: "mint",
-          args: [address, parsedAmount],
-        }),
-      }], options);
+      send(
+        [
+          {
+            to: TUSD.address,
+            data: encodeFunctionData({
+              abi: simpleERC20Abi,
+              functionName: "mint",
+              args: [address, parsedAmount],
+            }),
+          },
+        ],
+        options,
+      );
     },
     [address, send],
   );

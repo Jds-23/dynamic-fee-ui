@@ -1,7 +1,7 @@
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useUserPositions } from "@/hooks/positions/useUserPositions";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { PositionCard } from "./PositionCard";
 
 export function PositionsList() {
@@ -15,9 +15,7 @@ export function PositionsList() {
           <CardTitle>My Positions</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-muted-foreground">
-            Initializing...
-          </p>
+          <p className="text-center text-muted-foreground">Initializing...</p>
         </CardContent>
       </Card>
     );

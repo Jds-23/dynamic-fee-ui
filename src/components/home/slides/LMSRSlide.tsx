@@ -1,14 +1,14 @@
 import { parseUnits } from "viem";
-
+import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
-import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
-import { getExplorerTxUrl } from "@/utils/explorer";
 import type { MarketCondition, MarketWithPrices } from "@/types";
+import { getExplorerTxUrl } from "@/utils/explorer";
 
 const BUY_AMOUNT = parseUnits("1000", 6); // 1000 TUSD
-const MIN_OUT = BUY_AMOUNT * BigInt(10000 - DEFAULT_SLIPPAGE_TOLERANCE) / 10000n;
+const MIN_OUT =
+  (BUY_AMOUNT * BigInt(10000 - DEFAULT_SLIPPAGE_TOLERANCE)) / 10000n;
 
 export function LMSRSlideInfo() {
   return (
@@ -33,7 +33,9 @@ export function LMSRSlideInfo() {
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            <strong className="text-foreground">Marginal cost = probability.</strong>{" "}
+            <strong className="text-foreground">
+              Marginal cost = probability.
+            </strong>{" "}
             The derivative of the cost function with respect to each outcome
             gives its current market price, which sums to 1 across all outcomes.
           </span>
@@ -41,17 +43,18 @@ export function LMSRSlideInfo() {
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            Buy pressure on YES <strong className="text-foreground">raises</strong>{" "}
-            its price and <strong className="text-foreground">lowers</strong> NO
-            — and vice versa.
+            Buy pressure on YES{" "}
+            <strong className="text-foreground">raises</strong> its price and{" "}
+            <strong className="text-foreground">lowers</strong> NO — and vice
+            versa.
           </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            The <strong className="text-foreground">b</strong> parameter controls
-            liquidity depth — a higher b means larger trades are needed to move
-            the price.
+            The <strong className="text-foreground">b</strong> parameter
+            controls liquidity depth — a higher b means larger trades are needed
+            to move the price.
           </span>
         </li>
       </ul>
@@ -195,7 +198,11 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
     });
   };
 
-  const busy = buyYes.isPending || buyYes.isConfirming || buyNo.isPending || buyNo.isConfirming;
+  const busy =
+    buyYes.isPending ||
+    buyYes.isConfirming ||
+    buyNo.isPending ||
+    buyNo.isConfirming;
   const error = buyYes.error || buyNo.error;
   const confirmingHash = buyYes.hash || buyNo.hash;
 
@@ -219,7 +226,9 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
           disabled={busy || market.isResolved}
           onClick={handleBuyYes}
         >
-          {buyYes.isPending || buyYes.isConfirming ? "Buying…" : "Buy Yes — 1000 TUSD"}
+          {buyYes.isPending || buyYes.isConfirming
+            ? "Buying…"
+            : "Buy Yes — 1000 TUSD"}
         </button>
         <button
           type="button"
@@ -227,7 +236,9 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
           disabled={busy || market.isResolved}
           onClick={handleBuyNo}
         >
-          {buyNo.isPending || buyNo.isConfirming ? "Buying…" : "Buy No — 1000 TUSD"}
+          {buyNo.isPending || buyNo.isConfirming
+            ? "Buying…"
+            : "Buy No — 1000 TUSD"}
         </button>
       </div>
 

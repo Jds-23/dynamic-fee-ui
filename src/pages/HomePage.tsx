@@ -1,21 +1,51 @@
-import { useState, useEffect, useCallback } from "react";
 import { useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { StepperRail, StepperBottomNav } from "@/components/home/StepperNavigation";
-import { HeroSlideInfo, HeroSlidePanel } from "@/components/home/slides/HeroSlide";
-import { MultiverseSlideInfo, MultiverseSlidePanel } from "@/components/home/slides/IntroSlide";
-import { CreateMarketSlideInfo, CreateMarketSlidePanel } from "@/components/home/slides/CreateMarketSlide";
-import { TradeSlideInfo, TradeSlidePanel } from "@/components/home/slides/TradeSlide";
-import { LMSRSlideInfo, LMSRSlidePanel } from "@/components/home/slides/LMSRSlide";
-import { ResolutionSlideInfo, ResolutionSlidePanel } from "@/components/home/slides/ResolutionSlide";
+import { useCallback, useEffect, useState } from "react";
+import {
+  StepperBottomNav,
+  StepperRail,
+} from "@/components/home/StepperNavigation";
+import {
+  CreateMarketSlideInfo,
+  CreateMarketSlidePanel,
+} from "@/components/home/slides/CreateMarketSlide";
+import { HeroSlideInfo } from "@/components/home/slides/HeroSlide";
+import {
+  MultiverseSlideInfo,
+  MultiverseSlidePanel,
+} from "@/components/home/slides/IntroSlide";
+import {
+  LMSRSlideInfo,
+  LMSRSlidePanel,
+} from "@/components/home/slides/LMSRSlide";
+import {
+  ResolutionSlideInfo,
+  ResolutionSlidePanel,
+} from "@/components/home/slides/ResolutionSlide";
+import {
+  TradeSlideInfo,
+  TradeSlidePanel,
+} from "@/components/home/slides/TradeSlide";
 
 const STEPS = [
   { title: "Welcome", Info: HeroSlideInfo, Panel: null },
-  { title: "Multiverse", Info: MultiverseSlideInfo, Panel: MultiverseSlidePanel },
-  { title: "Creation", Info: CreateMarketSlideInfo, Panel: CreateMarketSlidePanel },
+  {
+    title: "Multiverse",
+    Info: MultiverseSlideInfo,
+    Panel: MultiverseSlidePanel,
+  },
+  {
+    title: "Creation",
+    Info: CreateMarketSlideInfo,
+    Panel: CreateMarketSlidePanel,
+  },
   { title: "Swaps", Info: TradeSlideInfo, Panel: TradeSlidePanel },
   { title: "LMSR", Info: LMSRSlideInfo, Panel: LMSRSlidePanel },
-  { title: "Resolution", Info: ResolutionSlideInfo, Panel: ResolutionSlidePanel },
+  {
+    title: "Resolution",
+    Info: ResolutionSlideInfo,
+    Panel: ResolutionSlidePanel,
+  },
 ];
 
 const stepTransition = { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const };
@@ -71,30 +101,37 @@ export function HomePage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
-
       <div className="flex flex-1">
-      {/* Mobile progress bar */}
-      <StepperRail steps={STEPS} currentStep={currentStep} onGoTo={handleGoTo} />
+        {/* Mobile progress bar */}
+        <StepperRail
+          steps={STEPS}
+          currentStep={currentStep}
+          onGoTo={handleGoTo}
+        />
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Content area */}
-        <div className="relative flex-1 overflow-hidden">
-          <AnimatePresence initial={false} custom={direction} mode="popLayout">
-            <motion.div
-              key={currentStep}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Content area */}
+          <div className="relative flex-1 overflow-hidden">
+            <AnimatePresence
+              initial={false}
               custom={direction}
-              initial={{ y: direction * 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: direction * -40, opacity: 0 }}
-              transition={stepTransition}
-              className={`absolute inset-0 grid grid-cols-1 items-center gap-12 overflow-y-auto px-4 pb-16 pt-12 ${Panel ? "lg:grid-cols-2" : ""}`}
+              mode="popLayout"
             >
-              <Info />
-              {Panel && <Panel {...panelProps} />}
-            </motion.div>
-          </AnimatePresence>
+              <motion.div
+                key={currentStep}
+                custom={direction}
+                initial={{ y: direction * 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: direction * -40, opacity: 0 }}
+                transition={stepTransition}
+                className={`absolute inset-0 grid grid-cols-1 items-center gap-12 overflow-y-auto px-4 pb-16 pt-12 ${Panel ? "lg:grid-cols-2" : ""}`}
+              >
+                <Info />
+                {Panel && <Panel {...panelProps} />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
       </div>
 
       <StepperBottomNav

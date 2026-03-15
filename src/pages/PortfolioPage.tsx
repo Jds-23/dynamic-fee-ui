@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { usePortfolio } from "@/hooks/market/usePortfolio";
 import { PositionRow } from "@/components/market/PositionRow";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
 import type { PortfolioPosition } from "@/hooks/market/usePortfolio";
+import { usePortfolio } from "@/hooks/market/usePortfolio";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 export function PortfolioPage() {
   const { isConnected } = useSmartAccount();
   const { positions, isLoading } = usePortfolio();
-  const [redeemPosition, setRedeemPosition] = useState<PortfolioPosition | null>(null);
+  const [redeemPosition, setRedeemPosition] =
+    useState<PortfolioPosition | null>(null);
 
   if (!isConnected) {
     return (
@@ -20,7 +21,9 @@ export function PortfolioPage() {
 
   if (isLoading && positions.length === 0) {
     return (
-      <div className="py-8 text-center text-muted-foreground">Loading positions...</div>
+      <div className="py-8 text-center text-muted-foreground">
+        Loading positions...
+      </div>
     );
   }
 
@@ -29,7 +32,9 @@ export function PortfolioPage() {
       <h1 className="mb-6 text-2xl font-bold">Portfolio</h1>
 
       {positions.length === 0 ? (
-        <div className="text-center text-muted-foreground">No positions found.</div>
+        <div className="text-center text-muted-foreground">
+          No positions found.
+        </div>
       ) : (
         <div className="mx-auto max-w-lg space-y-4">
           {positions.map((pos) => (
@@ -44,7 +49,7 @@ export function PortfolioPage() {
         </div>
       )}
 
-      {redeemPosition && redeemPosition.winnerToken && (
+      {redeemPosition?.winnerToken && (
         <div className="mx-auto mt-6 max-w-lg">
           <RedeemPanel
             resolvedOutcome={redeemPosition.market.resolvedOutcome!}

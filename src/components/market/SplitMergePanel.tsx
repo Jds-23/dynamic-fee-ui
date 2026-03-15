@@ -1,12 +1,12 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { parseUnits } from "viem";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { PM_CONTRACTS, TUSD } from "@/constants/markets";
 import { useTokenApproval } from "@/hooks/approval/useTokenApproval";
 import { useSplitMerge } from "@/hooks/market/useSplitMerge";
-import { PM_CONTRACTS, TUSD } from "@/constants/markets";
-import { getExplorerTxUrl } from "@/utils/explorer";
 import type { MarketWithPrices } from "@/types";
+import { getExplorerTxUrl } from "@/utils/explorer";
 
 const QUICK_AMOUNTS = [1, 5, 10, 100] as const;
 
@@ -23,7 +23,7 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
   const amount = useMemo(() => {
     if (!amountStr || Number.isNaN(Number(amountStr))) return 0n;
     return parseUnits(amountStr, decimals);
-  }, [amountStr, decimals]);
+  }, [amountStr]);
 
   const conditionId = market.condition.conditionId;
 
@@ -54,9 +54,12 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
       : mergeYesApproval.needsApproval || mergeNoApproval.needsApproval;
 
   const isApproving =
-    splitApproval.isPending || splitApproval.isConfirming ||
-    mergeYesApproval.isPending || mergeYesApproval.isConfirming ||
-    mergeNoApproval.isPending || mergeNoApproval.isConfirming;
+    splitApproval.isPending ||
+    splitApproval.isConfirming ||
+    mergeYesApproval.isPending ||
+    mergeYesApproval.isConfirming ||
+    mergeNoApproval.isPending ||
+    mergeNoApproval.isConfirming;
 
   function handleApprove() {
     if (mode === "split") {
@@ -90,7 +93,9 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
-          <h3 className="text-base font-semibold leading-tight">Split / Merge</h3>
+          <h3 className="text-base font-semibold leading-tight">
+            Split / Merge
+          </h3>
         </div>
         <button
           type="button"
@@ -102,10 +107,7 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
       </div>
 
       {/* Mode toggle — underline Tabs */}
-      <Tabs
-        value={mode}
-        onValueChange={(v) => setMode(v as "split" | "merge")}
-      >
+      <Tabs value={mode} onValueChange={(v) => setMode(v as "split" | "merge")}>
         <TabsList className="w-full rounded-none border-b border-border bg-transparent p-0">
           <TabsTrigger
             value="split"
@@ -131,7 +133,9 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
       {/* Amount input */}
       <div>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-muted-foreground">Amount</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            Amount
+          </span>
           <div className="relative">
             <span className="pointer-events-none text-4xl font-semibold">
               ${amountStr || "0"}
@@ -168,7 +172,11 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
       </div>
 
       {needsApproval && amount > 0n ? (
-        <Button className="w-full" onClick={handleApprove} disabled={isApproving}>
+        <Button
+          className="w-full"
+          onClick={handleApprove}
+          disabled={isApproving}
+        >
           {isApproving ? "Approving..." : "Approve"}
         </Button>
       ) : (
@@ -177,7 +185,11 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
           onClick={() => op.execute()}
           disabled={op.isPending || op.isConfirming || amount === 0n}
         >
-          {op.isPending || op.isConfirming ? "Executing..." : mode === "split" ? "Split" : "Merge"}
+          {op.isPending || op.isConfirming
+            ? "Executing..."
+            : mode === "split"
+              ? "Split"
+              : "Merge"}
         </Button>
       )}
 
@@ -185,7 +197,12 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
       {op.isSuccess && op.hash && (
         <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400">
           {mode === "split" ? "Split" : "Merge"} successful!{" "}
-          <a href={getExplorerTxUrl(op.hash, 1301)} target="_blank" rel="noopener noreferrer" className="underline">
+          <a
+            href={getExplorerTxUrl(op.hash, 1301)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
             View tx
           </a>
         </div>

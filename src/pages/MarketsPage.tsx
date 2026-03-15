@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { useMarketList } from "@/hooks/market/useMarketList";
 import { MarketCard } from "@/components/market/MarketCard";
+import { useMarketList } from "@/hooks/market/useMarketList";
 
 export function MarketsPage() {
   const { markets, isLoading } = useMarketList();

@@ -31,9 +31,23 @@ app.post("/api/markets", async (c) => {
     message: string;
   }>();
 
-  const { conditionId, question, collateralAddress, creator, signature, message } = body;
+  const {
+    conditionId,
+    question,
+    collateralAddress,
+    creator,
+    signature,
+    message,
+  } = body;
 
-  if (!conditionId || !question || !collateralAddress || !creator || !signature || !message) {
+  if (
+    !conditionId ||
+    !question ||
+    !collateralAddress ||
+    !creator ||
+    !signature ||
+    !message
+  ) {
     return c.json({ error: "Missing required fields" }, 400);
   }
 

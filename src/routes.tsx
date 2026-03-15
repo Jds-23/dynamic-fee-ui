@@ -5,20 +5,20 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
-import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { HomePage } from "@/pages/HomePage";
+import { Header } from "@/components/layout/Header";
+import { APP_MODE, type AppMode } from "@/constants/appMode";
+import { CreateMarketPage } from "@/pages/CreateMarketPage";
 import { FaucetPage } from "@/pages/FaucetPage";
-import { MintCollateralPage } from "@/pages/MintCollateralPage";
-import { MintPage } from "@/pages/MintPage";
+import { HomePage } from "@/pages/HomePage";
 import { MarketsPage } from "@/pages/MarketsPage";
 import { MarketTradePage } from "@/pages/MarketTradePage";
-import { CreateMarketPage } from "@/pages/CreateMarketPage";
+import { MintCollateralPage } from "@/pages/MintCollateralPage";
+import { MintPage } from "@/pages/MintPage";
 import { PortfolioPage } from "@/pages/PortfolioPage";
 import { PositionsPage } from "@/pages/PositionsPage";
-import { SwapPage } from "@/pages/SwapPage";
 import { ResolvePage } from "@/pages/ResolvePage";
-import { APP_MODE, type AppMode } from "@/constants/appMode";
+import { SwapPage } from "@/pages/SwapPage";
 
 interface NavItem {
   label: string;
@@ -38,7 +38,9 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Faucet", to: "/faucet", modes: ["dynamic"] },
 ];
 
-const filteredNavItems = NAV_ITEMS.filter((item) => item.modes.includes(APP_MODE));
+const filteredNavItems = NAV_ITEMS.filter((item) =>
+  item.modes.includes(APP_MODE),
+);
 
 function RootLayout() {
   return (
@@ -46,7 +48,11 @@ function RootLayout() {
       <header className="border-b border-border backdrop-blur-sm bg-background/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
-            <Link to="/" search={{ market: undefined }} className="text-xl font-bold">
+            <Link
+              to="/"
+              search={{ market: undefined }}
+              className="text-xl font-bold"
+            >
               Uniswap V4
             </Link>
             <nav className="flex gap-4">

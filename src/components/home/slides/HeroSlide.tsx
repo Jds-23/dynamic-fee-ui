@@ -1,6 +1,3 @@
-import { Link } from "@tanstack/react-router";
-import { BarChart3 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 
 interface FeatureCardProps {
@@ -9,7 +6,7 @@ interface FeatureCardProps {
   description: string;
 }
 
-function FeatureCard({ icon, title, description }: FeatureCardProps) {
+function _FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
     <Card className="p-4">
       <CardContent className="flex items-center gap-3 p-0">
@@ -28,18 +25,18 @@ export function HeroSlideInfo() {
     <div className="space-y-8">
       <div className="space-y-4">
         <div className="space-x-2 space-y-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs">
-          <img src="/uniswap.svg" alt="" className="h-4 w-4" />
-          Built on Uniswap V4
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs">
-          <img src="/testnet.svg" alt="" className="h-4 w-4" />
-          Deployed on Unichain
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs">
-          <img src="/atrium.png" alt="" className="h-4 w-4" />
-          Built at Atrium
-        </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs">
+            <img src="/uniswap.svg" alt="" className="h-4 w-4" />
+            Built on Uniswap V4
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs">
+            <img src="/testnet.svg" alt="" className="h-4 w-4" />
+            Deployed on Unichain
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs">
+            <img src="/atrium.png" alt="" className="h-4 w-4" />
+            Built at Atrium
+          </span>
         </div>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
           The Multiverse Market

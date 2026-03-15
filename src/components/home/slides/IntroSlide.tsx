@@ -14,30 +14,33 @@ export function MultiverseSlideInfo() {
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            Each outcome spawns <strong className="text-foreground">parallel-universe tokens</strong>{" "}
+            Each outcome spawns{" "}
+            <strong className="text-foreground">
+              parallel-universe tokens
+            </strong>{" "}
             representing conditional claims on collateral.
           </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            Traders hold <strong className="text-foreground">conditional positions</strong> —
-            bundles of tokens whose value depends on which universe materialises.
+            Traders hold{" "}
+            <strong className="text-foreground">conditional positions</strong> —
+            bundles of tokens whose value depends on which universe
+            materialises.
           </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            The framework generalises beyond binary markets to arbitrary
-            outcome sets, combinatorial bets, and cross-condition swaps.
+            The framework generalises beyond binary markets to arbitrary outcome
+            sets, combinatorial bets, and cross-condition swaps.
           </span>
         </li>
       </ul>
       <blockquote className="border-l-2 border-primary/40 pl-4 text-xs italic text-muted-foreground">
-        "Multiverse finance is financial infrastructure for parallel
-        universes."
-        <br />
-        — Dave White, Paradigm
+        "Multiverse finance is financial infrastructure for parallel universes."
+        <br />— Dave White, Paradigm
       </blockquote>
     </div>
   );

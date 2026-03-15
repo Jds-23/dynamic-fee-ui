@@ -1,13 +1,16 @@
+import {
+  create7702KernelAccount,
+  create7702KernelAccountClient,
+} from "@zerodev/ecdsa-validator";
 import { createZeroDevPaymasterClient } from "@zerodev/sdk";
-import { create7702KernelAccount, create7702KernelAccountClient } from "@zerodev/ecdsa-validator";
 import { type Chain, createPublicClient, http } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import {
   ENTRY_POINT,
-  KERNEL_ADDRESSES,
-  KERNEL_VERSION,
   getBundlerRpc,
   getPaymasterRpc,
+  KERNEL_ADDRESSES,
+  KERNEL_VERSION,
 } from "./zerodev";
 
 const STORAGE_KEY = "smart-account-private-key";

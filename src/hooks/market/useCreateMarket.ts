@@ -4,10 +4,13 @@ import { useReadContract } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
 import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
 import { erc20Abi } from "@/abi/erc20";
-import { PM_CONTRACTS } from "@/constants/markets";
 import { MAX_UINT256 } from "@/constants/defaults";
+import { PM_CONTRACTS } from "@/constants/markets";
+import {
+  type TransactionCallbacks,
+  useKernelTransaction,
+} from "@/hooks/transaction/useKernelTransaction";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseCreateMarketParams {
   conditionId: `0x${string}`;
@@ -15,7 +18,11 @@ interface UseCreateMarketParams {
   fundingAmount: bigint;
 }
 
-export function useCreateMarket({ conditionId, collateralAddress, fundingAmount }: UseCreateMarketParams) {
+export function useCreateMarket({
+  conditionId,
+  collateralAddress,
+  fundingAmount,
+}: UseCreateMarketParams) {
   const { address } = useSmartAccount();
   const spender = PM_CONTRACTS.conditionalMarkets;
 
@@ -58,5 +65,13 @@ export function useCreateMarket({ conditionId, collateralAddress, fundingAmount 
     send(calls, options);
   }
 
-  return { createMarket, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    createMarket,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+  };
 }

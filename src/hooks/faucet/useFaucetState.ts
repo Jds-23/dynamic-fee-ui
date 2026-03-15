@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useChainId, useReadContracts } from "wagmi";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { faucetAbi } from "@/abi/faucet";
 import { getAddress } from "@/constants/addresses";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 export interface FaucetState {
   canDrip: boolean;
@@ -76,7 +76,9 @@ export function useFaucetState(): FaucetState {
     const balancesResult = data?.[4];
 
     const canDrip =
-      canDripResult?.status === "success" ? (canDripResult.result as boolean) : false;
+      canDripResult?.status === "success"
+        ? (canDripResult.result as boolean)
+        : false;
     const timeUntilNextDrip =
       timeUntilNextDripResult?.status === "success"
         ? (timeUntilNextDripResult.result as bigint)

@@ -1,6 +1,6 @@
 import { formatUnits } from "viem";
-import { Button } from "@/components/ui/Button";
 import { MarketStatusBadge } from "@/components/market/MarketStatusBadge";
+import { Button } from "@/components/ui/Button";
 import { TUSD } from "@/constants/markets";
 import type { PortfolioPosition } from "@/hooks/market/usePortfolio";
 
@@ -10,7 +10,8 @@ interface PositionRowProps {
 }
 
 export function PositionRow({ position, onRedeem }: PositionRowProps) {
-  const { market, yesBalance, noBalance, yesValue, noValue, redeemable } = position;
+  const { market, yesBalance, noBalance, yesValue, noValue, redeemable } =
+    position;
   const decimals = TUSD.decimals;
 
   return (

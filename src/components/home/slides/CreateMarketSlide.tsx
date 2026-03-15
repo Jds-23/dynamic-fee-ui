@@ -18,7 +18,7 @@ export function CreateMarketSlideInfo() {
       </p>
 
       <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-xs font-mono leading-relaxed">
-{`Market(conditionId, collateral, amount)
+        {`Market(conditionId, collateral, amount)
   → deploy YES & NO tokens
   → fund the hook with collateral
   → initialise 3 pools`}

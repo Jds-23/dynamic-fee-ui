@@ -1,6 +1,6 @@
+import { TradeForm } from "@/components/market/TradeForm";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import { TradeForm } from "@/components/market/TradeForm";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 
@@ -11,7 +11,10 @@ export function TradeSlideInfo() {
         How a Swap Works
       </h2>
       <p className="text-sm text-muted-foreground">
-        Every buy starts by <strong className="text-foreground">minting equal amounts of YES and NO tokens</strong>{" "}
+        Every buy starts by{" "}
+        <strong className="text-foreground">
+          minting equal amounts of YES and NO tokens
+        </strong>{" "}
         from deposited collateral. The hook then routes the unwanted side back
         into the pool so the user ends up holding only the token they want.
       </p>
@@ -28,8 +31,9 @@ export function TradeSlideInfo() {
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            <strong className="text-foreground">Selling</strong> is the reverse — outcome tokens
-            are returned, merged back into collateral, and the user is paid out.
+            <strong className="text-foreground">Selling</strong> is the reverse
+            — outcome tokens are returned, merged back into collateral, and the
+            user is paid out.
           </span>
         </li>
         <li className="flex items-start gap-2">

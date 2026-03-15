@@ -2,11 +2,11 @@ import { useState } from "react";
 import { formatUnits } from "viem";
 import { useReadContract } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { Button } from "@/components/ui/Button";
 import { erc20Abi } from "@/abi/erc20";
+import { Button } from "@/components/ui/Button";
 import { TUSD } from "@/constants/markets";
 import { useMintCollateral } from "@/hooks/useMintCollateral";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 const QUICK_AMOUNTS = [1, 5, 10, 100] as const;
@@ -91,7 +91,9 @@ export function MintCollateralForm() {
           {/* Amount input */}
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Amount</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                Amount
+              </span>
               <div className="relative">
                 <span className="pointer-events-none text-4xl font-semibold">
                   {amount || "0"}

@@ -1,8 +1,8 @@
 import type { Address } from "viem";
 import { keccak256, toBytes, toHex } from "viem";
-import type { PoolKey } from "@/types";
-import { sortTokens } from "@/lib/poolId";
 import { PM_POOL_CONFIG } from "@/constants/markets";
+import { sortTokens } from "@/lib/poolId";
+import type { PoolKey } from "@/types";
 
 export function computeConditionId(question: string): `0x${string}` {
   return keccak256(toBytes(question));

@@ -1,8 +1,8 @@
-import { useMemo } from "react";
-import { useReadContracts } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { zeroAddress } from "viem";
+import { useMemo } from "react";
 import type { Address } from "viem";
+import { zeroAddress } from "viem";
+import { useReadContracts } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
 import { conditionalLMSRHookAbi } from "@/abi/conditionalLMSRHook";
 import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
@@ -14,10 +14,10 @@ import type { MarketState, MarketWithPrices } from "@/types";
 const chainId = unichainSepolia.id;
 
 export function useMarketList() {
-  const {
-    data: conditions = [],
-    isLoading: isLoadingConditions,
-  } = useQuery({ queryKey: ["markets"], queryFn: fetchMarkets });
+  const { data: conditions = [], isLoading: isLoadingConditions } = useQuery({
+    queryKey: ["markets"],
+    queryFn: fetchMarkets,
+  });
 
   // Batch 1: markets() + resolved() for every condition
   const batch1Contracts = conditions.flatMap((m) => [
@@ -60,8 +60,23 @@ export function useMarketList() {
         continue;
       }
 
-      const [collateralToken, yes, no, funding, reserveYes, reserveNo, reserveCollateral] =
-        marketsResult.result as [Address, Address, Address, bigint, bigint, bigint, bigint];
+      const [
+        collateralToken,
+        yes,
+        no,
+        funding,
+        reserveYes,
+        reserveNo,
+        reserveCollateral,
+      ] = marketsResult.result as [
+        Address,
+        Address,
+        Address,
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+      ];
 
       const resolved =
         resolvedResult?.status === "success"
@@ -69,7 +84,7 @@ export function useMarketList() {
           : zeroAddress;
 
       states.push({
-        conditionId: conditions[i]!.conditionId,
+        conditionId: conditions[i]?.conditionId,
         collateralAddress: collateralToken,
         yesTokenAddress: yes,
         noTokenAddress: no,
@@ -120,7 +135,8 @@ export function useMarketList() {
       const isResolved = state !== null && state.resolved !== zeroAddress;
       let resolvedOutcome: "YES" | "NO" | null = null;
       if (isResolved && state) {
-        resolvedOutcome = state.resolved === state.yesTokenAddress ? "YES" : "NO";
+        resolvedOutcome =
+          state.resolved === state.yesTokenAddress ? "YES" : "NO";
       }
 
       let yesProb: number | null = null;

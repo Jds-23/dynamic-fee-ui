@@ -1,4 +1,10 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import type { Address } from "viem";
 import { sepolia, unichainSepolia } from "wagmi/chains";
 import {
@@ -31,7 +37,11 @@ export const SmartAccountContext = createContext<SmartAccountContextValue>({
   resetAccount: () => {},
 });
 
-export function SmartAccountProvider({ children }: { children: React.ReactNode }) {
+export function SmartAccountProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sepoliaClient, setSepoliaClient] = useState<KernelClient>();
   const [unichainClient, setUnichainClient] = useState<KernelClient>();
   const [isInitializing, setIsInitializing] = useState(true);
@@ -92,7 +102,16 @@ export function SmartAccountProvider({ children }: { children: React.ReactNode }
       privateKey,
       resetAccount,
     }),
-    [address, isConnected, isInitializing, sepoliaClient, unichainClient, getClient, privateKey, resetAccount],
+    [
+      address,
+      isConnected,
+      isInitializing,
+      sepoliaClient,
+      unichainClient,
+      getClient,
+      privateKey,
+      resetAccount,
+    ],
   );
 
   return (

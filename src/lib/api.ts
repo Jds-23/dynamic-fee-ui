@@ -18,7 +18,12 @@ export async function fetchMarkets(): Promise<MarketCondition[]> {
 }
 
 export async function postMarket(
-  market: { conditionId: string; question: string; collateralAddress: string; creator: string },
+  market: {
+    conditionId: string;
+    question: string;
+    collateralAddress: string;
+    creator: string;
+  },
   signMessage: (args: { message: string }) => Promise<string>,
 ): Promise<void> {
   const message = `Create market: ${market.conditionId}`;

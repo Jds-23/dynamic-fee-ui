@@ -1,7 +1,7 @@
 import type { Address } from "viem";
 import { useChainId, useReadContract } from "wagmi";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { erc20Abi } from "@/abi/erc20";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 interface UseErc20AllowanceResult {
   allowance: bigint | undefined;

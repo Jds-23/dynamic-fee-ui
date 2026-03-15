@@ -1,11 +1,11 @@
-import { Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/Button";
-import { ProbabilityBar } from "@/components/market/ProbabilityBar";
+import { Link, useParams } from "@tanstack/react-router";
 import { MarketStatusBadge } from "@/components/market/MarketStatusBadge";
-import { TradeForm } from "@/components/market/TradeForm";
-import { SplitMergePanel } from "@/components/market/SplitMergePanel";
+import { ProbabilityBar } from "@/components/market/ProbabilityBar";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
+import { SplitMergePanel } from "@/components/market/SplitMergePanel";
+import { TradeForm } from "@/components/market/TradeForm";
+import { Button } from "@/components/ui/Button";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { fetchMarkets } from "@/lib/api";
@@ -13,7 +13,10 @@ import type { MarketCondition } from "@/types";
 
 export function MarketTradePage() {
   const { conditionId } = useParams({ from: "/markets/$conditionId" });
-  const { data: conditions = [] } = useQuery({ queryKey: ["markets"], queryFn: fetchMarkets });
+  const { data: conditions = [] } = useQuery({
+    queryKey: ["markets"],
+    queryFn: fetchMarkets,
+  });
   const condition = conditions.find((m) => m.conditionId === conditionId);
 
   if (!condition) {
@@ -30,18 +33,15 @@ export function MarketTradePage() {
   return <MarketTradeContent condition={condition} />;
 }
 
-function MarketTradeContent({
-  condition,
-}: {
-  condition: MarketCondition;
-}) {
+function MarketTradeContent({ condition }: { condition: MarketCondition }) {
   const market = useMarketState(condition);
 
-  const winnerToken = market.isResolved && market.state
-    ? market.resolvedOutcome === "YES"
-      ? market.state.yesTokenAddress
-      : market.state.noTokenAddress
-    : undefined;
+  const winnerToken =
+    market.isResolved && market.state
+      ? market.resolvedOutcome === "YES"
+        ? market.state.yesTokenAddress
+        : market.state.noTokenAddress
+      : undefined;
 
   const { balance: winnerBalance } = useTokenBalance(winnerToken);
 

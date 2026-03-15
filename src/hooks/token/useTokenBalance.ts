@@ -1,8 +1,8 @@
 import type { Address } from "viem";
-import { useReadContract } from "wagmi";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { erc20Abi } from "@/abi/erc20";
 import { unichainSepolia } from "viem/chains";
+import { useReadContract } from "wagmi";
+import { erc20Abi } from "@/abi/erc20";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 interface UseTokenBalanceResult {
   balance: bigint | undefined;

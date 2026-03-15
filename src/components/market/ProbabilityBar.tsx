@@ -7,9 +7,7 @@ interface ProbabilityBarProps {
 
 export function ProbabilityBar({ yesProb, noProb }: ProbabilityBarProps) {
   if (yesProb === null || noProb === null) {
-    return (
-      <div className="h-6 w-full rounded-full bg-muted animate-pulse" />
-    );
+    return <div className="h-6 w-full rounded-full bg-muted animate-pulse" />;
   }
 
   const yesPct = Math.max(yesProb * 100, 1);

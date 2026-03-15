@@ -6,8 +6,11 @@ import type { Hex } from "viem";
 import { useChainId } from "wagmi";
 import { getAddress } from "@/constants/addresses";
 import { DEFAULT_DEADLINE_MINUTES } from "@/constants/defaults";
+import {
+  type TransactionCallbacks,
+  useKernelTransaction,
+} from "@/hooks/transaction/useKernelTransaction";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseMintPositionParams {
   position?: Position;
@@ -30,35 +33,43 @@ export function useMintPosition({
     // Chain not supported
   }
 
-  const mint = useCallback((options?: TransactionCallbacks) => {
-    if (!position || !recipient || !positionManagerAddress) {
-      console.error("Missing required parameters for mint");
-      return;
-    }
+  const mint = useCallback(
+    (options?: TransactionCallbacks) => {
+      if (!position || !recipient || !positionManagerAddress) {
+        console.error("Missing required parameters for mint");
+        return;
+      }
 
-    try {
-      const deadline = BigInt(
-        Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_MINUTES * 60,
-      );
+      try {
+        const deadline = BigInt(
+          Math.floor(Date.now() / 1000) + DEFAULT_DEADLINE_MINUTES * 60,
+        );
 
-      const { calldata, value } = V4PositionManager.addCallParameters(
-        position,
-        {
-          slippageTolerance: new Percent(slippageTolerance, 10000),
-          deadline: deadline.toString(),
-          recipient,
-        },
-      );
+        const { calldata, value } = V4PositionManager.addCallParameters(
+          position,
+          {
+            slippageTolerance: new Percent(slippageTolerance, 10000),
+            deadline: deadline.toString(),
+            recipient,
+          },
+        );
 
-      send([{
-        to: positionManagerAddress,
-        data: calldata as Hex,
-        value: BigInt(value),
-      }], options);
-    } catch (error) {
-      console.error("Error preparing mint transaction:", error);
-    }
-  }, [position, recipient, slippageTolerance, positionManagerAddress, send]);
+        send(
+          [
+            {
+              to: positionManagerAddress,
+              data: calldata as Hex,
+              value: BigInt(value),
+            },
+          ],
+          options,
+        );
+      } catch (error) {
+        console.error("Error preparing mint transaction:", error);
+      }
+    },
+    [position, recipient, slippageTolerance, positionManagerAddress, send],
+  );
 
   return { mint, hash, isPending, isConfirming, isSuccess, error, reset };
 }

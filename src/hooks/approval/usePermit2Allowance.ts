@@ -1,8 +1,8 @@
 import type { Address } from "viem";
 import { useChainId, useReadContract } from "wagmi";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { permit2Abi } from "@/abi/permit2";
 import { getAddress } from "@/constants/addresses";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 interface UsePermit2AllowanceResult {
   allowance: bigint | undefined;

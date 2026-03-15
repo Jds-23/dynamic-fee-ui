@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import type { Hex } from "viem";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 
@@ -24,11 +24,17 @@ interface UseKernelTransactionResult {
   reset: () => void;
 }
 
-export function useKernelTransaction(chainId: number): UseKernelTransactionResult {
+export function useKernelTransaction(
+  chainId: number,
+): UseKernelTransactionResult {
   const { getClient } = useSmartAccount();
   const [isConfirming, setIsConfirming] = useState(false);
 
-  const mutation = useMutation<{ hash: Hex }, Error, { calls: Call[]; callbacks?: TransactionCallbacks }>({
+  const mutation = useMutation<
+    { hash: Hex },
+    Error,
+    { calls: Call[]; callbacks?: TransactionCallbacks }
+  >({
     mutationFn: async ({ calls }) => {
       const client = getClient(chainId);
       if (!client) {

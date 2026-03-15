@@ -1,11 +1,11 @@
-import { useState, useCallback } from "react";
-import { Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/Button";
-import { ProbabilityBar } from "@/components/market/ProbabilityBar";
+import { Link, useParams } from "@tanstack/react-router";
+import { useCallback, useState } from "react";
 import { MarketStatusBadge } from "@/components/market/MarketStatusBadge";
-import { ResolvePanel } from "@/components/market/ResolvePanel";
+import { ProbabilityBar } from "@/components/market/ProbabilityBar";
 import { RedeemPanel } from "@/components/market/RedeemPanel";
+import { ResolvePanel } from "@/components/market/ResolvePanel";
+import { Button } from "@/components/ui/Button";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { fetchMarkets } from "@/lib/api";
@@ -13,7 +13,10 @@ import type { MarketCondition } from "@/types";
 
 export function ResolvePage() {
   const { conditionId } = useParams({ from: "/markets/$conditionId/resolve" });
-  const { data: conditions = [] } = useQuery({ queryKey: ["markets"], queryFn: fetchMarkets });
+  const { data: conditions = [] } = useQuery({
+    queryKey: ["markets"],
+    queryFn: fetchMarkets,
+  });
   const condition = conditions.find((m) => m.conditionId === conditionId);
 
   if (!condition) {
@@ -32,20 +35,26 @@ export function ResolvePage() {
 
 function ResolveContent({ condition }: { condition: MarketCondition }) {
   const market = useMarketState(condition);
-  const [optimisticOutcome, setOptimisticOutcome] = useState<"YES" | "NO" | null>(null);
+  const [optimisticOutcome, setOptimisticOutcome] = useState<
+    "YES" | "NO" | null
+  >(null);
 
-  const onResolved = useCallback((outcome: "YES" | "NO") => {
-    setOptimisticOutcome(outcome);
-    market.refetch();
-  }, [market.refetch]);
+  const onResolved = useCallback(
+    (outcome: "YES" | "NO") => {
+      setOptimisticOutcome(outcome);
+      market.refetch();
+    },
+    [market.refetch],
+  );
 
   const resolvedOutcome = market.resolvedOutcome ?? optimisticOutcome;
 
-  const winnerToken = resolvedOutcome && market.state
-    ? resolvedOutcome === "YES"
-      ? market.state.yesTokenAddress
-      : market.state.noTokenAddress
-    : undefined;
+  const winnerToken =
+    resolvedOutcome && market.state
+      ? resolvedOutcome === "YES"
+        ? market.state.yesTokenAddress
+        : market.state.noTokenAddress
+      : undefined;
 
   const { balance: winnerBalance } = useTokenBalance(winnerToken);
 

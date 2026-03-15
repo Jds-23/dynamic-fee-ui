@@ -1,13 +1,13 @@
-import { useState, useMemo } from "react";
-import { parseUnits, formatUnits } from "viem";
+import { useMemo, useState } from "react";
+import { formatUnits, parseUnits } from "viem";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { cn } from "@/lib/utils";
-import { useMarketTrade } from "@/hooks/market/useMarketTrade";
-import { TUSD } from "@/constants/markets";
 import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
-import { getExplorerTxUrl } from "@/utils/explorer";
+import { TUSD } from "@/constants/markets";
+import { useMarketTrade } from "@/hooks/market/useMarketTrade";
+import { cn } from "@/lib/utils";
 import type { MarketWithPrices } from "@/types";
+import { getExplorerTxUrl } from "@/utils/explorer";
 
 interface TradeFormProps {
   market: MarketWithPrices & { refetch: () => void };
@@ -24,19 +24,27 @@ export function TradeForm({ market }: TradeFormProps) {
   const amountIn = useMemo(() => {
     if (!amountStr || Number.isNaN(Number(amountStr))) return 0n;
     return parseUnits(amountStr, decimals);
-  }, [amountStr, decimals]);
+  }, [amountStr]);
 
   const minAmountOut = useMemo(() => {
     if (amountIn === 0n) return 0n;
     return amountIn - (amountIn * BigInt(DEFAULT_SLIPPAGE_TOLERANCE)) / 10000n;
   }, [amountIn]);
 
-  const trade = useMarketTrade({ market, side, direction, amountIn, minAmountOut });
+  const trade = useMarketTrade({
+    market,
+    side,
+    direction,
+    amountIn,
+    minAmountOut,
+  });
 
   const isPending = trade.isPending || trade.isConfirming;
 
-  const yesPrice = market.yesProb !== null ? Math.round(market.yesProb * 100) : null;
-  const noPrice = market.noProb !== null ? Math.round(market.noProb * 100) : null;
+  const yesPrice =
+    market.yesProb !== null ? Math.round(market.yesProb * 100) : null;
+  const noPrice =
+    market.noProb !== null ? Math.round(market.noProb * 100) : null;
 
   function addAmount(increment: number) {
     const current = Number(amountStr) || 0;
@@ -86,7 +94,8 @@ export function TradeForm({ market }: TradeFormProps) {
               : "bg-success/15 text-success hover:bg-success/25",
           )}
         >
-          {direction === "buy" ? "Buy" : "Sell"} Yes{yesPrice !== null ? ` ${yesPrice}¢` : ""}
+          {direction === "buy" ? "Buy" : "Sell"} Yes
+          {yesPrice !== null ? ` ${yesPrice}¢` : ""}
         </button>
         <button
           type="button"
@@ -98,14 +107,17 @@ export function TradeForm({ market }: TradeFormProps) {
               : "bg-destructive/15 text-destructive hover:bg-destructive/25",
           )}
         >
-          {direction === "buy" ? "Buy" : "Sell"} No{noPrice !== null ? ` ${noPrice}¢` : ""}
+          {direction === "buy" ? "Buy" : "Sell"} No
+          {noPrice !== null ? ` ${noPrice}¢` : ""}
         </button>
       </div>
 
       {/* Amount input */}
       <div>
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-muted-foreground">Amount</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            Amount
+          </span>
           <div className="relative">
             <span className="pointer-events-none text-4xl font-semibold">
               ${amountStr || "0"}
@@ -144,7 +156,8 @@ export function TradeForm({ market }: TradeFormProps) {
       {/* Min output display */}
       {amountIn > 0n && (
         <div className="text-xs text-muted-foreground">
-          Min output: {formatUnits(minAmountOut, decimals)} ({DEFAULT_SLIPPAGE_TOLERANCE / 100}% slippage)
+          Min output: {formatUnits(minAmountOut, decimals)} (
+          {DEFAULT_SLIPPAGE_TOLERANCE / 100}% slippage)
         </div>
       )}
 
@@ -154,7 +167,9 @@ export function TradeForm({ market }: TradeFormProps) {
         onClick={() => trade.trade({ onSuccess: () => market.refetch() })}
         disabled={isPending || amountIn === 0n || !market.state}
       >
-        {isPending ? "Trading..." : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}
+        {isPending
+          ? "Trading..."
+          : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}
       </Button>
 
       {/* Status messages */}

@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits } from "viem";
 import { useReadContract } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
-import { Button } from "@/components/ui/Button";
 import { erc20Abi } from "@/abi/erc20";
+import { Button } from "@/components/ui/Button";
 import { TUSD } from "@/constants/markets";
 import { useMintCollateral } from "@/hooks/useMintCollateral";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
@@ -15,13 +15,15 @@ const LOW_BALANCE_THRESHOLD = 10_000;
 const MINT_AMOUNT = "1000000";
 
 function compactBalance(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  if (n >= 1_000_000)
+    return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
   return String(Math.round(n));
 }
 
 export function ConnectButton() {
-  const { address, isConnected, isInitializing, resetAccount } = useSmartAccount();
+  const { address, isConnected, isInitializing, resetAccount } =
+    useSmartAccount();
   const [copied, setCopied] = useState(false);
 
   const { data: balance, refetch: refetchBalance } = useReadContract({
@@ -82,16 +84,22 @@ export function ConnectButton() {
   };
 
   const handleReset = () => {
-    if (window.confirm("Reset your account? This will generate a new private key and address.")) {
+    if (
+      window.confirm(
+        "Reset your account? This will generate a new private key and address.",
+      )
+    ) {
       resetAccount();
     }
   };
 
   const isMinting = isPending || isConfirming;
-  const formattedBalance = balance !== undefined
-    ? Number(formatUnits(balance, TUSD.decimals))
-    : undefined;
-  const isLowBalance = formattedBalance === undefined || formattedBalance < LOW_BALANCE_THRESHOLD;
+  const formattedBalance =
+    balance !== undefined
+      ? Number(formatUnits(balance, TUSD.decimals))
+      : undefined;
+  const isLowBalance =
+    formattedBalance === undefined || formattedBalance < LOW_BALANCE_THRESHOLD;
 
   return (
     <div className="flex items-center gap-2">
@@ -100,7 +108,6 @@ export function ConnectButton() {
           {compactBalance(formattedBalance)} TUSD
         </span>
       )}
-     
 
       {isMinting ? (
         <Button variant="outline" size="sm" disabled>
@@ -113,14 +120,23 @@ export function ConnectButton() {
         </Button>
       ) : null}
 
-<Button variant="outline" size="sm" onClick={handleCopy} title="Copy address">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleCopy}
+        title="Copy address"
+      >
         {copied ? "Copied!" : truncated}
       </Button>
 
-      <Button variant="ghost" size="sm" onClick={handleReset} title="Reset account">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleReset}
+        title="Reset account"
+      >
         Reset
       </Button>
-
     </div>
   );
 }

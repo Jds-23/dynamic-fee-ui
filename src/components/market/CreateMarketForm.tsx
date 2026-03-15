@@ -1,13 +1,13 @@
-import { useState, useMemo } from "react";
-import { parseUnits } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { parseUnits } from "viem";
 import { Button } from "@/components/ui/Button";
+import { TUSD } from "@/constants/markets";
+import { getRandomQuestion } from "@/constants/oscarQuestions";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { TUSD } from "@/constants/markets";
-import { randomConditionId } from "@/lib/market";
-import { getRandomQuestion } from "@/constants/oscarQuestions";
 import { postMarket } from "@/lib/api";
+import { randomConditionId } from "@/lib/market";
 import { signMessage } from "@/lib/smartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
@@ -82,12 +82,16 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
       <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <h3 className="text-base font-semibold leading-tight">Create Market</h3>
+          <h3 className="text-base font-semibold leading-tight">
+            Create Market
+          </h3>
         </div>
 
         {/* Question */}
         <div>
-          <span className="text-sm font-medium text-muted-foreground">Question</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            Question
+          </span>
           <textarea
             rows={2}
             placeholder="Will ETH reach $10k by end of 2025?"

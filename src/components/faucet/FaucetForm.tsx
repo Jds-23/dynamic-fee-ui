@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { Button } from "@/components/ui/Button";
 import { useDrip } from "@/hooks/faucet/useDrip";
 import { useFaucetState } from "@/hooks/faucet/useFaucetState";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 function formatCountdown(seconds: bigint): string {
@@ -36,8 +36,7 @@ export function FaucetForm() {
     refetch,
   } = useFaucetState();
 
-  const { drip, hash, isPending, isConfirming, error, reset } =
-    useDrip();
+  const { drip, hash, isPending, isConfirming, error, reset } = useDrip();
 
   // Local countdown state for smooth UI updates
   const [countdown, setCountdown] = useState<bigint>(0n);
@@ -74,31 +73,41 @@ export function FaucetForm() {
     });
   };
 
-  const faucetHasTokens = faucetBalance0 >= dripAmount0 && faucetBalance1 >= dripAmount1;
+  const faucetHasTokens =
+    faucetBalance0 >= dripAmount0 && faucetBalance1 >= dripAmount1;
 
   const getButtonText = () => {
     if (!isConnected) return "Initializing...";
     if (isLoading) return "Loading...";
     if (isPending) return "Confirm in wallet...";
     if (isConfirming) return "Claiming tokens...";
-    if (!canDrip && countdown > 0n) return `Cooldown: ${formatCountdown(countdown)}`;
+    if (!canDrip && countdown > 0n)
+      return `Cooldown: ${formatCountdown(countdown)}`;
     if (!faucetHasTokens) return "Faucet Empty";
     return "Claim Tokens";
   };
 
   const canClaim =
-    isConnected && canDrip && faucetHasTokens && !isPending && !isConfirming && !isLoading;
+    isConnected &&
+    canDrip &&
+    faucetHasTokens &&
+    !isPending &&
+    !isConfirming &&
+    !isLoading;
 
   return (
     <div className="mx-auto w-full max-w-md rounded-xl border border-border bg-card p-5 space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
-        <h3 className="text-base font-semibold leading-tight">Test Token Faucet</h3>
+        <h3 className="text-base font-semibold leading-tight">
+          Test Token Faucet
+        </h3>
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Claim test tokens to use with the Uniswap V4 pool. Tokens can be claimed once per cooldown period.
+        Claim test tokens to use with the Uniswap V4 pool. Tokens can be claimed
+        once per cooldown period.
       </p>
 
       {!isConnected && (

@@ -6,10 +6,10 @@ import { TokenAmountInput } from "@/components/token/TokenAmountInput";
 import { Button } from "@/components/ui/Button";
 import { DEFAULT_POOL, DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { COMMON_TOKENS } from "@/constants/tokens";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { usePoolState } from "@/hooks/pool/usePoolState";
 import { useSwapQuote } from "@/hooks/swap/useSwapQuote";
 import { useSwapTransaction } from "@/hooks/swap/useSwapTransaction";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { sortTokens } from "@/lib/poolId";
 import type { PoolKey, TokenData } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -90,7 +90,8 @@ export function SwapForm() {
     poolKey,
     tokenIn: tokenIn?.address,
     zeroForOne,
-    amountIn: amountIn && tokenIn ? parseUnits(amountIn || "0", tokenIn.decimals) : 0n,
+    amountIn:
+      amountIn && tokenIn ? parseUnits(amountIn || "0", tokenIn.decimals) : 0n,
     amountOutMinimum: quote?.minimumAmountOut ?? 0n,
   });
 
@@ -128,11 +129,7 @@ export function SwapForm() {
     resetSwap();
   }, [tokenIn, tokenOut, resetSwap]);
 
-  const canSwap =
-    isConnected &&
-    quote &&
-    !isPending &&
-    !isConfirming;
+  const canSwap = isConnected && quote && !isPending && !isConfirming;
 
   const getButtonText = () => {
     if (!isConnected) return "Initializing...";

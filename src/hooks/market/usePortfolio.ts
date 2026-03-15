@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useReadContracts } from "wagmi";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { zeroAddress } from "viem";
+import { useReadContracts } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
 import { erc20Abi } from "@/abi/erc20";
 import { useMarketList } from "@/hooks/market/useMarketList";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import type { MarketWithPrices } from "@/types";
 
 export interface PortfolioPosition {
@@ -67,14 +67,18 @@ export function usePortfolio() {
       const noResult = balanceData[idx + 1];
       idx += 2;
 
-      const yesBalance = yesResult?.status === "success" ? (yesResult.result as bigint) : 0n;
-      const noBalance = noResult?.status === "success" ? (noResult.result as bigint) : 0n;
+      const yesBalance =
+        yesResult?.status === "success" ? (yesResult.result as bigint) : 0n;
+      const noBalance =
+        noResult?.status === "success" ? (noResult.result as bigint) : 0n;
 
       if (yesBalance === 0n && noBalance === 0n) continue;
 
       // value = balance * marginalPrice / 1e18
-      const yesPrice = m.yesProb !== null ? BigInt(Math.floor(m.yesProb * 1e18)) : 0n;
-      const noPrice = m.noProb !== null ? BigInt(Math.floor(m.noProb * 1e18)) : 0n;
+      const yesPrice =
+        m.yesProb !== null ? BigInt(Math.floor(m.yesProb * 1e18)) : 0n;
+      const noPrice =
+        m.noProb !== null ? BigInt(Math.floor(m.noProb * 1e18)) : 0n;
       const yesValue = (yesBalance * yesPrice) / 10n ** 18n;
       const noValue = (noBalance * noPrice) / 10n ** 18n;
 

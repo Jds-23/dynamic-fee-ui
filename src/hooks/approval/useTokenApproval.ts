@@ -1,11 +1,11 @@
+import type { Address } from "viem";
 import { encodeFunctionData } from "viem";
 import { useReadContract } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
-import type { Address } from "viem";
 import { erc20Abi } from "@/abi/erc20";
 import { MAX_UINT256 } from "@/constants/defaults";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 interface UseTokenApprovalParams {
   tokenAddress?: Address;
@@ -13,7 +13,11 @@ interface UseTokenApprovalParams {
   amount: bigint;
 }
 
-export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenApprovalParams) {
+export function useTokenApproval({
+  tokenAddress,
+  spender,
+  amount,
+}: UseTokenApprovalParams) {
   const { address } = useSmartAccount();
 
   const { data: allowance, refetch } = useReadContract({
@@ -25,22 +29,30 @@ export function useTokenApproval({ tokenAddress, spender, amount }: UseTokenAppr
     query: { enabled: !!tokenAddress && !!spender && !!address },
   });
 
-  const { send, isPending, isConfirming, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const { send, isPending, isConfirming, reset } = useKernelTransaction(
+    unichainSepolia.id,
+  );
 
   const needsApproval =
-    !!tokenAddress && !!spender && (allowance === undefined || allowance < amount);
+    !!tokenAddress &&
+    !!spender &&
+    (allowance === undefined || allowance < amount);
 
   function approve() {
     if (!tokenAddress || !spender) return;
-    send([{
-      to: tokenAddress,
-      data: encodeFunctionData({
-        abi: erc20Abi,
-        functionName: "approve",
-        args: [spender, MAX_UINT256],
-      }),
-    }], { onSuccess: () => refetch() });
+    send(
+      [
+        {
+          to: tokenAddress,
+          data: encodeFunctionData({
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [spender, MAX_UINT256],
+          }),
+        },
+      ],
+      { onSuccess: () => refetch() },
+    );
   }
 
   return { needsApproval, approve, isPending, isConfirming, refetch, reset };

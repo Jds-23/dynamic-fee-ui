@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
-import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { getAddress } from "@/constants/addresses";
+import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { fetchNFTsForOwner } from "@/lib/alchemy";
 import type { AlchemyNFT } from "@/types/userPosition";
 

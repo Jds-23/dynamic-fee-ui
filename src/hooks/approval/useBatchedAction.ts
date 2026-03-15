@@ -5,8 +5,11 @@ import { useReadContract } from "wagmi";
 import { erc20Abi } from "@/abi/erc20";
 import { permit2Abi } from "@/abi/permit2";
 import { MAX_UINT160, MAX_UINT256 } from "@/constants/defaults";
+import {
+  type TransactionCallbacks,
+  useKernelTransaction,
+} from "@/hooks/transaction/useKernelTransaction";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
-import { useKernelTransaction, type TransactionCallbacks } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseBatchedActionParams {
   chainId: number;
@@ -41,15 +44,26 @@ export function useBatchedAction({
     address: permit2Address,
     abi: permit2Abi,
     functionName: "allowance",
-    args: address && tokenAddress && targetAddress ? [address, tokenAddress, targetAddress] : undefined,
+    args:
+      address && tokenAddress && targetAddress
+        ? [address, tokenAddress, targetAddress]
+        : undefined,
     chainId,
-    query: { enabled: !!permit2Address && !!tokenAddress && !!targetAddress && !!address },
+    query: {
+      enabled:
+        !!permit2Address && !!tokenAddress && !!targetAddress && !!address,
+    },
   });
   const permit2Allowance = permit2Data?.[0];
 
-  const buildApprovalCalls = useCallback((): { to: Hex; data: Hex; value?: bigint }[] => {
+  const buildApprovalCalls = useCallback((): {
+    to: Hex;
+    data: Hex;
+    value?: bigint;
+  }[] => {
     const calls: { to: Hex; data: Hex; value?: bigint }[] = [];
-    if (!tokenAddress || !permit2Address || !targetAddress || amount === 0n) return calls;
+    if (!tokenAddress || !permit2Address || !targetAddress || amount === 0n)
+      return calls;
 
     // ERC20 → Permit2 approval
     if (erc20Allowance === undefined || erc20Allowance < amount) {
@@ -77,10 +91,20 @@ export function useBatchedAction({
     }
 
     return calls;
-  }, [tokenAddress, permit2Address, targetAddress, amount, erc20Allowance, permit2Allowance]);
+  }, [
+    tokenAddress,
+    permit2Address,
+    targetAddress,
+    amount,
+    erc20Allowance,
+    permit2Allowance,
+  ]);
 
   const sendWithApprovals = useCallback(
-    (actionCalls: { to: Hex; data?: Hex; value?: bigint }[], options?: TransactionCallbacks) => {
+    (
+      actionCalls: { to: Hex; data?: Hex; value?: bigint }[],
+      options?: TransactionCallbacks,
+    ) => {
       const approvalCalls = buildApprovalCalls();
       tx.send([...approvalCalls, ...actionCalls], options);
     },

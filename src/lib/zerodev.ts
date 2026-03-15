@@ -1,7 +1,7 @@
 import {
+  getEntryPoint,
   KERNEL_V3_3,
   KernelVersionToAddressesMap,
-  getEntryPoint,
 } from "@zerodev/sdk/constants";
 
 const PROJECT_ID = import.meta.env.VITE_ZERODEV_PROJECT_ID;
