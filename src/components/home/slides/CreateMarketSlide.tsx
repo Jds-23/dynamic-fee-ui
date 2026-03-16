@@ -8,18 +8,18 @@ export function CreateMarketSlideInfo() {
         Market Creation
       </h2>
       <p className="text-sm text-muted-foreground">
-        A binary market with <strong className="text-foreground">n</strong>{" "}
+        A multiverse market with <strong className="text-foreground">n</strong>{" "}
         outcomes requires{" "}
         <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono">
           C(n+1, 2)
         </code>{" "}
-        Uniswap V4 pools — one per token pair. For a YES / NO market that means
+        Uniswap V4 pools. For a binary market that means
         3 pools.
       </p>
 
       <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-xs font-mono leading-relaxed">
         {`Market(conditionId, collateral, amount)
-  → deploy YES & NO tokens
+  → deploy Multiverse tokens
   → fund the hook with collateral
   → initialise 3 pools`}
       </pre>
