@@ -4,6 +4,7 @@ import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
+import { retryRefetch } from "@/lib/retryRefetch";
 import type { MarketCondition, MarketWithPrices } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
@@ -190,7 +191,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
     buyYes.trade({
       onSuccess: () => {
         buyYes.reset();
-        setTimeout(() => refetch(), 2000);
+        retryRefetch(refetch);
       },
     });
   };
@@ -199,7 +200,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
     buyNo.trade({
       onSuccess: () => {
         buyNo.reset();
-        setTimeout(() => refetch(), 2000);
+        retryRefetch(refetch);
       },
     });
   };

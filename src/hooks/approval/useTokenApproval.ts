@@ -6,6 +6,7 @@ import { erc20Abi } from "@/abi/erc20";
 import { MAX_UINT256 } from "@/constants/defaults";
 import { useKernelTransaction } from "@/hooks/transaction/useKernelTransaction";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { retryRefetch } from "@/lib/retryRefetch";
 
 interface UseTokenApprovalParams {
   tokenAddress?: Address;
@@ -51,7 +52,7 @@ export function useTokenApproval({
           }),
         },
       ],
-      { onSuccess: () => refetch() },
+      { onSuccess: () => retryRefetch(refetch) },
     );
   }
 

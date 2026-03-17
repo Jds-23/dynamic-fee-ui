@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { TUSD } from "@/constants/markets";
 import { useMintCollateral } from "@/hooks/useMintCollateral";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
+import { retryRefetch } from "@/lib/retryRefetch";
 
 interface MintGateProps {
   amountNeeded: bigint;
@@ -28,7 +29,7 @@ export function MintGate({ amountNeeded, children }: MintGateProps) {
             variant="outline"
             className="w-full"
             disabled={isMinting}
-            onClick={() => mint("1000000", { onSuccess: () => refetch() })}
+            onClick={() => mint("1000000", { onSuccess: () => retryRefetch(refetch) })}
           >
             {isMinting ? "Minting..." : "Mint 1M TUSD"}
           </Button>

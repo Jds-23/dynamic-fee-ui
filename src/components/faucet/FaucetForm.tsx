@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { useDrip } from "@/hooks/faucet/useDrip";
 import { useFaucetState } from "@/hooks/faucet/useFaucetState";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { retryRefetch } from "@/lib/retryRefetch";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 function formatCountdown(seconds: bigint): string {
@@ -68,7 +69,7 @@ export function FaucetForm() {
     reset();
     drip({
       onSuccess: () => {
-        refetch();
+        retryRefetch(refetch);
       },
     });
   };

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { TUSD } from "@/constants/markets";
 import { useMintCollateral } from "@/hooks/useMintCollateral";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
+import { retryRefetch } from "@/lib/retryRefetch";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 const QUICK_AMOUNTS = [1, 5, 10, 100] as const;
@@ -33,7 +34,7 @@ export function MintCollateralForm() {
     mint(currentAmount, {
       onSuccess: () => {
         setAmount("");
-        refetchBalance();
+        retryRefetch(refetchBalance);
       },
     });
   };

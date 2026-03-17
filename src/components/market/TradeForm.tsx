@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { TUSD } from "@/constants/markets";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
+import { retryRefetch } from "@/lib/retryRefetch";
 import { cn } from "@/lib/utils";
 import type { MarketWithPrices } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
@@ -167,7 +168,7 @@ export function TradeForm({ market }: TradeFormProps) {
         {({ insufficientBalance }) => (
           <Button
             className="w-full"
-            onClick={() => trade.trade({ onSuccess: () => market.refetch() })}
+            onClick={() => trade.trade({ onSuccess: () => retryRefetch(() => market.refetch()) })}
             disabled={
               isPending || amountIn === 0n || !market.state || insufficientBalance
             }

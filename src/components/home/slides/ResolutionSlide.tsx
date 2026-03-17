@@ -4,6 +4,7 @@ import { ResolvePanel } from "@/components/market/ResolvePanel";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
+import { retryRefetch } from "@/lib/retryRefetch";
 import type { MarketCondition } from "@/types";
 
 export function ResolutionSlideInfo() {
@@ -92,7 +93,7 @@ function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
   const onResolved = useCallback(
     (outcome: "YES" | "NO") => {
       setOptimisticOutcome(outcome);
-      market.refetch();
+      retryRefetch(() => market.refetch());
     },
     [market.refetch],
   );

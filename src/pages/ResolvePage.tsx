@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { fetchMarkets } from "@/lib/api";
+import { retryRefetch } from "@/lib/retryRefetch";
 import type { MarketCondition } from "@/types";
 
 export function ResolvePage() {
@@ -42,7 +43,7 @@ function ResolveContent({ condition }: { condition: MarketCondition }) {
   const onResolved = useCallback(
     (outcome: "YES" | "NO") => {
       setOptimisticOutcome(outcome);
-      market.refetch();
+      retryRefetch(() => market.refetch());
     },
     [market.refetch],
   );
