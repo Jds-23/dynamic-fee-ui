@@ -23,6 +23,10 @@ import {
   ResolutionSlidePanel,
 } from "@/components/home/slides/ResolutionSlide";
 import {
+  ThankYouSlideInfo,
+  ThankYouSlidePanel,
+} from "@/components/home/slides/ThankYouSlide";
+import {
   TradeSlideInfo,
   TradeSlidePanel,
 } from "@/components/home/slides/TradeSlide";
@@ -45,6 +49,11 @@ const STEPS = [
     title: "Resolution",
     Info: ResolutionSlideInfo,
     Panel: ResolutionSlidePanel,
+  },
+  {
+    title: "Thanks",
+    Info: ThankYouSlideInfo,
+    Panel: ThankYouSlidePanel,
   },
 ];
 
