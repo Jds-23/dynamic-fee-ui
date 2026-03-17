@@ -1,4 +1,5 @@
 import { parseUnits } from "viem";
+import { MintGate } from "@/components/collateral/MintGate";
 import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
 import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
@@ -224,28 +225,32 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <button
-          type="button"
-          className="flex-1 rounded-lg bg-success/15 py-3 text-center text-sm font-semibold text-success transition-colors hover:bg-success/90 hover:text-white disabled:opacity-50"
-          disabled={busy || market.isResolved}
-          onClick={handleBuyYes}
-        >
-          {buyYes.isPending || buyYes.isConfirming
-            ? "Buying…"
-            : "Buy Yes — 1000 TUSD"}
-        </button>
-        <button
-          type="button"
-          className="flex-1 rounded-lg bg-destructive/15 py-3 text-center text-sm font-semibold text-destructive transition-colors hover:bg-destructive/90 hover:text-white disabled:opacity-50"
-          disabled={busy || market.isResolved}
-          onClick={handleBuyNo}
-        >
-          {buyNo.isPending || buyNo.isConfirming
-            ? "Buying…"
-            : "Buy No — 1000 TUSD"}
-        </button>
-      </div>
+      <MintGate amountNeeded={BUY_AMOUNT}>
+        {({ insufficientBalance }) => (
+          <div className="flex gap-3">
+            <button
+              type="button"
+              className="flex-1 rounded-lg bg-success/15 py-3 text-center text-sm font-semibold text-success transition-colors hover:bg-success/90 hover:text-white disabled:opacity-50"
+              disabled={busy || market.isResolved || insufficientBalance}
+              onClick={handleBuyYes}
+            >
+              {buyYes.isPending || buyYes.isConfirming
+                ? "Buying…"
+                : "Buy Yes — 1000 TUSD"}
+            </button>
+            <button
+              type="button"
+              className="flex-1 rounded-lg bg-destructive/15 py-3 text-center text-sm font-semibold text-destructive transition-colors hover:bg-destructive/90 hover:text-white disabled:opacity-50"
+              disabled={busy || market.isResolved || insufficientBalance}
+              onClick={handleBuyNo}
+            >
+              {buyNo.isPending || buyNo.isConfirming
+                ? "Buying…"
+                : "Buy No — 1000 TUSD"}
+            </button>
+          </div>
+        )}
+      </MintGate>
 
       {/* Status banners */}
       {(buyYes.isConfirming || buyNo.isConfirming) && confirmingHash && (

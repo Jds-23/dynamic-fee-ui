@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "sonner";
 import { WagmiProvider } from "wagmi";
 import { wagmiConfig } from "@/config/wagmi";
@@ -16,6 +17,7 @@ export function Providers({ children }: ProvidersProps) {
       <QueryClientProvider client={queryClient}>
         <SmartAccountProvider>{children}</SmartAccountProvider>
         <Toaster position="bottom-right" richColors />
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </WagmiProvider>
   );

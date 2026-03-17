@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { parseUnits } from "viem";
+import { MintGate } from "@/components/collateral/MintGate";
 import { Button } from "@/components/ui/Button";
 import { TUSD } from "@/constants/markets";
 import { getRandomQuestion } from "@/constants/oscarQuestions";
@@ -143,13 +144,22 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
         </div>
 
         {/* Action */}
-        <Button
-          className="w-full"
-          onClick={handleCreate}
-          disabled={isPending || !conditionId || fundingAmount === 0n}
-        >
-          {isPending ? "Creating..." : "Create Market"}
-        </Button>
+        <MintGate amountNeeded={fundingAmount}>
+          {({ insufficientBalance }) => (
+            <Button
+              className="w-full"
+              onClick={handleCreate}
+              disabled={
+                isPending ||
+                !conditionId ||
+                fundingAmount === 0n ||
+                insufficientBalance
+              }
+            >
+              {isPending ? "Creating..." : "Create Market"}
+            </Button>
+          )}
+        </MintGate>
 
         {/* Status */}
         {create.isSuccess && create.hash && (

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
+import { MintGate } from "@/components/collateral/MintGate";
 import { Button } from "@/components/ui/Button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { DEFAULT_SLIPPAGE_TOLERANCE } from "@/constants/defaults";
@@ -162,15 +163,21 @@ export function TradeForm({ market }: TradeFormProps) {
       )}
 
       {/* Trade button */}
-      <Button
-        className="w-full"
-        onClick={() => trade.trade({ onSuccess: () => market.refetch() })}
-        disabled={isPending || amountIn === 0n || !market.state}
-      >
-        {isPending
-          ? "Trading..."
-          : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}
-      </Button>
+      <MintGate amountNeeded={direction === "buy" ? amountIn : 0n}>
+        {({ insufficientBalance }) => (
+          <Button
+            className="w-full"
+            onClick={() => trade.trade({ onSuccess: () => market.refetch() })}
+            disabled={
+              isPending || amountIn === 0n || !market.state || insufficientBalance
+            }
+          >
+            {isPending
+              ? "Trading..."
+              : `${direction === "buy" ? "Buy" : "Sell"} ${side}`}
+          </Button>
+        )}
+      </MintGate>
 
       {/* Status messages */}
       {trade.isSuccess && trade.hash && (
