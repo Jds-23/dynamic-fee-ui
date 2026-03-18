@@ -1,6 +1,6 @@
 import { encodeFunctionData } from "viem";
 import { unichainSepolia } from "wagmi/chains";
-import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
+import { multiverseMarketsAbi } from "@/abi/multiverseMarkets";
 import { PM_CONTRACTS } from "@/constants/markets";
 import {
   type TransactionCallbacks,
@@ -8,13 +8,13 @@ import {
 } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseSplitMergeParams {
-  conditionId: `0x${string}`;
+  universeId: `0x${string}`;
   amount: bigint;
   mode: "split" | "merge";
 }
 
 export function useSplitMerge({
-  conditionId,
+  universeId,
   amount,
   mode,
 }: UseSplitMergeParams) {
@@ -25,11 +25,11 @@ export function useSplitMerge({
     send(
       [
         {
-          to: PM_CONTRACTS.conditionalMarkets,
+          to: PM_CONTRACTS.multiverseMarkets,
           data: encodeFunctionData({
-            abi: conditionalMarketsAbi,
+            abi: multiverseMarketsAbi,
             functionName: mode,
-            args: [conditionId, amount],
+            args: [universeId, amount],
           }),
         },
       ],

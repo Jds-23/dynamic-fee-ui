@@ -27,9 +27,9 @@ export function MarketsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {markets.map((market) => (
           <Link
-            key={market.condition.conditionId}
-            to="/markets/$conditionId"
-            params={{ conditionId: market.condition.conditionId }}
+            key={market.universe.universeId}
+            to="/markets/$universeId"
+            params={{ universeId: market.universe.universeId }}
           >
             <MarketCard market={market} />
           </Link>

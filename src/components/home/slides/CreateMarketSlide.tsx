@@ -18,7 +18,7 @@ export function CreateMarketSlideInfo() {
       </p>
 
       <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-xs font-mono leading-relaxed">
-        {`Market(conditionId, collateral, amount)
+        {`Market(universeId, collateral, amount)
   → deploy Multiverse tokens
   → fund the hook with collateral
   → initialise 3 pools`}
@@ -27,7 +27,7 @@ export function CreateMarketSlideInfo() {
       <ol className="list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
         <li>
           <strong className="text-foreground">Deploy</strong> — ERC-20 outcome
-          tokens are created for the condition.
+          tokens are created for the universe.
         </li>
         <li>
           <strong className="text-foreground">Fund</strong> — Collateral is
@@ -77,8 +77,8 @@ export function CreateMarketSlidePanel() {
   return (
     <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
       <CreateMarketForm
-        onCreated={(conditionId) =>
-          navigate({ to: "/", search: { market: conditionId } })
+        onCreated={(universeId) =>
+          navigate({ to: "/", search: { market: universeId } })
         }
       />
     </div>

@@ -50,21 +50,21 @@ export function TradeSlideInfo() {
 
 interface TradeSlidePanelProps {
   onGoTo?: (index: number) => void;
-  conditionId?: string;
+  universeId?: string;
 }
 
-export function TradeSlidePanel({ onGoTo, conditionId }: TradeSlidePanelProps) {
+export function TradeSlidePanel({ onGoTo, universeId }: TradeSlidePanelProps) {
   return (
     <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
-      <TradeSlideInner onGoTo={onGoTo} conditionId={conditionId} />
+      <TradeSlideInner onGoTo={onGoTo} universeId={universeId} />
     </div>
   );
 }
 
-function TradeSlideInner({ onGoTo, conditionId }: TradeSlidePanelProps) {
+function TradeSlideInner({ onGoTo, universeId }: TradeSlidePanelProps) {
   const { markets, isLoading, refetch: listRefetch } = useMarketList();
-  const target = conditionId
-    ? markets.find((m) => m.condition.conditionId === conditionId)
+  const target = universeId
+    ? markets.find((m) => m.universe.universeId === universeId)
     : markets[0];
   const firstMarket = target ?? null;
 
@@ -85,20 +85,20 @@ function TradeSlideInner({ onGoTo, conditionId }: TradeSlidePanelProps) {
 
   return (
     <TradeSlideWithMarket
-      condition={firstMarket.condition}
+      universe={firstMarket.universe}
       listRefetch={listRefetch}
     />
   );
 }
 
 function TradeSlideWithMarket({
-  condition,
+  universe,
   listRefetch,
 }: {
-  condition: Parameters<typeof useMarketState>[0];
+  universe: Parameters<typeof useMarketState>[0];
   listRefetch: () => void;
 }) {
-  const marketState = useMarketState(condition);
+  const marketState = useMarketState(universe);
 
   return (
     <TradeForm

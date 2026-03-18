@@ -25,28 +25,28 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
     return parseUnits(amountStr, decimals);
   }, [amountStr]);
 
-  const conditionId = market.condition.conditionId;
+  const universeId = market.universe.universeId;
 
-  // Split: approve collateral → ConditionalMarkets
+  // Split: approve collateral → MultiverseMarkets
   const splitApproval = useTokenApproval({
     tokenAddress: market.state?.collateralAddress,
-    spender: PM_CONTRACTS.conditionalMarkets,
+    spender: PM_CONTRACTS.multiverseMarkets,
     amount,
   });
 
-  // Merge: approve YES + NO → ConditionalMarkets
+  // Merge: approve YES + NO → MultiverseMarkets
   const mergeYesApproval = useTokenApproval({
     tokenAddress: market.state?.yesTokenAddress,
-    spender: PM_CONTRACTS.conditionalMarkets,
+    spender: PM_CONTRACTS.multiverseMarkets,
     amount,
   });
   const mergeNoApproval = useTokenApproval({
     tokenAddress: market.state?.noTokenAddress,
-    spender: PM_CONTRACTS.conditionalMarkets,
+    spender: PM_CONTRACTS.multiverseMarkets,
     amount,
   });
 
-  const op = useSplitMerge({ conditionId, amount, mode });
+  const op = useSplitMerge({ universeId, amount, mode });
 
   const needsApproval =
     mode === "split"

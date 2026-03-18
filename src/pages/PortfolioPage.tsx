@@ -39,7 +39,7 @@ export function PortfolioPage() {
         <div className="mx-auto max-w-lg space-y-4">
           {positions.map((pos) => (
             <PositionRow
-              key={pos.market.condition.conditionId}
+              key={pos.market.universe.universeId}
               position={pos}
               onRedeem={
                 pos.redeemable ? () => setRedeemPosition(pos) : undefined

@@ -15,7 +15,7 @@ export function MarketCard({ market }: MarketCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-base">
-            {market.condition.question}
+            {market.universe.question}
           </CardTitle>
           <MarketStatusBadge
             isResolved={market.isResolved}
@@ -33,8 +33,8 @@ export function MarketCard({ market }: MarketCardProps) {
           >
             <Button variant="outline" size="sm" asChild>
               <Link
-                to="/markets/$conditionId/resolve"
-                params={{ conditionId: market.condition.conditionId }}
+                to="/markets/$universeId/resolve"
+                params={{ universeId: market.universe.universeId }}
               >
                 Resolve
               </Link>

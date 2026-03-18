@@ -9,17 +9,17 @@ import { Button } from "@/components/ui/Button";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { fetchMarkets } from "@/lib/api";
-import type { MarketCondition } from "@/types";
+import type { MarketUniverse } from "@/types";
 
 export function MarketTradePage() {
-  const { conditionId } = useParams({ from: "/markets/$conditionId" });
-  const { data: conditions = [] } = useQuery({
+  const { universeId } = useParams({ from: "/markets/$universeId" });
+  const { data: universes = [] } = useQuery({
     queryKey: ["markets"],
     queryFn: fetchMarkets,
   });
-  const condition = conditions.find((m) => m.conditionId === conditionId);
+  const universe = universes.find((m) => m.universeId === universeId);
 
-  if (!condition) {
+  if (!universe) {
     return (
       <div className="py-8 text-center text-muted-foreground">
         Market not found.{" "}
@@ -30,11 +30,11 @@ export function MarketTradePage() {
     );
   }
 
-  return <MarketTradeContent condition={condition} />;
+  return <MarketTradeContent universe={universe} />;
 }
 
-function MarketTradeContent({ condition }: { condition: MarketCondition }) {
-  const market = useMarketState(condition);
+function MarketTradeContent({ universe }: { universe: MarketUniverse }) {
+  const market = useMarketState(universe);
 
   const winnerToken =
     market.isResolved && market.state
@@ -54,7 +54,7 @@ function MarketTradeContent({ condition }: { condition: MarketCondition }) {
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold">{condition.question}</h1>
+            <h1 className="text-xl font-bold">{universe.question}</h1>
             <MarketStatusBadge
               isResolved={market.isResolved}
               resolvedOutcome={market.resolvedOutcome}

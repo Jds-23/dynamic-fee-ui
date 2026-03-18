@@ -59,7 +59,7 @@ export function TradeForm({ market }: TradeFormProps) {
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 shrink-0 rounded-lg bg-muted" />
         <h3 className="text-base font-semibold leading-tight">
-          {market.condition.question}
+          {market.universe.question}
         </h3>
       </div>
 

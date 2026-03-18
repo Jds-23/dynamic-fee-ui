@@ -100,13 +100,13 @@ const marketsRoute = createRoute({
 
 const marketTradeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/markets/$conditionId",
+  path: "/markets/$universeId",
   component: MarketTradePage,
 });
 
 const marketResolveRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/markets/$conditionId/resolve",
+  path: "/markets/$universeId/resolve",
   component: ResolvePage,
 });
 

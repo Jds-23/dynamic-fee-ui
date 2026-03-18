@@ -8,14 +8,14 @@ import { getRandomQuestion } from "@/constants/oscarQuestions";
 import { useCreateMarket } from "@/hooks/market/useCreateMarket";
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 import { postMarket } from "@/lib/api";
-import { randomConditionId } from "@/lib/market";
+import { randomUniverseId } from "@/lib/market";
 import { signMessage } from "@/lib/smartAccount";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 const QUICK_AMOUNTS = [1, 5, 10, 100] as const;
 
 interface CreateMarketFormProps {
-  onCreated?: (conditionId: string) => void;
+  onCreated?: (universeId: string) => void;
 }
 
 export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
@@ -26,9 +26,9 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
   const { address, privateKey } = useSmartAccount();
   const queryClient = useQueryClient();
 
-  const conditionId = useMemo(() => {
+  const universeId = useMemo(() => {
     if (!question.trim()) return undefined;
-    return randomConditionId();
+    return randomUniverseId();
   }, [question]);
 
   const fundingAmount = useMemo(() => {
@@ -37,13 +37,13 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
   }, [fundingStr]);
 
   const create = useCreateMarket({
-    conditionId: conditionId ?? "0x",
+    universeId: universeId ?? "0x",
     collateralAddress: TUSD.address,
     fundingAmount,
   });
 
   const handleCreate = () => {
-    if (!conditionId || !address || !privateKey) return;
+    if (!universeId || !address || !privateKey) return;
     setPostError(null);
 
     create.createMarket({
@@ -55,7 +55,7 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
         try {
           await postMarket(
             {
-              conditionId,
+              universeId,
               question: question.trim(),
               collateralAddress: TUSD.address,
               creator: address,
@@ -63,7 +63,7 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
             signFn,
           );
           queryClient.invalidateQueries({ queryKey: ["markets"] });
-          onCreated?.(conditionId);
+          onCreated?.(universeId);
         } catch (err) {
           setPostError((err as Error).message);
         }
@@ -151,7 +151,7 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
               onClick={handleCreate}
               disabled={
                 isPending ||
-                !conditionId ||
+                !universeId ||
                 fundingAmount === 0n ||
                 insufficientBalance
               }

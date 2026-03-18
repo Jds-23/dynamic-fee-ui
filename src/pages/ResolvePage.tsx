@@ -10,17 +10,17 @@ import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { fetchMarkets } from "@/lib/api";
 import { retryRefetch } from "@/lib/retryRefetch";
-import type { MarketCondition } from "@/types";
+import type { MarketUniverse } from "@/types";
 
 export function ResolvePage() {
-  const { conditionId } = useParams({ from: "/markets/$conditionId/resolve" });
-  const { data: conditions = [] } = useQuery({
+  const { universeId } = useParams({ from: "/markets/$universeId/resolve" });
+  const { data: universes = [] } = useQuery({
     queryKey: ["markets"],
     queryFn: fetchMarkets,
   });
-  const condition = conditions.find((m) => m.conditionId === conditionId);
+  const universe = universes.find((m) => m.universeId === universeId);
 
-  if (!condition) {
+  if (!universe) {
     return (
       <div className="py-8 text-center text-muted-foreground">
         Market not found.{" "}
@@ -31,11 +31,11 @@ export function ResolvePage() {
     );
   }
 
-  return <ResolveContent condition={condition} />;
+  return <ResolveContent universe={universe} />;
 }
 
-function ResolveContent({ condition }: { condition: MarketCondition }) {
-  const market = useMarketState(condition);
+function ResolveContent({ universe }: { universe: MarketUniverse }) {
+  const market = useMarketState(universe);
   const [optimisticOutcome, setOptimisticOutcome] = useState<
     "YES" | "NO" | null
   >(null);
@@ -68,7 +68,7 @@ function ResolveContent({ condition }: { condition: MarketCondition }) {
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold">{condition.question}</h1>
+            <h1 className="text-xl font-bold">{universe.question}</h1>
             <MarketStatusBadge
               isResolved={market.isResolved}
               resolvedOutcome={market.resolvedOutcome}

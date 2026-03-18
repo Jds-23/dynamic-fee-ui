@@ -17,7 +17,7 @@ export function PositionRow({ position, onRedeem }: PositionRowProps) {
   return (
     <div className="rounded-lg border border-border p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-medium">{market.condition.question}</h3>
+        <h3 className="text-sm font-medium">{market.universe.question}</h3>
         <MarketStatusBadge
           isResolved={market.isResolved}
           resolvedOutcome={market.resolvedOutcome}

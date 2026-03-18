@@ -4,8 +4,8 @@ import type { Address } from "viem";
 import { zeroAddress } from "viem";
 import { useReadContracts } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
-import { conditionalLMSRHookAbi } from "@/abi/conditionalLMSRHook";
-import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
+import { multiverseHookAbi } from "@/abi/multiverseHook";
+import { multiverseMarketsAbi } from "@/abi/multiverseMarkets";
 import { PM_CONTRACTS } from "@/constants/markets";
 import { fetchMarkets } from "@/lib/api";
 import { wadToProb } from "@/lib/market";
@@ -14,25 +14,25 @@ import type { MarketState, MarketWithPrices } from "@/types";
 const chainId = unichainSepolia.id;
 
 export function useMarketList() {
-  const { data: conditions = [], isLoading: isLoadingConditions } = useQuery({
+  const { data: universes = [], isLoading: isLoadingUniverses } = useQuery({
     queryKey: ["markets"],
     queryFn: fetchMarkets,
   });
 
-  // Batch 1: markets() + resolved() for every condition
-  const batch1Contracts = conditions.flatMap((m) => [
+  // Batch 1: markets() + resolved() for every universe
+  const batch1Contracts = universes.flatMap((m) => [
     {
-      address: PM_CONTRACTS.conditionalLMSRHook,
-      abi: conditionalLMSRHookAbi,
+      address: PM_CONTRACTS.multiverseHook,
+      abi: multiverseHookAbi,
       functionName: "markets" as const,
-      args: [m.conditionId] as const,
+      args: [m.universeId] as const,
       chainId,
     },
     {
-      address: PM_CONTRACTS.conditionalMarkets,
-      abi: conditionalMarketsAbi,
+      address: PM_CONTRACTS.multiverseMarkets,
+      abi: multiverseMarketsAbi,
       functionName: "resolved" as const,
-      args: [m.conditionId] as const,
+      args: [m.universeId] as const,
       chainId,
     },
   ]);
@@ -40,7 +40,7 @@ export function useMarketList() {
   const batch1 = useReadContracts({
     contracts: batch1Contracts,
     query: {
-      enabled: conditions.length > 0,
+      enabled: universes.length > 0,
       refetchInterval: 15000,
     },
   });
@@ -50,7 +50,7 @@ export function useMarketList() {
     const states: (MarketState | null)[] = [];
     const tokenPairs: { yes: Address; no: Address }[] = [];
 
-    for (let i = 0; i < conditions.length; i++) {
+    for (let i = 0; i < universes.length; i++) {
       const marketsResult = batch1.data?.[i * 2];
       const resolvedResult = batch1.data?.[i * 2 + 1];
 
@@ -85,7 +85,7 @@ export function useMarketList() {
 
       states.push({
         // @ts-ignore
-        conditionId: conditions[i]?.conditionId,
+        universeId: universes[i]?.universeId,
         collateralAddress: collateralToken,
         yesTokenAddress: yes,
         noTokenAddress: no,
@@ -100,24 +100,24 @@ export function useMarketList() {
     }
 
     return { states, tokenPairs };
-  }, [batch1.data, conditions]);
+  }, [batch1.data, universes]);
 
   // Batch 2: calcMarginalPrice for each token
   const anyTokens = tokenPairs.some((p) => p.yes !== zeroAddress);
 
-  const batch2Contracts = conditions.flatMap((m, i) => [
+  const batch2Contracts = universes.flatMap((m, i) => [
     {
-      address: PM_CONTRACTS.conditionalLMSRHook,
-      abi: conditionalLMSRHookAbi,
+      address: PM_CONTRACTS.multiverseHook,
+      abi: multiverseHookAbi,
       functionName: "calcMarginalPrice" as const,
-      args: [m.conditionId, tokenPairs[i]?.yes ?? zeroAddress] as const,
+      args: [m.universeId, tokenPairs[i]?.yes ?? zeroAddress] as const,
       chainId,
     },
     {
-      address: PM_CONTRACTS.conditionalLMSRHook,
-      abi: conditionalLMSRHookAbi,
+      address: PM_CONTRACTS.multiverseHook,
+      abi: multiverseHookAbi,
       functionName: "calcMarginalPrice" as const,
-      args: [m.conditionId, tokenPairs[i]?.no ?? zeroAddress] as const,
+      args: [m.universeId, tokenPairs[i]?.no ?? zeroAddress] as const,
       chainId,
     },
   ]);
@@ -131,7 +131,7 @@ export function useMarketList() {
   });
 
   const markets = useMemo((): MarketWithPrices[] => {
-    return conditions.map((condition, i) => {
+    return universes.map((universe, i) => {
       const state = states[i] ?? null;
       const isResolved = state !== null && state.resolved !== zeroAddress;
       let resolvedOutcome: "YES" | "NO" | null = null;
@@ -153,13 +153,13 @@ export function useMarketList() {
         noProb = wadToProb(noPriceResult.result as bigint);
       }
 
-      return { condition, state, yesProb, noProb, isResolved, resolvedOutcome };
+      return { universe, state, yesProb, noProb, isResolved, resolvedOutcome };
     });
-  }, [conditions, states, batch2.data]);
+  }, [universes, states, batch2.data]);
 
   return {
     markets,
-    isLoading: isLoadingConditions || batch1.isLoading || batch2.isLoading,
+    isLoading: isLoadingUniverses || batch1.isLoading || batch2.isLoading,
     refetch: () => {
       batch1.refetch();
       batch2.refetch();

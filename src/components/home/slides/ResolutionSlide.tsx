@@ -5,7 +5,7 @@ import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useTokenBalance } from "@/hooks/token/useTokenBalance";
 import { retryRefetch } from "@/lib/retryRefetch";
-import type { MarketCondition } from "@/types";
+import type { MarketUniverse } from "@/types";
 
 export function ResolutionSlideInfo() {
   return (
@@ -25,7 +25,7 @@ export function ResolutionSlideInfo() {
       </p>
 
       <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-xs font-mono leading-relaxed">
-        {`resolve(conditionId, winner)
+        {`resolve(universeId, winner)
   → winning token redeems 1 : 1 for collateral
   → losing tokens become worthless`}
       </pre>
@@ -51,13 +51,13 @@ export function ResolutionSlideInfo() {
 }
 
 export function ResolutionSlidePanel({
-  conditionId,
+  universeId,
 }: {
-  conditionId?: string;
+  universeId?: string;
 }) {
   const { markets, isLoading } = useMarketList();
-  const target = conditionId
-    ? markets.find((m) => m.condition.conditionId === conditionId)
+  const target = universeId
+    ? markets.find((m) => m.universe.universeId === universeId)
     : markets[0];
   const firstMarket = target ?? null;
 
@@ -79,13 +79,13 @@ export function ResolutionSlidePanel({
 
   return (
     <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
-      <ResolutionSlideInner condition={firstMarket.condition} />
+      <ResolutionSlideInner universe={firstMarket.universe} />
     </div>
   );
 }
 
-function ResolutionSlideInner({ condition }: { condition: MarketCondition }) {
-  const market = useMarketState(condition);
+function ResolutionSlideInner({ universe }: { universe: MarketUniverse }) {
+  const market = useMarketState(universe);
   const [optimisticOutcome, setOptimisticOutcome] = useState<
     "YES" | "NO" | null
   >(null);
