@@ -23,7 +23,7 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
 
   const { resolve, hash, isPending, isConfirming, isSuccess, error } =
     useResolveMarket({
-      conditionId: market.condition.conditionId,
+      universeId: market.universe.universeId,
       winner: winner ?? "0x0000000000000000000000000000000000000000",
     });
 
@@ -66,8 +66,8 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
         </div>
         <Button variant="outline" className="w-full" asChild>
           <Link
-            to="/markets/$conditionId"
-            params={{ conditionId: market.condition.conditionId }}
+            to="/markets/$universeId"
+            params={{ universeId: market.universe.universeId }}
           >
             Go to Redeem
           </Link>

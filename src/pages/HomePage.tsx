@@ -60,7 +60,7 @@ const STEPS = [
 const stepTransition = { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const };
 
 export function HomePage() {
-  const { market: conditionId } = useSearch({ from: "/" });
+  const { market: universeId } = useSearch({ from: "/" });
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -104,10 +104,10 @@ export function HomePage() {
   const panelProps: Record<string, unknown> = {};
   if (currentStep === 3) {
     panelProps.onGoTo = handleGoTo;
-    panelProps.conditionId = conditionId;
+    panelProps.universeId = universeId;
   }
   if (currentStep === 4 || currentStep === 5) {
-    panelProps.conditionId = conditionId;
+    panelProps.universeId = universeId;
   }
 
   return (

@@ -2,7 +2,7 @@ import type { Address, Hex } from "viem";
 import { encodeFunctionData } from "viem";
 import { useReadContract } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
-import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
+import { multiverseMarketsAbi } from "@/abi/multiverseMarkets";
 import { erc20Abi } from "@/abi/erc20";
 import { MAX_UINT256 } from "@/constants/defaults";
 import { PM_CONTRACTS } from "@/constants/markets";
@@ -13,18 +13,18 @@ import {
 import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 interface UseCreateMarketParams {
-  conditionId: `0x${string}`;
+  universeId: `0x${string}`;
   collateralAddress: Address;
   fundingAmount: bigint;
 }
 
 export function useCreateMarket({
-  conditionId,
+  universeId,
   collateralAddress,
   fundingAmount,
 }: UseCreateMarketParams) {
   const { address } = useSmartAccount();
-  const spender = PM_CONTRACTS.conditionalMarkets;
+  const spender = PM_CONTRACTS.multiverseMarkets;
 
   const { data: allowance } = useReadContract({
     address: collateralAddress,
@@ -56,9 +56,9 @@ export function useCreateMarket({
     calls.push({
       to: spender,
       data: encodeFunctionData({
-        abi: conditionalMarketsAbi,
+        abi: multiverseMarketsAbi,
         functionName: "createMarket",
-        args: [conditionId, collateralAddress, fundingAmount],
+        args: [universeId, collateralAddress, fundingAmount],
       }),
     });
 

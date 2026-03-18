@@ -1,7 +1,7 @@
 import type { Address } from "viem";
 import { encodeFunctionData } from "viem";
 import { unichainSepolia } from "wagmi/chains";
-import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
+import { multiverseMarketsAbi } from "@/abi/multiverseMarkets";
 import { PM_CONTRACTS } from "@/constants/markets";
 import {
   type TransactionCallbacks,
@@ -9,12 +9,12 @@ import {
 } from "@/hooks/transaction/useKernelTransaction";
 
 interface UseResolveMarketParams {
-  conditionId: `0x${string}`;
+  universeId: `0x${string}`;
   winner: Address;
 }
 
 export function useResolveMarket({
-  conditionId,
+  universeId,
   winner,
 }: UseResolveMarketParams) {
   const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
@@ -24,11 +24,11 @@ export function useResolveMarket({
     send(
       [
         {
-          to: PM_CONTRACTS.conditionalMarkets,
+          to: PM_CONTRACTS.multiverseMarkets,
           data: encodeFunctionData({
-            abi: conditionalMarketsAbi,
+            abi: multiverseMarketsAbi,
             functionName: "resolve",
-            args: [conditionId, winner],
+            args: [universeId, winner],
           }),
         },
       ],

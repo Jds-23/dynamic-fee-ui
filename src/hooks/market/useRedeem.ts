@@ -1,7 +1,7 @@
 import type { Address } from "viem";
 import { encodeFunctionData } from "viem";
 import { unichainSepolia } from "wagmi/chains";
-import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
+import { multiverseMarketsAbi } from "@/abi/multiverseMarkets";
 import { erc20Abi } from "@/abi/erc20";
 import { MAX_UINT256 } from "@/constants/defaults";
 import { PM_CONTRACTS } from "@/constants/markets";
@@ -27,13 +27,13 @@ export function useRedeem({ token, amount }: UseRedeemParams) {
           data: encodeFunctionData({
             abi: erc20Abi,
             functionName: "approve",
-            args: [PM_CONTRACTS.conditionalMarkets, MAX_UINT256],
+            args: [PM_CONTRACTS.multiverseMarkets, MAX_UINT256],
           }),
         },
         {
-          to: PM_CONTRACTS.conditionalMarkets,
+          to: PM_CONTRACTS.multiverseMarkets,
           data: encodeFunctionData({
-            abi: conditionalMarketsAbi,
+            abi: multiverseMarketsAbi,
             functionName: "redeem",
             args: [token, amount],
           }),

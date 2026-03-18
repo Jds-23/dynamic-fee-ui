@@ -1,7 +1,7 @@
-export const conditionalMarketsAbi = [
+export const multiverseMarketsAbi = [
   {
     type: "function",
-    name: "conditions",
+    name: "universes",
     inputs: [{ name: "", type: "bytes32" }],
     outputs: [
       { name: "collateralToken", type: "address" },
@@ -14,7 +14,7 @@ export const conditionalMarketsAbi = [
     type: "function",
     name: "createMarket",
     inputs: [
-      { name: "conditionId", type: "bytes32" },
+      { name: "universeId", type: "bytes32" },
       { name: "collateralToken", type: "address" },
       { name: "amount", type: "uint256" },
     ],
@@ -25,7 +25,7 @@ export const conditionalMarketsAbi = [
     type: "function",
     name: "split",
     inputs: [
-      { name: "conditionId", type: "bytes32" },
+      { name: "universeId", type: "bytes32" },
       { name: "amount", type: "uint256" },
     ],
     outputs: [],
@@ -35,7 +35,7 @@ export const conditionalMarketsAbi = [
     type: "function",
     name: "merge",
     inputs: [
-      { name: "conditionId", type: "bytes32" },
+      { name: "universeId", type: "bytes32" },
       { name: "amount", type: "uint256" },
     ],
     outputs: [],
@@ -55,7 +55,7 @@ export const conditionalMarketsAbi = [
     type: "function",
     name: "resolve",
     inputs: [
-      { name: "conditionId", type: "bytes32" },
+      { name: "universeId", type: "bytes32" },
       { name: "winner", type: "address" },
     ],
     outputs: [],
@@ -70,7 +70,7 @@ export const conditionalMarketsAbi = [
   },
   {
     type: "function",
-    name: "tokenCondition",
+    name: "tokenUniverse",
     inputs: [{ name: "", type: "address" }],
     outputs: [{ name: "", type: "bytes32" }],
     stateMutability: "view",
@@ -83,6 +83,13 @@ export const conditionalMarketsAbi = [
       { name: "", type: "address" },
     ],
     outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "creatorOf",
+    inputs: [{ name: "", type: "bytes32" }],
+    outputs: [{ name: "", type: "address" }],
     stateMutability: "view",
   },
 ] as const;

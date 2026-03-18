@@ -5,7 +5,7 @@ import { useMarketList } from "@/hooks/market/useMarketList";
 import { useMarketState } from "@/hooks/market/useMarketState";
 import { useMarketTrade } from "@/hooks/market/useMarketTrade";
 import { retryRefetch } from "@/lib/retryRefetch";
-import type { MarketCondition, MarketWithPrices } from "@/types";
+import type { MarketUniverse, MarketWithPrices } from "@/types";
 import { getExplorerTxUrl } from "@/utils/explorer";
 
 const BUY_AMOUNT = parseUnits("1000", 6); // 1000 TUSD
@@ -64,18 +64,18 @@ export function LMSRSlideInfo() {
   );
 }
 
-export function LMSRSlidePanel({ conditionId }: { conditionId?: string }) {
+export function LMSRSlidePanel({ universeId }: { universeId?: string }) {
   return (
     <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-6">
-      <LivePricePanel conditionId={conditionId} />
+      <LivePricePanel universeId={universeId} />
     </div>
   );
 }
 
-function LivePricePanel({ conditionId }: { conditionId?: string }) {
+function LivePricePanel({ universeId }: { universeId?: string }) {
   const { markets, isLoading } = useMarketList();
-  const target = conditionId
-    ? markets.find((m) => m.condition.conditionId === conditionId)
+  const target = universeId
+    ? markets.find((m) => m.universe.universeId === universeId)
     : markets[0];
   const firstMarket = target ?? null;
 
@@ -93,7 +93,7 @@ function LivePricePanel({ conditionId }: { conditionId?: string }) {
     );
   }
 
-  return <LivePricePanelInner condition={firstMarket.condition} />;
+  return <LivePricePanelInner universe={firstMarket.universe} />;
 }
 
 function SemiCircleGauge({ value }: { value: number | null }) {
@@ -158,12 +158,12 @@ function SemiCircleGauge({ value }: { value: number | null }) {
   );
 }
 
-function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
-  const market = useMarketState(condition);
+function LivePricePanelInner({ universe }: { universe: MarketUniverse }) {
+  const market = useMarketState(universe);
   const { refetch } = market;
 
   const marketWithPrices: MarketWithPrices = {
-    condition: market.condition,
+    universe: market.universe,
     state: market.state,
     yesProb: market.yesProb,
     noProb: market.noProb,
@@ -222,7 +222,7 @@ function LivePricePanelInner({ condition }: { condition: MarketCondition }) {
           <h3 className="text-sm font-medium text-muted-foreground">
             Live Probabilities
           </h3>
-          <p className="text-lg font-semibold">{condition.question}</p>
+          <p className="text-lg font-semibold">{universe.question}</p>
         </div>
       </div>
 

@@ -1,9 +1,9 @@
-export const conditionalLMSRHookAbi = [
+export const multiverseHookAbi = [
   {
     type: "function",
     name: "calcMarginalPrice",
     inputs: [
-      { name: "conditionId", type: "bytes32" },
+      { name: "universeId", type: "bytes32" },
       { name: "token", type: "address" },
     ],
     outputs: [{ name: "", type: "uint256" }],
@@ -26,7 +26,7 @@ export const conditionalLMSRHookAbi = [
   },
   {
     type: "function",
-    name: "tokenToCondition",
+    name: "tokenToUniverse",
     inputs: [{ name: "", type: "address" }],
     outputs: [{ name: "", type: "bytes32" }],
     stateMutability: "view",

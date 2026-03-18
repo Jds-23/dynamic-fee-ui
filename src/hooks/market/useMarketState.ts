@@ -3,32 +3,32 @@ import type { Address } from "viem";
 import { zeroAddress } from "viem";
 import { useReadContracts } from "wagmi";
 import { unichainSepolia } from "wagmi/chains";
-import { conditionalLMSRHookAbi } from "@/abi/conditionalLMSRHook";
-import { conditionalMarketsAbi } from "@/abi/conditionalMarkets";
+import { multiverseHookAbi } from "@/abi/multiverseHook";
+import { multiverseMarketsAbi } from "@/abi/multiverseMarkets";
 import { PM_CONTRACTS } from "@/constants/markets";
 import { wadToProb } from "@/lib/market";
-import type { MarketCondition, MarketState, MarketWithPrices } from "@/types";
+import type { MarketUniverse, MarketState, MarketWithPrices } from "@/types";
 
 const chainId = unichainSepolia.id;
 
-export function useMarketState(condition: MarketCondition) {
-  const { conditionId } = condition;
+export function useMarketState(universe: MarketUniverse) {
+  const { universeId } = universe;
 
   // Batch 1: market struct + resolved status
   const batch1 = useReadContracts({
     contracts: [
       {
-        address: PM_CONTRACTS.conditionalLMSRHook,
-        abi: conditionalLMSRHookAbi,
+        address: PM_CONTRACTS.multiverseHook,
+        abi: multiverseHookAbi,
         functionName: "markets",
-        args: [conditionId],
+        args: [universeId],
         chainId,
       },
       {
-        address: PM_CONTRACTS.conditionalMarkets,
-        abi: conditionalMarketsAbi,
+        address: PM_CONTRACTS.multiverseMarkets,
+        abi: multiverseMarketsAbi,
         functionName: "resolved",
-        args: [conditionId],
+        args: [universeId],
         chainId,
       },
     ],
@@ -67,7 +67,7 @@ export function useMarketState(condition: MarketCondition) {
         : zeroAddress;
 
     const ms: MarketState = {
-      conditionId,
+      universeId,
       collateralAddress: collateralToken,
       yesTokenAddress: yes,
       noTokenAddress: no,
@@ -79,23 +79,23 @@ export function useMarketState(condition: MarketCondition) {
     };
 
     return { state: ms, yesToken: yes, noToken: no };
-  }, [batch1.data, conditionId]);
+  }, [batch1.data, universeId]);
 
   // Batch 2: marginal prices (enabled when we have token addresses)
   const batch2 = useReadContracts({
     contracts: [
       {
-        address: PM_CONTRACTS.conditionalLMSRHook,
-        abi: conditionalLMSRHookAbi,
+        address: PM_CONTRACTS.multiverseHook,
+        abi: multiverseHookAbi,
         functionName: "calcMarginalPrice",
-        args: [conditionId, yesToken],
+        args: [universeId, yesToken],
         chainId,
       },
       {
-        address: PM_CONTRACTS.conditionalLMSRHook,
-        abi: conditionalLMSRHookAbi,
+        address: PM_CONTRACTS.multiverseHook,
+        abi: multiverseHookAbi,
         functionName: "calcMarginalPrice",
-        args: [conditionId, noToken],
+        args: [universeId, noToken],
         chainId,
       },
     ],
@@ -126,7 +126,7 @@ export function useMarketState(condition: MarketCondition) {
     }
 
     return {
-      condition,
+      universe,
       state,
       yesProb,
       noProb,
@@ -134,7 +134,7 @@ export function useMarketState(condition: MarketCondition) {
       resolvedOutcome,
       isLoading: batch1.isLoading || batch2.isLoading,
     };
-  }, [condition, state, batch2.data, batch1.isLoading, batch2.isLoading]);
+  }, [universe, state, batch2.data, batch1.isLoading, batch2.isLoading]);
 
   return {
     ...result,

@@ -50,7 +50,7 @@ export function useMarketTrade({
     const poolKey = buildMarketPoolKey(
       collateral,
       outcomeToken,
-      PM_CONTRACTS.conditionalLMSRHook,
+      PM_CONTRACTS.multiverseHook,
     );
 
     const zeroForOne =

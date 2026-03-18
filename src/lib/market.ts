@@ -4,11 +4,11 @@ import { PM_POOL_CONFIG } from "@/constants/markets";
 import { sortTokens } from "@/lib/poolId";
 import type { PoolKey } from "@/types";
 
-export function computeConditionId(question: string): `0x${string}` {
+export function computeUniverseId(question: string): `0x${string}` {
   return keccak256(toBytes(question));
 }
 
-export function randomConditionId(): `0x${string}` {
+export function randomUniverseId(): `0x${string}` {
   return toHex(crypto.getRandomValues(new Uint8Array(32)));
 }
 

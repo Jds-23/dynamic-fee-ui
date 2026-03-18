@@ -1,13 +1,13 @@
 import type { Address } from "viem";
 
-export interface MarketCondition {
-  conditionId: `0x${string}`;
+export interface MarketUniverse {
+  universeId: `0x${string}`;
   question: string;
   collateralAddress: Address;
 }
 
 export interface MarketState {
-  conditionId: `0x${string}`;
+  universeId: `0x${string}`;
   collateralAddress: Address;
   yesTokenAddress: Address;
   noTokenAddress: Address;
@@ -19,7 +19,7 @@ export interface MarketState {
 }
 
 export interface MarketWithPrices {
-  condition: MarketCondition;
+  universe: MarketUniverse;
   state: MarketState | null;
   yesProb: number | null;
   noProb: number | null;
