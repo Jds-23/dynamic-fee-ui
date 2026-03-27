@@ -51,12 +51,12 @@ export function ThankYouSlideInfo() {
 
 export function ThankYouSlidePanel() {
   return (
-    <div className="flex h-full min-h-[28rem] flex-col items-center justify-center gap-12 rounded-2xl border border-border/50 bg-card/30 p-8">
+    <div className="flex h-full min-h-0 flex-col items-center justify-center gap-6 rounded-2xl border border-border/50 bg-card/30 p-4 lg:min-h-[28rem] lg:gap-12 lg:p-8">
       <h3 className="text-lg font-semibold text-muted-foreground">
         Powered By
       </h3>
 
-      <div className="flex flex-col items-center gap-14">
+      <div className="flex flex-col items-center gap-8 lg:gap-14">
         <img
           src="/uniswap_full.png"
           alt="Uniswap"

@@ -60,6 +60,12 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
+@supports (padding: env(safe-area-inset-bottom)) {
+  :root {
+    --safe-area-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 :root {
   --background: #15191D;
   --foreground: #FFFFFF;

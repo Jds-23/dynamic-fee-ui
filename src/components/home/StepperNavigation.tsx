@@ -73,7 +73,7 @@ export function StepperRail({
       </nav>
 
       {/* Mobile: thin progress bar + step label */}
-      <div className="lg:hidden px-4 pt-4 pb-2 space-y-2">
+      <div className="lg:hidden px-4 pt-2 pb-1 space-y-1">
         <div className="h-1 w-full rounded-full bg-border overflow-hidden">
           <div
             className="h-full rounded-full bg-primary transition-all duration-300"
@@ -102,10 +102,10 @@ export function StepperBottomNav({
   const isLast = currentStep === totalSteps - 1;
 
   return (
-    <div className="flex items-center justify-between border-t border-border px-6 py-4">
+    <div className="flex items-center justify-between border-t border-border px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
       {currentStep > 0 ? (
-        <Button variant="outline" onClick={onPrev}>
-          <ChevronLeft className="mr-1 h-4 w-4" />
+        <Button variant="outline" className="min-h-[44px]" onClick={onPrev}>
+          <ChevronLeft className="mr-1 h-5 w-5 sm:h-4 sm:w-4" />
           Back
         </Button>
       ) : (
@@ -113,16 +113,16 @@ export function StepperBottomNav({
       )}
 
       {isLast ? (
-        <Button asChild>
+        <Button asChild className="min-h-[44px]">
           <Link to="/markets">
             Explore Markets
-            <ChevronRight className="ml-1 h-4 w-4" />
+            <ChevronRight className="ml-1 h-5 w-5 sm:h-4 sm:w-4" />
           </Link>
         </Button>
       ) : (
-        <Button onClick={onNext}>
+        <Button className="min-h-[44px]" onClick={onNext}>
           Next
-          <ChevronRight className="ml-1 h-4 w-4" />
+          <ChevronRight className="ml-1 h-5 w-5 sm:h-4 sm:w-4" />
         </Button>
       )}
     </div>

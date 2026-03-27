@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { MobileMenu } from "@/components/layout/MobileMenu";
 import { APP_MODE, type AppMode } from "@/constants/appMode";
 import { CreateMarketPage } from "@/pages/CreateMarketPage";
 import { FaucetPage } from "@/pages/FaucetPage";
@@ -55,7 +56,7 @@ function RootLayout() {
             >
               Uniswap V4
             </Link>
-            <nav className="flex gap-4">
+            <nav className="hidden md:flex gap-4">
               {filteredNavItems.map((item) => (
                 <Link
                   key={item.to}
@@ -68,7 +69,12 @@ function RootLayout() {
               ))}
             </nav>
           </div>
-          <Header />
+          <div className="md:hidden">
+            <MobileMenu />
+          </div>
+          <div className="hidden md:block">
+            <Header />
+          </div>
         </div>
       </header>
       <main className="container mx-auto px-4">
