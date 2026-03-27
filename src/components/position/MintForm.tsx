@@ -125,6 +125,8 @@ export function MintForm() {
     isSuccess,
     error: mintError,
     reset: resetMint,
+    retryCountdown,
+    retryAttempt,
   } = useMintPosition({
     position: positionData?.position,
     slippageTolerance: DEFAULT_SLIPPAGE_TOLERANCE,
@@ -290,6 +292,12 @@ export function MintForm() {
           >
             View tx
           </a>
+        </div>
+      )}
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
         </div>
       )}
       {mintError && (

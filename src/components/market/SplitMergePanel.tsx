@@ -207,6 +207,12 @@ export function SplitMergePanel({ market }: SplitMergePanelProps) {
           </a>
         </div>
       )}
+      {op.retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {op.retryCountdown}s… (attempt{" "}
+          {op.retryAttempt}/3)
+        </div>
+      )}
       {op.error && (
         <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
           {(op.error as Error).message?.slice(0, 100)}

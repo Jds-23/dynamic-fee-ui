@@ -21,12 +21,19 @@ export function RedeemPanel({
   const decimals = TUSD.decimals;
   const formattedPayout = formatUnits(winnerBalance, decimals);
 
-  const { redeem, hash, isPending, isConfirming, isSuccess, error } = useRedeem(
-    {
-      token: winnerToken,
-      amount: winnerBalance,
-    },
-  );
+  const {
+    redeem,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    retryCountdown,
+    retryAttempt,
+  } = useRedeem({
+    token: winnerToken,
+    amount: winnerBalance,
+  });
 
   const transition = { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const };
 
@@ -126,6 +133,12 @@ export function RedeemPanel({
         {isPending || isConfirming ? "Redeeming..." : "Redeem"}
       </Button>
 
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
+        </div>
+      )}
       {error && (
         <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
           {(error as Error).message?.slice(0, 100)}

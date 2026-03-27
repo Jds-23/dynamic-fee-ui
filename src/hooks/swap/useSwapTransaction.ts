@@ -31,8 +31,18 @@ export function useSwapTransaction({
 }: UseSwapTransactionParams) {
   const { address: recipient } = useSmartAccount();
   const chainId = useChainId();
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(chainId);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(chainId);
 
   let universalRouterAddress: `0x${string}` | undefined;
   try {
@@ -143,5 +153,16 @@ export function useSwapTransaction({
     ],
   );
 
-  return { swap, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    swap,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

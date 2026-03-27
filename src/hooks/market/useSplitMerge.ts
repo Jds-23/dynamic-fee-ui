@@ -18,8 +18,18 @@ export function useSplitMerge({
   amount,
   mode,
 }: UseSplitMergeParams) {
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   function execute(options?: TransactionCallbacks) {
     send(
@@ -37,5 +47,16 @@ export function useSplitMerge({
     );
   }
 
-  return { execute, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    execute,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

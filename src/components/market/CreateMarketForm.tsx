@@ -180,6 +180,12 @@ export function CreateMarketForm({ onCreated }: CreateMarketFormProps = {}) {
             Market created on-chain but failed to register: {postError}
           </div>
         )}
+        {create.retryCountdown > 0 && (
+          <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+            Transaction failed, retrying in {create.retryCountdown}s… (attempt{" "}
+            {create.retryAttempt}/3)
+          </div>
+        )}
         {create.error && (
           <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
             {(create.error as Error).message?.slice(0, 100)}

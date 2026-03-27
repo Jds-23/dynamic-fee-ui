@@ -35,8 +35,18 @@ export function useCreateMarket({
     query: { enabled: !!address },
   });
 
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   function createMarket(options?: TransactionCallbacks) {
     const calls: { to: Hex; data: Hex }[] = [];
@@ -73,5 +83,8 @@ export function useCreateMarket({
     isSuccess,
     error,
     reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
   };
 }

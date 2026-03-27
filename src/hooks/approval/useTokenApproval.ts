@@ -30,9 +30,15 @@ export function useTokenApproval({
     query: { enabled: !!tokenAddress && !!spender && !!address },
   });
 
-  const { send, isPending, isConfirming, reset } = useKernelTransaction(
-    unichainSepolia.id,
-  );
+  const {
+    send,
+    isPending,
+    isConfirming,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   const needsApproval =
     !!tokenAddress &&
@@ -56,5 +62,15 @@ export function useTokenApproval({
     );
   }
 
-  return { needsApproval, approve, isPending, isConfirming, refetch, reset };
+  return {
+    needsApproval,
+    approve,
+    isPending,
+    isConfirming,
+    refetch,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

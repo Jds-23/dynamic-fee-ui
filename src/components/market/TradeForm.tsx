@@ -194,6 +194,12 @@ export function TradeForm({ market }: TradeFormProps) {
           </a>
         </div>
       )}
+      {trade.retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {trade.retryCountdown}s… (attempt{" "}
+          {trade.retryAttempt}/3)
+        </div>
+      )}
       {trade.error && (
         <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
           {(trade.error as Error).message?.slice(0, 100)}

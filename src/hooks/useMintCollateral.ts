@@ -11,8 +11,18 @@ import { useSmartAccount } from "@/hooks/useSmartAccount";
 
 export function useMintCollateral() {
   const { address } = useSmartAccount();
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   const mint = useCallback(
     (amount: string, options?: TransactionCallbacks) => {
@@ -40,5 +50,16 @@ export function useMintCollateral() {
     [address, send],
   );
 
-  return { mint, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    mint,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

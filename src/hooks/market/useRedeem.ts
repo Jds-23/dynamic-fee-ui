@@ -16,8 +16,18 @@ interface UseRedeemParams {
 }
 
 export function useRedeem({ token, amount }: UseRedeemParams) {
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   function redeem(options?: TransactionCallbacks) {
     send(
@@ -43,5 +53,16 @@ export function useRedeem({ token, amount }: UseRedeemParams) {
     );
   }
 
-  return { redeem, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    redeem,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

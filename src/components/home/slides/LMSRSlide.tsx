@@ -212,6 +212,8 @@ function LivePricePanelInner({ universe }: { universe: MarketUniverse }) {
     buyNo.isPending ||
     buyNo.isConfirming;
   const error = buyYes.error || buyNo.error;
+  const retryCountdown = buyYes.retryCountdown || buyNo.retryCountdown;
+  const retryAttempt = buyYes.retryAttempt || buyNo.retryAttempt;
   const confirmingHash = buyYes.hash || buyNo.hash;
 
   return (
@@ -266,6 +268,12 @@ function LivePricePanelInner({ universe }: { universe: MarketUniverse }) {
           >
             View tx
           </a>
+        </div>
+      )}
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
         </div>
       )}
       {error && (

@@ -86,6 +86,8 @@ export function SwapForm() {
     isSuccess,
     error: swapError,
     reset: resetSwap,
+    retryCountdown,
+    retryAttempt,
   } = useSwapTransaction({
     poolKey,
     tokenIn: tokenIn?.address,
@@ -237,6 +239,12 @@ export function SwapForm() {
           >
             View tx
           </a>
+        </div>
+      )}
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
         </div>
       )}
       {swapError && (

@@ -12,8 +12,18 @@ import { useSmartAccount } from "@/hooks/useSmartAccount";
 export function useDrip() {
   const { address } = useSmartAccount();
   const chainId = useChainId();
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(chainId);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(chainId);
 
   const faucetAddress = useMemo(() => {
     try {
@@ -46,5 +56,16 @@ export function useDrip() {
     [address, faucetAddress, send],
   );
 
-  return { drip, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    drip,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

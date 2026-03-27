@@ -23,8 +23,18 @@ export function useMintPosition({
 }: UseMintPositionParams) {
   const { address: recipient } = useSmartAccount();
   const chainId = useChainId();
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(chainId);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(chainId);
 
   let positionManagerAddress: `0x${string}` | undefined;
   try {
@@ -71,5 +81,16 @@ export function useMintPosition({
     [position, recipient, slippageTolerance, positionManagerAddress, send],
   );
 
-  return { mint, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    mint,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

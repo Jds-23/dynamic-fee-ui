@@ -31,8 +31,18 @@ export function useMarketTrade({
   minAmountOut,
 }: UseMarketTradeParams) {
   const { address } = useSmartAccount();
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   const buildCalls = useCallback(():
     | { to: Hex; data: Hex; value: bigint }[]
@@ -143,5 +153,8 @@ export function useMarketTrade({
     isSuccess,
     error,
     reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
   };
 }

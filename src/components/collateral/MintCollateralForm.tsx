@@ -25,8 +25,17 @@ export function MintCollateralForm() {
     query: { enabled: !!address },
   });
 
-  const { mint, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useMintCollateral();
+  const {
+    mint,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+  } = useMintCollateral();
 
   const handleMint = () => {
     const currentAmount = amount;
@@ -153,6 +162,12 @@ export function MintCollateralForm() {
           >
             View tx
           </a>
+        </div>
+      )}
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
         </div>
       )}
       {error && (

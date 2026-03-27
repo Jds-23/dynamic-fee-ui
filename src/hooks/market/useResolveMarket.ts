@@ -17,8 +17,18 @@ export function useResolveMarket({
   universeId,
   winner,
 }: UseResolveMarketParams) {
-  const { send, hash, isPending, isConfirming, isSuccess, error, reset } =
-    useKernelTransaction(unichainSepolia.id);
+  const {
+    send,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  } = useKernelTransaction(unichainSepolia.id);
 
   function resolve(options?: TransactionCallbacks) {
     send(
@@ -36,5 +46,16 @@ export function useResolveMarket({
     );
   }
 
-  return { resolve, hash, isPending, isConfirming, isSuccess, error, reset };
+  return {
+    resolve,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+    isRetrying,
+  };
 }

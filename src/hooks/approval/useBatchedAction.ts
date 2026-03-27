@@ -119,5 +119,8 @@ export function useBatchedAction({
     isSuccess: tx.isSuccess,
     error: tx.error,
     reset: tx.reset,
+    retryCountdown: tx.retryCountdown,
+    retryAttempt: tx.retryAttempt,
+    isRetrying: tx.isRetrying,
   };
 }

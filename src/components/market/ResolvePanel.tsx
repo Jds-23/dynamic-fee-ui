@@ -21,11 +21,19 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
         ? market.state?.noTokenAddress
         : undefined;
 
-  const { resolve, hash, isPending, isConfirming, isSuccess, error } =
-    useResolveMarket({
-      universeId: market.universe.universeId,
-      winner: winner ?? "0x0000000000000000000000000000000000000000",
-    });
+  const {
+    resolve,
+    hash,
+    isPending,
+    isConfirming,
+    isSuccess,
+    error,
+    retryCountdown,
+    retryAttempt,
+  } = useResolveMarket({
+    universeId: market.universe.universeId,
+    winner: winner ?? "0x0000000000000000000000000000000000000000",
+  });
 
   const handleResolve = () => {
     if (!selected) return;
@@ -138,6 +146,12 @@ export function ResolvePanel({ market, onResolved }: ResolvePanelProps) {
         {isPending || isConfirming ? "Resolving..." : "Resolve Market"}
       </Button>
 
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
+        </div>
+      )}
       {error && (
         <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
           {(error as Error).message?.includes("ConditionAlreadyResolved")

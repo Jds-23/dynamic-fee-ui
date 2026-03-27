@@ -37,7 +37,16 @@ export function FaucetForm() {
     refetch,
   } = useFaucetState();
 
-  const { drip, hash, isPending, isConfirming, error, reset } = useDrip();
+  const {
+    drip,
+    hash,
+    isPending,
+    isConfirming,
+    error,
+    reset,
+    retryCountdown,
+    retryAttempt,
+  } = useDrip();
 
   // Local countdown state for smooth UI updates
   const [countdown, setCountdown] = useState<bigint>(0n);
@@ -183,6 +192,12 @@ export function FaucetForm() {
           >
             View tx
           </a>
+        </div>
+      )}
+      {retryCountdown > 0 && (
+        <div className="rounded-md bg-yellow-500/10 p-3 text-sm text-yellow-400">
+          Transaction failed, retrying in {retryCountdown}s… (attempt{" "}
+          {retryAttempt}/3)
         </div>
       )}
       {error && (
