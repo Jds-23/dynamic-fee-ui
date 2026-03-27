@@ -8,39 +8,37 @@ export function TradeSlideInfo() {
   return (
     <div className="space-y-5">
       <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-        How a Swap Works
+        Step 2: The Crowd Trades
       </h2>
       <p className="text-sm text-muted-foreground">
-        Every buy starts by{" "}
+        Once your market is live, anyone can buy YES or NO tokens. Every trade{" "}
         <strong className="text-foreground">
-          minting equal amounts of YES and NO tokens
+          moves the price toward the crowd's true belief
         </strong>{" "}
-        from deposited collateral. The hook then routes the unwanted side back
-        into the pool so the user ends up holding only the token they want.
+        — and that price <em>is</em> your probability estimate.
       </p>
 
       <div className="space-y-2 rounded-lg bg-muted/60 p-4 text-xs font-mono leading-relaxed">
-        <p className="text-muted-foreground">{"// Buy YES flow"}</p>
-        <p>1. Collateral deposited</p>
-        <p>2. Split → equal YES + NO minted</p>
-        <p>3. User receives YES</p>
-        <p>4. Hook retains NO as reserve</p>
+        <p className="text-muted-foreground">{"// Someone thinks YES is underpriced"}</p>
+        <p>1. Deposits collateral</p>
+        <p>2. Buys YES tokens → price rises</p>
+        <p>3. Market now reflects their info</p>
       </div>
 
       <ul className="space-y-2 text-sm text-muted-foreground">
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            <strong className="text-foreground">Selling</strong> is the reverse
-            — outcome tokens are returned, merged back into collateral, and the
-            user is paid out.
+            <strong className="text-foreground">Profit motive = accuracy</strong>{" "}
+            — Traders who know something the market doesn't can profit by pushing
+            the price toward truth.
           </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            <strong className="text-foreground">YES↔NO swaps</strong> happen at
-            near-zero net cost because the collateral legs cancel out.
+            <strong className="text-foreground">Your subsidy funds the information</strong>{" "}
+            — The money you put in is the "bounty" that incentivizes informed traders to participate.
           </span>
         </li>
       </ul>
@@ -55,7 +53,7 @@ interface TradeSlidePanelProps {
 
 export function TradeSlidePanel({ onGoTo, universeId }: TradeSlidePanelProps) {
   return (
-    <div className="flex h-full min-h-[28rem] items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-6">
+    <div className="flex h-full min-h-0 items-center justify-center overflow-y-auto rounded-2xl border border-border/50 bg-card/30 p-4 lg:min-h-[28rem] lg:p-6">
       <TradeSlideInner onGoTo={onGoTo} universeId={universeId} />
     </div>
   );

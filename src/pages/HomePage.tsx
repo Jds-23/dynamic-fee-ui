@@ -1,6 +1,7 @@
 import { useSearch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSwipe } from "@/hooks/useSwipe";
 import {
   StepperBottomNav,
   StepperRail,
@@ -34,19 +35,19 @@ import {
 const STEPS = [
   { title: "Welcome", Info: HeroSlideInfo, Panel: null },
   {
-    title: "Multiverse",
+    title: "Problem",
     Info: MultiverseSlideInfo,
     Panel: MultiverseSlidePanel,
   },
   {
-    title: "Creation",
+    title: "Create",
     Info: CreateMarketSlideInfo,
     Panel: CreateMarketSlidePanel,
   },
-  { title: "Swaps", Info: TradeSlideInfo, Panel: TradeSlidePanel },
-  { title: "LMSR", Info: LMSRSlideInfo, Panel: LMSRSlidePanel },
+  { title: "Trade", Info: TradeSlideInfo, Panel: TradeSlidePanel },
+  { title: "Accuracy", Info: LMSRSlideInfo, Panel: LMSRSlidePanel },
   {
-    title: "Resolution",
+    title: "Resolve",
     Info: ResolutionSlideInfo,
     Panel: ResolutionSlidePanel,
   },
@@ -63,6 +64,7 @@ export function HomePage() {
   const { market: universeId } = useSearch({ from: "/" });
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const handleNext = useCallback(() => {
     if (currentStep < STEPS.length - 1) {
@@ -96,6 +98,8 @@ export function HomePage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleNext, handlePrev]);
 
+  useSwipe(contentRef, { onSwipeLeft: handleNext, onSwipeRight: handlePrev });
+
   const step = STEPS[currentStep];
   if (!step) return null;
   const { Info, Panel } = step;
@@ -120,7 +124,7 @@ export function HomePage() {
           onGoTo={handleGoTo}
         />
 
-        <div className="flex flex-1 overflow-hidden">
+        <div ref={contentRef} className="flex flex-1 overflow-hidden">
           {/* Content area */}
           <div className="relative flex-1 overflow-hidden">
             <AnimatePresence
@@ -135,7 +139,7 @@ export function HomePage() {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: direction * -40, opacity: 0 }}
                 transition={stepTransition}
-                className={`absolute inset-0 grid grid-cols-1 items-center gap-12 overflow-y-auto px-4 pb-16 pt-12 ${Panel ? "lg:grid-cols-2" : ""}`}
+                className={`absolute inset-0 grid grid-cols-1 items-start gap-6 overflow-y-auto px-4 pb-20 pt-4 lg:items-center lg:gap-12 lg:pb-16 lg:pt-12 ${Panel ? "lg:grid-cols-2" : ""}`}
               >
                 <Info />
                 {Panel && <Panel {...panelProps} />}

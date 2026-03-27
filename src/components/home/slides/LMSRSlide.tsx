@@ -16,15 +16,15 @@ export function LMSRSlideInfo() {
   return (
     <div className="space-y-5">
       <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-        The LMSR
+        Why the Price Is Accurate
       </h2>
       <p className="text-sm text-muted-foreground">
-        The{" "}
+        Under the hood, the{" "}
         <strong className="text-foreground">
-          Logarithmic Market Scoring Rule
+          Logarithmic Market Scoring Rule (LMSR)
         </strong>{" "}
-        is the cost function that prices every swap. It guarantees bounded loss
-        for the market maker and smooth price discovery for traders.
+        guarantees that the market always has liquidity and that prices behave
+        like real probabilities — they always sum to 100%.
       </p>
 
       <div className="rounded-lg bg-muted p-4 text-center font-mono text-sm leading-relaxed">
@@ -36,27 +36,28 @@ export function LMSRSlideInfo() {
           <span className="mt-0.5 text-primary">●</span>
           <span>
             <strong className="text-foreground">
-              Marginal cost = probability.
+              Prices are probabilities.
             </strong>{" "}
-            The derivative of the cost function with respect to each outcome
-            gives its current market price, which sums to 1 across all outcomes.
+            A YES token trading at $0.73 means the market thinks there's a 73%
+            chance the answer is yes.
           </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            Buy pressure on YES{" "}
-            <strong className="text-foreground">raises</strong> its price and{" "}
-            <strong className="text-foreground">lowers</strong> NO — and vice
-            versa.
+            <strong className="text-foreground">Your subsidy controls depth.</strong>{" "}
+            The <strong className="text-foreground">b</strong> parameter (set by
+            your funding amount) determines how much money it takes to move the
+            price — more subsidy means a more stable, harder-to-manipulate
+            estimate.
           </span>
         </li>
         <li className="flex items-start gap-2">
           <span className="mt-0.5 text-primary">●</span>
           <span>
-            The <strong className="text-foreground">b</strong> parameter
-            controls liquidity depth — a higher b means larger trades are needed
-            to move the price.
+            <strong className="text-foreground">Bounded loss.</strong>{" "}
+            The maximum you can lose as the market creator is capped — your
+            subsidy is the worst case, not an open-ended liability.
           </span>
         </li>
       </ul>
@@ -66,7 +67,7 @@ export function LMSRSlideInfo() {
 
 export function LMSRSlidePanel({ universeId }: { universeId?: string }) {
   return (
-    <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-6">
+    <div className="flex h-full min-h-0 items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-4 lg:min-h-[28rem] lg:p-6">
       <LivePricePanel universeId={universeId} />
     </div>
   );
@@ -228,10 +229,10 @@ function LivePricePanelInner({ universe }: { universe: MarketUniverse }) {
 
       <MintGate amountNeeded={BUY_AMOUNT}>
         {({ insufficientBalance }) => (
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
-              className="flex-1 rounded-lg bg-success/15 py-3 text-center text-sm font-semibold text-success transition-colors hover:bg-success/90 hover:text-white disabled:opacity-50"
+              className="flex-1 rounded-lg bg-success/15 py-3.5 text-center text-sm font-semibold text-success transition-colors hover:bg-success/90 hover:text-white disabled:opacity-50"
               disabled={busy || market.isResolved || insufficientBalance}
               onClick={handleBuyYes}
             >
@@ -241,7 +242,7 @@ function LivePricePanelInner({ universe }: { universe: MarketUniverse }) {
             </button>
             <button
               type="button"
-              className="flex-1 rounded-lg bg-destructive/15 py-3 text-center text-sm font-semibold text-destructive transition-colors hover:bg-destructive/90 hover:text-white disabled:opacity-50"
+              className="flex-1 rounded-lg bg-destructive/15 py-3.5 text-center text-sm font-semibold text-destructive transition-colors hover:bg-destructive/90 hover:text-white disabled:opacity-50"
               disabled={busy || market.isResolved || insufficientBalance}
               onClick={handleBuyNo}
             >

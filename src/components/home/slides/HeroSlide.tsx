@@ -17,9 +17,9 @@ export function HeroSlideInfo() {
           </span>
         </div>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-          The Multiverse Market
+          Multiverse Markets
           <span className="block text-muted-foreground">
-            A Uniswap v4 Hook for Conditional Finance
+            Spin up a prediction market on any question for $100–500 and get a real probability estimate.
           </span>
         </h1>
         {/* <p className="max-w-lg text-muted-foreground">
@@ -53,7 +53,7 @@ export function HeroSlideInfo() {
 
 export function HeroSlidePanel() {
   return (
-    <div className="flex h-full min-h-[28rem] items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-8">
+    <div className="flex h-full min-h-0 items-center justify-center rounded-2xl border border-border/50 bg-card/30 p-4 lg:min-h-[28rem] lg:p-8">
       <h2 className="text-lg font-semibold">Demo</h2>
     </div>
   );
